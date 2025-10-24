@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "../../lib/supabaseClient";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -19,19 +19,13 @@ export default function Dashboard() {
     router.replace("/login");
   };
 
-  if (!user) return <main>Yükleniyor…</main>;
+  if (!user) return <main style={{ padding: 40 }}>Yükleniyor…</main>;
 
   return (
-    <main>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h1 style={{ fontSize: 24, fontWeight: 600 }}>Dashboard</h1>
-        <button onClick={logout} style={{ padding: 8, borderRadius: 10, background: "rgba(255,255,255,.1)", border: "1px solid rgba(255,255,255,.2)" }}>
-          Çıkış Yap
-        </button>
-      </div>
-      <div style={{ marginTop: 16, padding: 16, borderRadius: 16, background: "rgba(255,255,255,.06)" }}>
-        Hoş geldin, <b>{user.email}</b>
-      </div>
+    <main style={{ padding: 40 }}>
+      <h1>Dashboard</h1>
+      <p>Hoş geldin, <b>{user.email}</b></p>
+      <button onClick={logout} style={{ marginTop: 12 }}>Çıkış Yap</button>
     </main>
   );
 }
