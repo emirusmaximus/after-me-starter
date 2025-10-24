@@ -1,39 +1,41 @@
 "use client";
+
 import { useState } from "react";
+import { supabase } from "../../lib/supabaseClient";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { supabase } from "@/lib/supabaseClient";
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [err, setErr] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const onSubmit = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErr(""); setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setLoading(false);
-    if (error) return setErr(error.message);
-    router.push("/dashboard");
+    if (error) setError(error.message);
+    else router.push("/dashboard");
   };
 
   return (
-    <main>
-      <h1 style={{ fontSize: 24, fontWeight: 600 }}>Giriş Yap</h1>
-      <form onSubmit={onSubmit} style={{ display: "grid", gap: 12, marginTop: 16 }}>
-        <input placeholder="E-posta" value={email} onChange={(e)=>setEmail(e.target.value)} />
-        <input type="password" placeholder="Şifre" value={password} onChange={(e)=>setPassword(e.target.value)} />
-        {err && <p style={{ color: "#ff8080" }}>{err}</p>}
-        <button disabled={loading} style={{ padding: 10, borderRadius: 10, background: "#fff", color: "#000", fontWeight: 600, opacity: loading? .6:1 }}>
-          {loading ? "Giriş yapılıyor..." : "Giriş Yap"}
-        </button>
+    <main style={{ padding: 40, textAlign: "center" }}>
+      <h1>Giriş Yap</h1>
+      <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        <input
+          type="email"
+          placeholder="E-posta"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input
+          type="password"
+          placeholder="Şifre"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button type="submit">Giriş</button>
       </form>
-      <p style={{ opacity: .75, marginTop: 12 }}>
-        Hesabın yok mu? <Link href="/signup" style={{ textDecoration: "underline" }}>Üye ol</Link>
-      </p>
+      {error && <p style={{ color: "red" }}>{error}</p>}
     </main>
   );
 }
