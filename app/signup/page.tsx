@@ -1,41 +1,31 @@
 "use client";
-
 import { useState } from "react";
-import { supabase } from "../../lib/supabaseClient";
 import { useRouter } from "next/navigation";
+import { supabase } from "../../lib/supabaseClient";
 
 export default function SignupPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [err, setErr] = useState("");
 
-  const handleSignup = async (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErr("");
     const { error } = await supabase.auth.signUp({ email, password });
-    if (error) setError(error.message);
-    else router.push("/dashboard");
+    if (error) return setErr(error.message);
+    router.push("/dashboard");
   };
 
   return (
     <main style={{ padding: 40, textAlign: "center" }}>
       <h1>Üye Ol</h1>
-      <form onSubmit={handleSignup} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-        <input
-          type="email"
-          placeholder="E-posta"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="Şifre"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button type="submit">Üye Ol</button>
+      <form onSubmit={onSubmit} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        <input type="email" placeholder="E-posta" value={email} onChange={(e)=>setEmail(e.target.value)} />
+        <input type="password" placeholder="Şifre (min 6)" value={password} onChange={(e)=>setPassword(e.target.value)} />
+        {err && <p style={{ color: "red" }}>{err}</p>}
+        <button type="submit">Hesap Oluştur</button>
       </form>
-      {error && <p style={{ color: "red" }}>{error}</p>}
     </main>
   );
 }
