@@ -18,14 +18,19 @@ export default function SignupPage() {
   };
 
   return (
-    <main style={{ padding: 40, textAlign: "center" }}>
-      <h1>Üye Ol</h1>
-      <form onSubmit={onSubmit} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-        <input type="email" placeholder="E-posta" value={email} onChange={(e)=>setEmail(e.target.value)} />
-        <input type="password" placeholder="Şifre (min 6)" value={password} onChange={(e)=>setPassword(e.target.value)} />
-        {err && <p style={{ color: "red" }}>{err}</p>}
-        <button type="submit">Hesap Oluştur</button>
+    <main style={{ padding: 40, maxWidth: 520, margin: "0 auto" }}>
+      <h1 style={{ fontSize: 26, fontWeight: 800 }}>Sign Up</h1>
+      <form onSubmit={onSubmit} style={{ display: "grid", gap: 12, marginTop: 16 }}>
+        <input placeholder="Email" value={email} onChange={(e)=>setEmail(e.target.value)} />
+        <input type="password" placeholder="Password (min 6)" value={password} onChange={(e)=>setPassword(e.target.value)} />
+        {err && <p style={{ color: "#ff8a8a" }}>{err}</p>}
+        <button style={{ padding: 10, borderRadius: 10, background: "#fff", color: "#000", fontWeight: 700 }}>
+          Create Account
+        </button>
       </form>
+      <p style={{ opacity: .8, marginTop: 10 }}>
+        Already have an account? <a href="/login" style={{ textDecoration: "underline", color: "white" }}>Log In</a>
+      </p>
     </main>
   );
 }
