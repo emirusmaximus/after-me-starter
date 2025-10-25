@@ -5,7 +5,6 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
 export default function HomePage(): JSX.Element {
-  // Animated counters
   const [messages, setMessages] = useState(0);
   const [capsules, setCapsules] = useState(0);
   const [letters, setLetters] = useState(0);
@@ -25,6 +24,20 @@ export default function HomePage(): JSX.Element {
     animate(setLetters, 529);
   }, []);
 
+  useEffect(() => {
+    // Waitlist thank-you animation
+    if (typeof window !== "undefined") {
+      const form = document.querySelector("form");
+      if (form) {
+        form.addEventListener("submit", (e) => {
+          e.preventDefault();
+          form.classList.add("submitted");
+          setTimeout(() => form.reset(), 1000);
+        });
+      }
+    }
+  }, []);
+
   return (
     <>
       {/* Navbar */}
@@ -37,13 +50,17 @@ export default function HomePage(): JSX.Element {
             <span>After.Me</span>
           </div>
           <div className="nav-actions">
-            <Link href="/login" className="btn">Log In</Link>
-            <Link href="/signup" className="btn btn--light">Sign Up</Link>
+            <Link href="/login" className="btn">
+              Log In
+            </Link>
+            <Link href="/signup" className="btn btn--light">
+              Sign Up
+            </Link>
           </div>
         </div>
       </nav>
 
-      {/* Hero (centered, balanced spacing) */}
+      {/* Hero */}
       <motion.header
         className="hero"
         initial={{ opacity: 0, y: 24 }}
@@ -62,18 +79,22 @@ export default function HomePage(): JSX.Element {
             </h1>
 
             <p className="subtitle">
-              <strong>After.Me</strong> — your digital vault of final words, memories, and messages.
-              Write now, store encrypted, deliver later.
+              <strong>After.Me</strong> — your digital vault of final words,
+              memories, and messages. Write now, store encrypted, deliver later.
             </p>
 
             <div className="cta">
-              <Link href="/signup" className="btn btn--light pulse">Sign Up Now</Link>
-              <Link href="/login" className="btn">Log In</Link>
+              <Link href="/signup" className="btn btn--light pulse">
+                Sign Up Now
+              </Link>
+              <Link href="/login" className="btn">
+                Log In
+              </Link>
             </div>
 
-            {/* Quote near top */}
             <p className="quote-top">
-              “He left us his voice. We still hear it every year on his birthday.”
+              “He left us his voice. We still hear it every year on his
+              birthday.”
               <small>A Daughter</small>
             </p>
           </div>
@@ -85,7 +106,6 @@ export default function HomePage(): JSX.Element {
         className="section"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
         transition={{ duration: 0.6 }}
       >
         <div className="container">
@@ -106,21 +126,27 @@ export default function HomePage(): JSX.Element {
         </div>
       </motion.section>
 
-      {/* ===== NEW SECTIONS (below stats) ===== */}
-
       {/* WHY AFTER.ME EXISTS */}
       <motion.section
         className="section"
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
+        transition={{ duration: 0.8 }}
       >
         <div className="container" style={{ textAlign: "center" }}>
           <h2 style={{ fontSize: 26, marginBottom: 16 }}>Why After.Me Exists</h2>
-          <p style={{ color: "var(--muted)", maxWidth: 680, margin: "0 auto", lineHeight: 1.7 }}>
-            People vanish. Words remain.<br />
-            After.Me was born from the desire to preserve our voices — not data, but <em>legacy</em>.
-            It’s where silence meets continuity; where what you write today can comfort someone tomorrow.
+          <p
+            style={{
+              color: "var(--muted)",
+              maxWidth: 680,
+              margin: "0 auto",
+              lineHeight: 1.7,
+            }}
+          >
+            People vanish. Words remain. <br />
+            After.Me was born from the desire to preserve our voices — not data,
+            but <em>legacy</em>. It’s where silence meets continuity; where what
+            you write today can comfort someone tomorrow.
           </p>
         </div>
       </motion.section>
@@ -130,11 +156,18 @@ export default function HomePage(): JSX.Element {
         className="section"
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
+        transition={{ duration: 0.8 }}
       >
-        <div className="container" style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "40px" }}>
-          <div style={{ flex: "1 1 320px", display: "flex", justifyContent: "center" }}>
-            {/* basit kilit ikonu (inverted) */}
+        <div
+          className="container"
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            gap: "40px",
+          }}
+        >
+          <div style={{ flex: "1 1 320px", textAlign: "center" }}>
             <img
               src="https://cdn-icons-png.flaticon.com/512/3064/3064197.png"
               alt="lock icon"
@@ -142,11 +175,13 @@ export default function HomePage(): JSX.Element {
             />
           </div>
           <div style={{ flex: "2 1 480px" }}>
-            <h3 style={{ fontSize: 22, marginBottom: 8 }}>Security & Privacy First</h3>
+            <h3 style={{ fontSize: 22, marginBottom: 8 }}>
+              Security & Privacy First
+            </h3>
             <p style={{ color: "var(--muted)", lineHeight: 1.7 }}>
-              Every message is encrypted <strong>before</strong> it leaves your device.
-              We can’t read your words — and that’s the point.
-              Your vault belongs only to you, protected with client-side AES-256 encryption
+              Every message is encrypted <strong>before</strong> it leaves your
+              device. We can’t read your words — and that’s the point. Your vault
+              belongs only to you, protected with client-side AES-256 encryption
               and stored securely on distributed Supabase servers.
             </p>
           </div>
@@ -158,22 +193,55 @@ export default function HomePage(): JSX.Element {
         className="section"
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
+        transition={{ duration: 0.8 }}
       >
         <div className="container" style={{ textAlign: "center" }}>
           <h2 style={{ fontSize: 26, marginBottom: 20 }}>Beyond a Time Capsule</h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))", gap: 24 }}>
-            <div style={{ border: "1px solid var(--border)", borderRadius: 12, padding: 20 }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))",
+              gap: 24,
+            }}
+          >
+            <div
+              style={{
+                border: "1px solid var(--border)",
+                borderRadius: 12,
+                padding: 20,
+              }}
+            >
               <h4>Trusted Contacts</h4>
-              <p style={{ color: "var(--muted)" }}>Nominate people who can access your vault after confirmation of life events.</p>
+              <p style={{ color: "var(--muted)" }}>
+                Nominate people who can access your vault after confirmation of
+                life events.
+              </p>
             </div>
-            <div style={{ border: "1px solid var(--border)", borderRadius: 12, padding: 20 }}>
+            <div
+              style={{
+                border: "1px solid var(--border)",
+                borderRadius: 12,
+                padding: 20,
+              }}
+            >
               <h4>Posthumous Delivery</h4>
-              <p style={{ color: "var(--muted)" }}>Automated releases triggered after inactivity periods or verified passing.</p>
+              <p style={{ color: "var(--muted)" }}>
+                Automated releases triggered after inactivity periods or verified
+                passing.
+              </p>
             </div>
-            <div style={{ border: "1px solid var(--border)", borderRadius: 12, padding: 20 }}>
+            <div
+              style={{
+                border: "1px solid var(--border)",
+                borderRadius: 12,
+                padding: 20,
+              }}
+            >
               <h4>Time-Locked Messages</h4>
-              <p style={{ color: "var(--muted)" }}>Choose a specific date in the future — your message will unlock only then.</p>
+              <p style={{ color: "var(--muted)" }}>
+                Choose a specific date in the future — your message will unlock
+                only then.
+              </p>
             </div>
           </div>
         </div>
@@ -184,30 +252,65 @@ export default function HomePage(): JSX.Element {
         className="section"
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
+        transition={{ duration: 0.8 }}
       >
         <div className="container" style={{ textAlign: "center" }}>
-          <h2 style={{ fontSize: 26, marginBottom: 16 }}>Real Messages. Real People.</h2>
-          <p style={{ color: "var(--muted)", maxWidth: 640, margin: "0 auto 28px" }}>
+          <h2 style={{ fontSize: 26, marginBottom: 16 }}>
+            Real Messages. Real People.
+          </h2>
+          <p
+            style={{
+              color: "var(--muted)",
+              maxWidth: 640,
+              margin: "0 auto 28px",
+            }}
+          >
             Anonymous stories from those who’ve already left their mark.
           </p>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 20 }}>
-            <div style={{ border: "1px solid var(--border)", borderRadius: 12, padding: 20 }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))",
+              gap: 20,
+            }}
+          >
+            <div
+              style={{
+                border: "1px solid var(--border)",
+                borderRadius: 12,
+                padding: 20,
+              }}
+            >
               <p style={{ fontStyle: "italic", color: "#eaeaea" }}>
-                “To my son: May you never fear the unknown. The stars are closer than they look.”
+                “To my son: May you never fear the unknown. The stars are closer
+                than they look.”
               </p>
               <small style={{ color: "var(--muted)" }}>– A Father, 2024</small>
             </div>
-            <div style={{ border: "1px solid var(--border)", borderRadius: 12, padding: 20 }}>
+            <div
+              style={{
+                border: "1px solid var(--border)",
+                borderRadius: 12,
+                padding: 20,
+              }}
+            >
               <p style={{ fontStyle: "italic", color: "#eaeaea" }}>
-                “I wrote this letter when I was 25. If you’re reading it, it means I finally had courage.”
+                “I wrote this letter when I was 25. If you’re reading it, it means
+                I finally had courage.”
               </p>
               <small style={{ color: "var(--muted)" }}>– A Stranger, 2023</small>
             </div>
-            <div style={{ border: "1px solid var(--border)", borderRadius: 12, padding: 20 }}>
+            <div
+              style={{
+                border: "1px solid var(--border)",
+                borderRadius: 12,
+                padding: 20,
+              }}
+            >
               <p style={{ fontStyle: "italic", color: "#eaeaea" }}>
-                “He left us his voice. We still hear it every year on his birthday.”
+                “He left us his voice. We still hear it every year on his
+                birthday.”
               </p>
               <small style={{ color: "var(--muted)" }}>– A Daughter</small>
             </div>
@@ -220,7 +323,7 @@ export default function HomePage(): JSX.Element {
         className="section"
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
+        transition={{ duration: 0.8 }}
       >
         <div className="container" style={{ textAlign: "center" }}>
           <h2 style={{ fontSize: 26, marginBottom: 12 }}>Join the Waitlist</h2>
@@ -228,8 +331,12 @@ export default function HomePage(): JSX.Element {
             Be among the first to experience the full release of After.Me Premium.
           </p>
           <form
-            style={{ display: "flex", justifyContent: "center", gap: 10, flexWrap: "wrap" }}
-            onSubmit={(e) => e.preventDefault()}
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              gap: 10,
+              flexWrap: "wrap",
+            }}
           >
             <input
               type="email"
@@ -243,39 +350,77 @@ export default function HomePage(): JSX.Element {
                 width: 260,
               }}
             />
-            <button type="submit" className="btn btn--light pulse" style={{ minWidth: 140 }}>
+            <button
+              type="submit"
+              className="btn btn--light pulse"
+              style={{ minWidth: 140 }}
+            >
               Notify Me
             </button>
           </form>
         </div>
       </motion.section>
 
-      {/* ===== END NEW SECTIONS ===== */}
-
-      {/* Process (keep) */}
-      <section className="section">
-        <div className="container" style={{ textAlign: "center" }}>
-          <h3 style={{ fontSize: 22, color: "var(--muted)", marginBottom: 12 }}>
-            🕰️ How your words travel through time.
-          </h3>
-          <div style={{ color: "var(--muted)" }}>A simple process built to last beyond us.</div>
+      {/* MEMORY SPARKS */}
+      <motion.section
+        className="section"
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1.2 }}
+      >
+        <div
+          className="container"
+          style={{
+            textAlign: "center",
+            padding: "80px 20px",
+            background:
+              "radial-gradient(circle at center, #111 0%, #050505 100%)",
+            borderRadius: 20,
+            boxShadow: "0 0 60px rgba(255,255,255,0.02) inset",
+          }}
+        >
+          <motion.h2
+            style={{
+              fontSize: 28,
+              marginBottom: 12,
+              background: "linear-gradient(90deg,#fff,#bfbfbf)",
+              WebkitBackgroundClip: "text",
+              color: "transparent",
+            }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            “A million words waiting for their moment.”
+          </motion.h2>
+          <motion.p
+            style={{ color: "var(--muted)" }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ delay: 0.4, duration: 1.2 }}
+          >
+            Every 14 seconds, someone writes their final message.
+          </motion.p>
+          <motion.div
+            className="sparkle"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 0.3 }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              repeatType: "mirror",
+            }}
+            style={{
+              width: 6,
+              height: 6,
+              borderRadius: "50%",
+              background: "#fff",
+              margin: "24px auto 0",
+              boxShadow: "0 0 20px 4px #fff",
+            }}
+          />
         </div>
-        <div className="hr" />
-        <div className="steps">
-          <div className="step">
-            <h4>1) Write</h4>
-            <p>Compose letters, memories, and instructions. Save drafts whenever you need.</p>
-          </div>
-          <div className="step">
-            <h4>2) Store</h4>
-            <p>Encrypted in your vault. You control visibility and release conditions.</p>
-          </div>
-          <div className="step">
-            <h4>3) Deliver</h4>
-            <p>Schedule to loved ones or your future self — only when the time is right.</p>
-          </div>
-        </div>
-      </section>
+      </motion.section>
 
       {/* Footer */}
       <section className="container">
@@ -287,7 +432,9 @@ export default function HomePage(): JSX.Element {
             <a href="#">Instagram</a>
           </div>
           <div>
-            <div>© 2025 After.Me — A product of <b>CobsVault Labs</b></div>
+            <div>
+              © 2025 After.Me — A product of <b>CobsVault Labs</b>
+            </div>
             <div style={{ display: "flex", gap: 18 }}>
               <a href="#">Privacy Policy</a>
               <a href="#">Terms of Service</a>
@@ -295,6 +442,40 @@ export default function HomePage(): JSX.Element {
           </div>
         </div>
       </section>
+
+      {/* Animations & Styles */}
+      <style jsx global>{`
+        .btn {
+          transition: all 0.3s ease;
+        }
+        .btn:hover {
+          transform: scale(1.05);
+          box-shadow: 0 0 18px rgba(255, 255, 255, 0.12);
+        }
+        .kpi:hover,
+        .step:hover {
+          transform: translateY(-4px);
+          transition: transform 0.3s ease;
+        }
+        form.submitted::after {
+          content: "✔ Thank you for subscribing!";
+          display: block;
+          margin-top: 12px;
+          color: #8fffcc;
+          font-weight: 500;
+          animation: fadein 1s ease;
+        }
+        @keyframes fadein {
+          from {
+            opacity: 0;
+            transform: translateY(8px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
     </>
   );
 }
