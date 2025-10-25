@@ -1,280 +1,258 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
+import { createClient } from "@supabase/supabase-js";
 
+// Not: İstersen ../../lib/supabaseClient importunu kullan.
+// Burada bağımlılık sızıntısı olmasın diye local client oluşturuyoruz.
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-/**
- * Premium, hikayeleştirilmiş dashboard
- * - Username ekranı estetik kart olarak
- * - Üst bar: Back to Home, avatar, @username, Logout
- * - Hero: gradient başlık + kısa hikaye
- * - Quick Actions
- * - Plan kartları: gradient ring + cam efekti
- * - Vault Preview: boş durumda şık illüstrasyon + CTA
- * - Journey Timeline: duygusal kapanış
- * Tüm stiller bu dosyada (styled-jsx); ek CSS gerektirmez.
- */
+type UserMeta = {
+  username?: string;
+};
 
-export default function Dashboard() {
+export default function DashboardPage() {
   const router = useRouter();
-
-  // Auth + Profile
-  const [user, setUser] = useState<any>(null);
-  const [hasUsername, setHasUsername] = useState(false);
-  const [displayNameInput, setDisplayNameInput] = useState("");
+  const [username, setUsername] = useState<string>("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase.auth.getUser();
-      if (!data.user) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
         router.push("/login");
         return;
       }
-      setUser(data.user);
-      const saved = !!data.user.user_metadata?.username;
-      setHasUsername(saved);
-      setDisplayNameInput(data.user.user_metadata?.username || "");
+      const meta = (user.user_metadata || {}) as UserMeta;
+      setUsername(meta.username || user.email?.split("@")[0] || "friend");
       setLoading(false);
     })();
   }, [router]);
 
-  async function handleLogout() {
+  const onLogout = async () => {
     await supabase.auth.signOut();
-    router.push("/login");
-  }
+    router.push("/");
+  };
 
-  async function saveUsername(e: React.FormEvent) {
-    e.preventDefault();
-    const value = displayNameInput.trim();
-    if (value.length < 2) return;
-    const { error } = await supabase.auth.updateUser({ data: { username: value } });
-    if (!error) setHasUsername(true);
-  }
-
-  const initial =
-    (user?.user_metadata?.username?.[0] ||
-      user?.email?.[0] ||
-      "U")
-      .toUpperCase();
+  const onCompose = () => {
+    // Geçici: Composer modal henüz yoksa /dashboard#compose anchor’ına veya gelecekteki route’a gidebilir.
+    // Şimdilik basit bir alert. Roadmap 1: Composer modal implement edilecek.
+    alert("Composer (Yeni Mesaj) burada açılacak. Roadmap #1’e göre AES-GCM ile istemci tarafında şifreleyip kaydedeceğiz.");
+  };
 
   if (loading) {
     return (
-      <div style={{ minHeight: "100vh", display: "grid", placeItems: "center", color: "#fff" }}>
-        <h2>Loading your vault…</h2>
-      </div>
-    );
-  }
-
-  /* ───────── Username Setup (estetik kart) ───────── */
-  if (!hasUsername) {
-    return (
-      <main className="u-page">
-        <div className="u-card">
-          <div className="u-logo">After.Me</div>
-          <h1 className="u-title">Choose a name that will echo in time</h1>
-          {!user?.email_confirmed_at && (
-            <div className="u-banner">
-              Please confirm your email to secure your vault. Check your inbox.
-            </div>
-          )}
-          <form onSubmit={saveUsername} className="u-form">
-            <label className="u-label">Username</label>
-            <input
-              className="u-input"
-              type="text"
-              placeholder="e.g. emir, e.coban"
-              value={displayNameInput}
-              onChange={(e) => setDisplayNameInput(e.target.value)}
-              minLength={2}
-              required
-            />
-            <button
-              type="submit"
-              className="u-btn"
-              disabled={displayNameInput.trim().length < 2}
-            >
-              Continue →
-            </button>
-            <button type="button" className="u-link" onClick={handleLogout}>
-              Log out
-            </button>
-          </form>
-        </div>
-
-        <style jsx global>{`
-          :root { --bg:#030303; --fg:#f5f5f5; --card:#0d0d0d; --border:#1f1f1f; --muted:#bdbdbd; }
-          .u-page{min-height:100vh;display:grid;place-items:center;background:var(--bg);color:var(--fg);padding:24px}
-          .u-card{
-            width:min(560px,92%);background:linear-gradient(180deg,#0e0e0e,#0a0a0a);
-            border:1px solid var(--border);border-radius:18px;padding:36px 28px;
-            box-shadow:0 12px 60px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.04);
-            animation:fadeIn .7s ease
-          }
-          .u-logo{font-weight:800;letter-spacing:.2px;margin-bottom:6px;opacity:.9}
-          .u-title{font-size:26px;line-height:1.28;margin:0 0 14px;background:linear-gradient(90deg,#fff,#bfbfbf);
-            -webkit-background-clip:text;color:transparent}
-          .u-banner{background:#0b0b0b;border:1px dashed #333;color:#e8e8e8;padding:10px 12px;border-radius:10px;font-size:13px;margin-bottom:16px}
-          .u-form{display:grid;gap:10px}
-          .u-label{font-size:13px;color:var(--muted)}
-          .u-input{background:#000;border:1px solid #333;color:#fff;padding:12px 14px;border-radius:10px;font-size:15px}
-          .u-input:focus{border-color:#fff}
-          .u-btn{margin-top:6px;background:#fff;color:#000;border:none;border-radius:10px;padding:12px 16px;font-weight:700;cursor:pointer;transition:transform .15s}
-          .u-btn:hover{transform:translateY(-1px)}
-          .u-btn[disabled]{opacity:.5;cursor:not-allowed;transform:none}
-          .u-link{margin-top:6px;background:transparent;color:#fff;border:1px solid var(--border);border-radius:10px;padding:10px 16px}
-          @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-        `}</style>
-      </main>
-    );
-  }
-
-  /* ───────── Premium Dashboard ───────── */
-  return (
-    <main className="dash">
-      {/* Top bar */}
-      <div className="bar">
-        <div className="bar-left">
+      <div className="wrap">
+        <div className="topbar">
           <button className="ghost" onClick={() => router.push("/")}>← Back to Home</button>
+          <div className="right">
+            <div className="avatar">{(username || "U").slice(0,1).toUpperCase()}</div>
+            <button className="ghost" disabled>Loading…</button>
+          </div>
         </div>
-        <div className="bar-right">
-          <div className="avatar" aria-hidden>{initial}</div>
-          <span className="handle">@{user?.user_metadata?.username}</span>
-          <button className="ghost" onClick={handleLogout}>Log out</button>
+        <div className="skeleton" />
+        <style jsx>{styles}</style>
+      </div>
+    );
+  }
+
+  return (
+    <div className="wrap">
+      {/* Top Bar */}
+      <div className="topbar">
+        <button className="ghost" onClick={() => router.push("/")}>← Back to Home</button>
+        <div className="right">
+          <div className="handle">@{username}</div>
+          <div className="avatar">{username.slice(0,1).toUpperCase()}</div>
+          <button className="ghost" onClick={onLogout}>Log out</button>
         </div>
       </div>
 
-      {/* Hero */}
+      {/* Hero — Sessiz lüks, duygusal */}
       <section className="hero">
-        <h1>
-          Welcome, {user?.user_metadata?.username} <span className="moon">🌙</span>
-        </h1>
-        <p className="lead">
-          Every word you write will become part of your legacy. This is your space —
-          your thoughts, your memories, your truth.
-        </p>
-        <div className="quick">
-          <button className="solid">+ Write a new message</button>
-          <button className="ghost">Manage profile</button>
+        <p className="eyebrow">Your private space</p>
+        <h1>Welcome, {username}.</h1>
+        <p className="sub">People vanish. Words remain. This is where your voice can outlive you — calm, encrypted, yours.</p>
+        <div className="ctaRow">
+          <button className="solid" onClick={onCompose}>+ Write a new message</button>
+          <button className="ghost" onClick={() => router.push("/dashboard#vault")}>Open your vault</button>
         </div>
       </section>
 
-      {/* Plans */}
-      <section className="section">
-        <div className="sec-head">
-          <h2>Choose Your Vault Plan</h2>
-          <p className="muted">Decide how far your words will travel.</p>
+      {/* Journey — 3 adımda hikâye */}
+      <section className="journey">
+        <div className="card">
+          <div className="node">1</div>
+          <h3>Write</h3>
+          <p>Say the thing that matters. A letter, a memory, a final word — in your own voice.</p>
         </div>
-        <div className="grid">
+        <div className="card">
+          <div className="node">2</div>
+          <h3>Encrypt</h3>
+          <p>Your message is encrypted <em>before</em> it leaves your device. We can’t read your words — and that’s the point.</p>
+        </div>
+        <div className="card">
+          <div className="node">3</div>
+          <h3>Deliver</h3>
+          <p>Choose a date or a condition. Your words arrive when they should — quietly, on time.</p>
+        </div>
+      </section>
+
+      {/* Memory Sparks — yazma kıvılcımları */}
+      <section className="sparks">
+        <p className="eyebrow">Memory Sparks</p>
+        <div className="chips">
           {[
-            { title: "Free", desc: "Write up to 5 messages. Simple, secure." },
-            { title: "Premium", desc: "Unlimited messages, scheduled delivery, encrypted storage.", highlight: true },
-            { title: "Lifetime", desc: "Everything unlocked. Your voice, forever preserved." },
-          ].map((p) => (
-            <div key={p.title} className={`card ${p.highlight ? "hi" : ""}`}>
-              <div className="ring" />
-              <div className="card-body">
-                <h3>{p.title}</h3>
-                <p className="muted">{p.desc}</p>
-                {p.title !== "Free" && <button className="dark">Upgrade →</button>}
-              </div>
-            </div>
+            "A lesson I wish I learned earlier…",
+            "To my future self: please remember…",
+            "For my child on their 18th birthday…",
+            "The story I never told anyone…",
+            "If I’m gone, read this on our anniversary…",
+          ].map((t) => (
+            <button key={t} className="chip" onClick={() => alert(`Composer’a eklenecek öneri: ${t}`)}>{t}</button>
           ))}
         </div>
       </section>
 
-      {/* Vault Preview */}
-      <section className="section">
-        <div className="sec-head">
-          <h2>Your Vault</h2>
-          <p className="muted">No messages yet. Start your first letter.</p>
+      {/* Vault — boş durum */}
+      <section id="vault" className="vault">
+        <h2>Your Vault</h2>
+        <div className="empty">
+          <div className="homeIcon" />
+          <p>No messages yet. Start your first letter.</p>
+          <button className="solid" onClick={onCompose}>Start writing</button>
         </div>
-        <div className="vault">
-          <div className="illustration" aria-hidden>
-            <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
-              <circle cx="60" cy="60" r="46" stroke="rgba(255,255,255,.14)" strokeWidth="2"/>
-              <path d="M35 65 L60 38 L85 65" stroke="white" strokeOpacity=".8" strokeWidth="2" fill="none"/>
-              <rect x="44" y="66" width="32" height="20" rx="6" fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.18)"/>
-            </svg>
+      </section>
+
+      {/* Gentle Upsell — en altta, sessiz */}
+      <section className="upsell">
+        <div className="upsellInner">
+          <div>
+            <h3>Preserve more memories, quietly.</h3>
+            <p>Premium lifts your limits and schedules deliveries — no rush, no noise.</p>
           </div>
-          <button className="solid">+ New Message</button>
+          <a className="softBtn" href="https://checkout.stripe.com/c/test_..." target="_blank" rel="noreferrer">
+            Consider Premium →
+          </a>
         </div>
+        <p className="micro">© 2025 After.Me — A product of CobsVault Labs</p>
       </section>
 
-      {/* Journey */}
-      <section className="section">
-        <div className="sec-head">
-          <h2>Your Journey So Far</h2>
-        </div>
-        <div className="timeline">
-          {[
-            "You created your account.",
-            "You chose a name to be remembered by.",
-            "One day, these words will reach someone you chose."
-          ].map((t, i) => (
-            <div key={i} className="node">
-              <span className="dot" /> <p>{t}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <footer className="foot">© 2025 After.Me — Crafted by CobsVault Labs</footer>
-
-      {/* Styles (tamamı bu dosyada) */}
-      <style jsx global>{`
-        :root{
-          --bg:#050505; --fg:#f5f5f5; --muted:#c7c7c7;
-          --card:#0b0b0b; --border:#1a1a1a; --ring:#2a2a2a;
-        }
-        .dash{max-width:1100px;margin:0 auto;padding:32px 20px;color:var(--fg);background:var(--bg)}
-        .bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
-        .bar-right{display:flex;align-items:center;gap:10px}
-        .avatar{width:28px;height:28px;border-radius:50%;background:#fff;color:#000;display:grid;place-items:center;font-weight:800}
-        .handle{opacity:.85;font-size:14px}
-        .ghost{background:transparent;color:#fff;border:1px solid #3a3a3a;border-radius:10px;padding:8px 14px;transition:.2s}
-        .ghost:hover{background:#fff;color:#000}
-        .hero{text-align:center;margin:18px 0 56px}
-        .hero h1{font-size:34px;margin-bottom:8px;background:linear-gradient(90deg,#fff,#bfbfbf);-webkit-background-clip:text;color:transparent}
-        .moon{filter:saturate(.9);opacity:.95}
-        .lead{max-width:760px;margin:0 auto;color:#e1e1e1}
-        .quick{display:flex;gap:10px;justify-content:center;margin-top:16px;flex-wrap:wrap}
-        .solid{background:#fff;color:#000;border:none;border-radius:10px;padding:12px 16px;font-weight:700;transition:.15s}
-        .solid:hover{transform:translateY(-1px)}
-        .dark{background:#0f0f0f;color:#fff;border:1px solid #3a3a3a;border-radius:10px;padding:10px 14px;font-weight:600}
-        .section{margin:40px 0}
-        .sec-head{text-align:center;margin-bottom:12px}
-        .muted{color:var(--muted)}
-        .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:14px}
-        .card{position:relative;border-radius:18px;overflow:hidden}
-        .card .ring{
-          position:absolute;inset:0;border-radius:18px;
-          background:linear-gradient(135deg,rgba(255,255,255,.18),rgba(255,255,255,0) 40%);
-          opacity:.25;pointer-events:none;border:1px solid var(--ring);
-        }
-        .card .card-body{
-          position:relative;background:rgba(255,255,255,.03);
-          backdrop-filter:blur(6px);
-          border:1px solid var(--border);
-          border-radius:16px;margin:1px;padding:22px;min-height:160px;
-          transition:transform .2s, box-shadow .2s;
-        }
-        .card:hover .card-body{transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,.35)}
-        .card.hi .card-body{border-color:#fff}
-        .vault{display:grid;justify-items:center;gap:14px;padding:22px;border:1px dashed #2e2e2e;border-radius:16px;background:linear-gradient(180deg,#0c0c0c,#0a0a0a)}
-        .illustration{opacity:.9}
-        .timeline{display:grid;gap:12px;justify-items:center}
-        .node{display:flex;gap:10px;align-items:center;opacity:.9}
-        .dot{width:8px;height:8px;border-radius:50%;background:#fff;box-shadow:0 0 12px #fff}
-        .foot{text-align:center;margin:60px 0 12px;opacity:.6;border-top:1px solid var(--border);padding-top:16px}
-        @media (max-width:640px){.hero h1{font-size:26px}}
-      `}</style>
-    </main>
+      <style jsx>{styles}</style>
+    </div>
   );
 }
+
+/** Styles (design tokensa saygılı) */
+const styles = /* css */ `
+.wrap {
+  --bg:#050505; --fg:#f5f5f5; --card:#0b0b0b; --border:#1a1a1a; --muted:#c7c7c7;
+  color: var(--fg);
+  background: var(--bg);
+  min-height: 100dvh;
+  padding: 24px 20px 64px;
+  display: grid;
+  gap: 32px;
+  justify-items: center;
+}
+.topbar{
+  width: 100%;
+  max-width: 1100px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.right{ display:flex; gap:12px; align-items:center; }
+.avatar{
+  width:32px; height:32px; border-radius:50%; background:#111; border:1px solid var(--border);
+  display:grid; place-items:center; font-weight:600;
+}
+.handle{ color:var(--muted); font-size:14px; }
+.ghost{
+  background:transparent; color:var(--fg); border:1px solid var(--border);
+  padding:8px 12px; border-radius:12px; cursor:pointer;
+  transition:transform 120ms ease, background 120ms ease;
+}
+.ghost:hover{ transform:scale(1.03); background:#0a0a0a; }
+.solid{
+  background:#fff; color:#000; border:none; padding:10px 14px; border-radius:14px; cursor:pointer; font-weight:600;
+  transition:transform 120ms ease, filter 120ms ease;
+}
+.solid:hover{ transform:scale(1.04); filter:brightness(0.95); }
+
+.hero{
+  width:100%; max-width:900px; text-align:center; margin-top:8px;
+  display:grid; gap:14px;
+}
+.eyebrow{ color:var(--muted); font-size:13px; letter-spacing:.3px; }
+.hero h1{ font-size:40px; line-height:1.1; margin:0; }
+.sub{ color:#d9d9d9; max-width:720px; margin:0 auto; }
+.ctaRow{ display:flex; gap:10px; justify-content:center; margin-top:4px; flex-wrap:wrap; }
+
+.journey{
+  width:100%; max-width:1000px;
+  display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:16px;
+}
+.card{
+  background: radial-gradient(120% 120% at 50% 0%, rgba(255,255,255,0.03), rgba(0,0,0,0)) , var(--card);
+  border:1px solid var(--border); border-radius:16px; padding:18px; box-shadow: 0 0 24px rgba(255,255,255,0.05);
+}
+.card h3{ margin:8px 0 6px; }
+.card p{ color:#d0d0d0; }
+.node{
+  width:28px; height:28px; border-radius:999px; display:grid; place-items:center;
+  background:#0f0f0f; border:1px solid var(--border); color:#bbb; font-weight:600; font-size:13px;
+}
+
+.sparks{
+  width:100%; max-width:1000px; text-align:center; display:grid; gap:12px; margin-top:4px;
+}
+.chips{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; }
+.chip{
+  border:1px solid var(--border); background:#0c0c0c; color:#eaeaea; border-radius:999px; padding:8px 12px;
+  cursor:pointer; transition:transform 120ms ease, background 120ms ease;
+}
+.chip:hover{ transform:scale(1.03); background:#111; }
+
+.vault{ width:100%; max-width:1000px; text-align:center; display:grid; gap:14px; }
+.vault h2{ margin-top:8px; }
+.empty{
+  border:1px solid var(--border); background:var(--card); border-radius:18px;
+  padding:28px; display:grid; gap:10px; place-items:center;
+}
+.homeIcon{
+  width:56px; height:56px; border-radius:14px; background: linear-gradient(180deg, #111, #0a0a0a);
+  border:1px solid var(--border); box-shadow: inset 0 0 24px rgba(255,255,255,.05);
+}
+.upsell{
+  width:100%; max-width:1000px; margin-top:6px;
+}
+.upsellInner{
+  display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap;
+  border:1px solid var(--border); background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0)) , var(--card);
+  border-radius:18px; padding:16px 18px;
+}
+.softBtn{
+  display:inline-block; padding:10px 14px; border-radius:12px;
+  background:#111; color:#f5f5f5; border:1px solid var(--border); text-decoration:none;
+  transition:transform 120ms ease, background 120ms ease;
+}
+.softBtn:hover{ transform:scale(1.03); background:#141414; }
+.micro{ color:var(--muted); margin-top:8px; text-align:center; font-size:12px; }
+
+.skeleton{
+  width:100%; max-width:900px; height:180px; border-radius:18px; background:#0a0a0a; border:1px solid var(--border);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+@keyframes pulse{
+  0%{opacity:.6} 50%{opacity:1} 100%{opacity:.6}
+}
+
+/* Responsive */
+@media (max-width: 900px){
+  .hero h1{ font-size:32px; }
+  .journey{ grid-template-columns: 1fr; }
+}
+`;
