@@ -2,7 +2,7 @@ import Link from "next/link";
 
 function Stat({ value, label }: { value: string; label: string }) {
   return (
-    <div style={{ textAlign: "center" }}>
+    <div>
       <div style={{ fontSize: 42, fontWeight: 800, lineHeight: 1 }}>{value}</div>
       <div style={{ marginTop: 6, opacity: 0.75 }}>{label}</div>
     </div>
@@ -42,33 +42,20 @@ function Card({ icon, title, desc }: { icon: string; title: string; desc: string
 
 export default function Home() {
   return (
-    <div style={{ padding: "48px 24px" }}>
-      <section style={{ maxWidth: 980, margin: "0 auto", paddingTop: 40, textAlign: "center" }}>
-        <h1
-          style={{
-            fontSize: 40,
-            lineHeight: 1.15,
-            margin: "24px 0 8px",
-            fontWeight: 800,
-            letterSpacing: -0.5,
-          }}
-        >
+    <div style={{ padding: "48px 0" }}>
+      {/* HERO */}
+      <section className="container hero" style={{ paddingTop: 40, textAlign: "center" }}>
+        <h1 style={{ margin: "24px 0 8px", fontWeight: 800 }}>
           One day you’ll be gone, but your words can remain.
         </h1>
-        <p
-          style={{
-            fontSize: 22,
-            opacity: 0.9,
-            margin: 0,
-            fontWeight: 700,
-          }}
-        >
+        <p style={{ margin: 0 }}>
           After.Me — your digital vault of final words, memories, and messages.
         </p>
 
         <div style={{ marginTop: 20 }}>
           <Link
             href="/signup"
+            className="cta-btn"
             style={{
               display: "inline-block",
               padding: "10px 18px",
@@ -84,30 +71,26 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Three feature cards */}
-      <section style={{ maxWidth: 1120, margin: "54px auto 0", display: "grid", gap: 18, gridTemplateColumns: "repeat(3, 1fr)" }}>
-        <Card icon="■" title="Write." desc="Compose your message or record your voice." />
-        <Card icon="●" title="Store." desc="Your memories are encrypted and secured forever." />
-        <Card icon="▲" title="Deliver." desc="They’re released only when the time you set arrives." />
+      {/* FEATURES */}
+      <section className="container" style={{ marginTop: 54 }}>
+        <div className="grid-3">
+          <Card icon="■" title="Write." desc="Compose your message or record your voice." />
+          <Card icon="●" title="Store." desc="Your memories are encrypted and secured forever." />
+          <Card icon="▲" title="Deliver." desc="They’re released only when the time you set arrives." />
+        </div>
       </section>
 
-      {/* Stats */}
-      <section
-        style={{
-          maxWidth: 980,
-          margin: "48px auto 0",
-          display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gap: 24,
-        }}
-      >
-        <Stat value="12,842" label="Messages stored" />
-        <Stat value="3,427" label="Time capsules waiting" />
-        <Stat value="529" label="Final letters delivered" />
+      {/* STATS */}
+      <section className="container" style={{ marginTop: 48 }}>
+        <div className="stats-grid">
+          <Stat value="12,842" label="Messages stored" />
+          <Stat value="3,427" label="Time capsules waiting" />
+          <Stat value="529" label="Final letters delivered" />
+        </div>
       </section>
 
-      {/* Process headline */}
-      <section id="about" style={{ maxWidth: 980, margin: "52px auto 0" }}>
+      {/* PROCESS */}
+      <section id="about" className="container" style={{ marginTop: 52 }}>
         <h3 style={{ margin: 0, fontSize: 20, fontWeight: 800 }}>
           🕰️ How your words travel through time.
         </h3>
@@ -116,18 +99,19 @@ export default function Home() {
         </p>
       </section>
 
-      {/* Testimonial */}
-      <section style={{ maxWidth: 820, margin: "44px auto 0", opacity: 0.95 }}>
+      {/* TESTIMONIAL */}
+      <section className="container" style={{ marginTop: 44, opacity: 0.95, maxWidth: 820 }}>
         <blockquote style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>
           “He left us his voice. We still hear it every year on his birthday.”
         </blockquote>
         <div style={{ marginTop: 10, opacity: 0.7, fontSize: 14 }}>— A Daughter</div>
       </section>
 
-      {/* Call to action near bottom */}
-      <section style={{ maxWidth: 980, margin: "56px auto 0", textAlign: "center" }}>
+      {/* CTA BOTTOM */}
+      <section className="container" style={{ marginTop: 56, textAlign: "center" }}>
         <Link
           href="/signup"
+          className="cta-btn"
           style={{
             display: "inline-block",
             padding: "12px 22px",
