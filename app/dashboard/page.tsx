@@ -1,7 +1,13 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "../../lib/supabaseClient";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export default function Dashboard() {
   const router = useRouter();
@@ -9,29 +15,37 @@ export default function Dashboard() {
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
-      if (!data?.user) router.replace("/login");
+      if (!data.user) router.push("/login");
       else setUser(data.user);
     });
   }, [router]);
 
-  const logout = async () => {
+  async function handleLogout() {
     await supabase.auth.signOut();
-    router.replace("/login");
-  };
+    router.push("/login");
+  }
 
-  if (!user) return <main style={{ padding: 40 }}>Loading…</main>;
+  if (!user)
+    return (
+      <div style={{ textAlign: "center", paddingTop: 80 }}>
+        <h2>Loading vault...</h2>
+      </div>
+    );
 
   return (
-    <main style={{ padding: 40 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", maxWidth: 980, margin: "0 auto" }}>
-        <h1 style={{ fontSize: 26, fontWeight: 800 }}>Dashboard</h1>
-        <button onClick={logout} style={{ padding: "8px 12px", borderRadius: 10, border: "1px solid rgba(255,255,255,.25)" }}>
-          Log Out
+    <main className="dashboard">
+      <header className="dash-header">
+        <h1>Welcome, {user.email}</h1>
+        <button onClick={handleLogout}>Log Out</button>
+      </header>
+
+      <section className="vault">
+        <h2>Your Vault</h2>
+        <p>No messages yet. Start by writing your first memory 🌙</p>
+        <button className="btn btn--light" style={{ marginTop: 16 }}>
+          + New Message
         </button>
-      </div>
-      <div style={{ maxWidth: 980, margin: "16px auto 0", padding: 16, borderRadius: 16, background: "rgba(255,255,255,.06)", border: "1px solid rgba(255,255,255,.08)" }}>
-        Welcome, <b>{user.email}</b>
-      </div>
+      </section>
     </main>
   );
 }
