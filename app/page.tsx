@@ -1,22 +1,78 @@
 "use client";
 
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 
 export default function HomePage() {
-  // Hover parıltısı için mouse konumu
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const el = e.currentTarget;
-    const r = el.getBoundingClientRect();
-    const mx = ((e.clientX - r.left) / r.width) * 100;
-    const my = ((e.clientY - r.top) / r.height) * 100;
-    el.style.setProperty("--mx", `${mx}%`);
-    el.style.setProperty("--my", `${my}%`);
-  };
+  // ===== Starfield (canvas) =====
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  useEffect(() => {
+    const c = canvasRef.current!;
+    const ctx = c.getContext("2d")!;
+    let raf = 0;
+
+    const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+    function resize() {
+      c.width = Math.floor(window.innerWidth * dpr);
+      c.height = Math.floor(window.innerHeight * dpr);
+    }
+    resize();
+    window.addEventListener("resize", resize);
+
+    const stars = Array.from({ length: 220 }).map(() => ({
+      x: Math.random() * c.width,
+      y: Math.random() * c.height,
+      r: Math.random() * 1.8 + 0.3,
+      s: Math.random() * 0.015 + 0.003, // twinkle speed
+      t: Math.random() * Math.PI * 2,
+    }));
+
+    function draw() {
+      ctx.clearRect(0, 0, c.width, c.height);
+      for (const s of stars) {
+        s.t += s.s;
+        const alpha = 0.4 + 0.6 * (0.5 + 0.5 * Math.cos(s.t));
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r * dpr, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+        ctx.fill();
+      }
+      raf = requestAnimationFrame(draw);
+    }
+    draw();
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", resize);
+    };
+  }, []);
+
+  // ===== Floating message packets (CSS-only; random seeds) =====
+  useEffect(() => {
+    const root = document.body;
+    const count = 12;
+    const nodes: HTMLDivElement[] = [];
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement("div");
+      p.className = "packet";
+      p.style.setProperty("--x", `${Math.random() * window.innerWidth - window.innerWidth * 0.2}px`);
+      p.style.setProperty("--dx", `${(Math.random() * 0.5 + 0.35) * window.innerWidth}px`);
+      p.style.setProperty("--dur", `${18 + Math.random() * 10}s`);
+      p.style.left = `${Math.random() * 100}vw`;
+      p.style.top = `${Math.random() * 60}vh`;
+      root.appendChild(p);
+      nodes.push(p);
+    }
+    return () => { nodes.forEach(n => n.remove()); };
+  }, []);
 
   return (
     <>
+      {/* Starfield Background */}
+      <div className="starfield" aria-hidden>
+        <canvas ref={canvasRef} className="starfield-canvas" />
+      </div>
+
       {/* Navbar */}
       <nav className="navbar">
         <div className="container navbar-inner">
@@ -26,48 +82,33 @@ export default function HomePage() {
           </div>
           <div className="nav-actions">
             <Link href="/login" className="btn btn--ghost">Log In</Link>
-            <Link href="/signup" className="btn btn--accent">Sign Up</Link>
+            <Link href="/signup" className="btn btn--light">Sign Up</Link>
           </div>
         </div>
       </nav>
 
       {/* Hero */}
       <header className="hero">
-        {/* Arkaplan orblar */}
-        <div className="container" style={{ position: "relative" }}>
-          <div className="bg-orb bg-orb--indigo" style={{ left: -80, top: -40 }} />
-          <div className="bg-orb bg-orb--cyan" style={{ right: -120, top: -60 }} />
-
+        <div className="container">
           <div className="hero-wrap">
             <motion.div
-              initial={{ opacity: 0, y: 14 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.55, ease: "easeOut" }}
             >
-              <div className="hero-eyebrow">
-                <span className="pulse-dot" />
-                Future-release digital vault
+              <div className="eyebrow">
+                <span className="dot" /> Future-release digital vault
               </div>
-
-              <h1 className="hero-title">
-                One day you’ll be gone, <br />
-                but your <em style={{ color: "var(--accent-2)", fontStyle: "normal" }}>words</em> can remain.
+              <h1 className="title">
+                One day you’ll be gone, <br /> but your <em style={{ fontStyle: "normal", color: "#fff" }}>words</em> can remain.
               </h1>
-
-              <p className="hero-sub">
-                <strong>After.Me</strong> — your digital vault of final words, memories, and messages.
-                Write now, store encrypted, deliver later.
+              <p className="subtitle">
+                <strong>After.Me</strong> — your digital vault of final words, memories, and messages. Write now, store encrypted, deliver later.
               </p>
-
-              <motion.div
-                className="hero-cta"
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.45, ease: "easeOut", delay: 0.15 }}
-              >
-                <Link href="/signup" className="btn btn--accent">Sign Up Now</Link>
+              <div className="cta">
+                <Link href="/signup" className="btn btn--light">Sign Up Now</Link>
                 <Link href="/login" className="btn">Log In</Link>
-              </motion.div>
+              </div>
             </motion.div>
 
             <motion.div
@@ -76,7 +117,7 @@ export default function HomePage() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
             >
-              <code className="hero-code">
+              <code className="code">
 {`// Client-side AES (planned)
 const secret = generateKey();
 const ciphertext = encrypt(message, secret);
@@ -87,135 +128,92 @@ await supabase.from("vault").insert({ ciphertext });`}
         </div>
       </header>
 
-      {/* Features */}
-      <section className="section">
-        <div className="container">
-          <h3 className="section-title">What you can do</h3>
-          <div className="features">
-            <motion.div
-              className="feature"
-              onMouseMove={handleMouseMove}
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-20% 0px -20% 0px" }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
-            >
-              <div className="feature-icon" />
-              <h4>Write</h4>
-              <p>Capture final words, letters, and instructions in your own voice, whenever you’re ready.</p>
-            </motion.div>
-
-            <motion.div
-              className="feature"
-              onMouseMove={handleMouseMove}
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.45, ease: "easeOut", delay: 0.05 }}
-            >
-              <div className="feature-icon" />
-              <h4>Store</h4>
-              <p>Keep them encrypted in your private vault. You’re in control of what’s visible and when.</p>
-            </motion.div>
-
-            <motion.div
-              className="feature"
-              onMouseMove={handleMouseMove}
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
-            >
-              <div className="feature-icon" />
-              <h4>Deliver</h4>
-              <p>Schedule delivery to loved ones or to your future self — only when the time is right.</p>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Stats + Testimonial */}
+      {/* KPIs (from your visual) */}
       <section className="section">
         <div className="container">
           <div className="stats">
-            <motion.div
-              className="stat"
-              initial={{ opacity: 0, y: 8 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.35 }}
-            >
-              <b>99.9%</b>
-              <div>Uptime on Vercel</div>
-            </motion.div>
-
-            <motion.div
-              className="stat"
-              initial={{ opacity: 0, y: 8 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.35, delay: 0.05 }}
-            >
-              <b>Supabase</b>
-              <div>Auth & Postgres</div>
-            </motion.div>
-
-            <motion.div
-              className="stat"
-              initial={{ opacity: 0, y: 8 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.35, delay: 0.1 }}
-            >
-              <b>Client-first</b>
-              <div>Encryption roadmap</div>
-            </motion.div>
+            <div className="kpi">
+              <b>12,842</b>
+              <span>Messages stored</span>
+            </div>
+            <div className="kpi">
+              <b>3,427</b>
+              <span>Time capsules waiting</span>
+            </div>
+            <div className="kpi">
+              <b>529</b>
+              <span>Final letters delivered</span>
+            </div>
           </div>
-
-          <motion.div
-            className="testimonial"
-            initial={{ opacity: 0, y: 6 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4, delay: 0.05 }}
-          >
-            “After.Me helped me put into words what matters. I wrote it once — now it will reach them when it should.”
-          </motion.div>
         </div>
       </section>
 
-      {/* CTA Footer */}
+      {/* Process title (from your visual text) */}
+      <section className="section">
+        <div className="container">
+          <h3 className="section-title">🕰️ How your words travel through time.</h3>
+          <div style={{ color: "var(--muted)" }}>A simple process built to last beyond us.</div>
+          <div className="hr" />
+          <div className="steps">
+            <div className="step">
+              <h4>1) Write</h4>
+              <p>Compose letters, memories, and instructions. Save drafts whenever you need.</p>
+            </div>
+            <div className="step">
+              <h4>2) Store</h4>
+              <p>Encrypted in your vault. You control visibility and release conditions.</p>
+            </div>
+            <div className="step">
+              <h4>3) Deliver</h4>
+              <p>Schedule to loved ones or your future self — only when the time is right.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonial (from your visual text) */}
+      <section className="section">
+        <div className="container">
+          <div className="quote">
+            “He left us his voice. We still hear it every year on his birthday.”
+            <small>A Daughter</small>
+          </div>
+        </div>
+      </section>
+
+      {/* Contact (from your visual layout & labels) */}
+      <section className="section">
+        <div className="container">
+          <h2 style={{ margin: 0, fontWeight: 800 }}>Contact After.Me</h2>
+          <div style={{ marginTop: 2, color: "var(--muted)", fontSize: 22, fontWeight: 700 }}>
+            We’re here to help.
+          </div>
+
+          <form className="form" onSubmit={(e) => e.preventDefault()}>
+            <div>
+              <label style={{ fontSize: 13, color: "var(--muted)" }}>Name</label>
+              <input className="input" placeholder="Jane Smith" />
+            </div>
+            <div>
+              <label style={{ fontSize: 13, color: "var(--muted)" }}>Email</label>
+              <input className="input" placeholder="jane@framer.com" type="email" />
+            </div>
+            <div>
+              <label style={{ fontSize: 13, color: "var(--muted)" }}>Message</label>
+              <textarea className="textarea" placeholder="Your message..." />
+            </div>
+            <div>
+              <button className="btn btn--light" type="submit" style={{ width: 160 }}>Submit</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      {/* Footer (black & white) */}
       <section className="container">
-        <motion.div
-          className="cta"
-          initial={{ opacity: 0, y: 8 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.4 }}
-        >
-          <div>
-            <div style={{ opacity: .7, fontSize: 13 }}>Ready to begin?</div>
-            <div style={{ fontSize: 20, fontWeight: 800 }}>Create your vault today.</div>
-          </div>
-          <div style={{ display: "flex", gap: 10 }}>
-            <Link href="/signup" className="btn btn--accent">Get Started</Link>
-            <Link href="/login" className="btn">I already have an account</Link>
-          </div>
-        </motion.div>
-      </section>
-
-      {/* Sticky mobile Sign Up bar */}
-      <div className="signbar">
-        <div className="signbar-inner">
-          <span style={{ color: "var(--text-muted)", fontSize: 13 }}>
-            Start your legacy vault on After.Me
-          </span>
-          <div style={{ display: "flex", gap: 8 }}>
-            <Link href="/login" className="btn btn--ghost">Log In</Link>
-            <Link href="/signup" className="btn btn--accent">Sign Up</Link>
-          </div>
-        </div>
-      </div>
-    </>
-  );
-}
+        <div className="footer">
+          <div style={{ display: "flex", gap: 18 }}>
+            <span style={{ opacity: 0.8 }}>Contact</span>
+            <a href="#" style={{ color: "#fff" }}>Email</a>
+            <a href="#" style={{ color: "#fff" }}>Twitter</a>
+            <a href="#" style={{ color: "#fff" }
