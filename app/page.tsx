@@ -4,19 +4,24 @@ import Link from "next/link";
 import React, { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 
-export default function HomePage() {
+export default function HomePage(): JSX.Element {
   // ===== Starfield (canvas) =====
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
   useEffect(() => {
-    const c = canvasRef.current!;
-    const ctx = c.getContext("2d")!;
+    const c = canvasRef.current;
+    if (!c) return;
+
+    const ctx = c.getContext("2d");
+    if (!ctx) return;
+
     let raf = 0;
 
     const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-    function resize() {
+    const resize = () => {
       c.width = Math.floor(window.innerWidth * dpr);
       c.height = Math.floor(window.innerHeight * dpr);
-    }
+    };
     resize();
     window.addEventListener("resize", resize);
 
@@ -28,7 +33,7 @@ export default function HomePage() {
       t: Math.random() * Math.PI * 2,
     }));
 
-    function draw() {
+    const draw = () => {
       ctx.clearRect(0, 0, c.width, c.height);
       for (const s of stars) {
         s.t += s.s;
@@ -39,7 +44,8 @@ export default function HomePage() {
         ctx.fill();
       }
       raf = requestAnimationFrame(draw);
-    }
+    };
+
     draw();
     return () => {
       cancelAnimationFrame(raf);
@@ -52,6 +58,7 @@ export default function HomePage() {
     const root = document.body;
     const count = 12;
     const nodes: HTMLDivElement[] = [];
+
     for (let i = 0; i < count; i++) {
       const p = document.createElement("div");
       p.className = "packet";
@@ -63,7 +70,10 @@ export default function HomePage() {
       root.appendChild(p);
       nodes.push(p);
     }
-    return () => { nodes.forEach(n => n.remove()); };
+
+    return () => {
+      nodes.forEach((n) => n.remove());
+    };
   }, []);
 
   return (
@@ -81,8 +91,12 @@ export default function HomePage() {
             <span>After.Me</span>
           </div>
           <div className="nav-actions">
-            <Link href="/login" className="btn btn--ghost">Log In</Link>
-            <Link href="/signup" className="btn btn--light">Sign Up</Link>
+            <Link href="/login" className="btn btn--ghost">
+              Log In
+            </Link>
+            <Link href="/signup" className="btn btn--light">
+              Sign Up
+            </Link>
           </div>
         </div>
       </nav>
@@ -100,14 +114,20 @@ export default function HomePage() {
                 <span className="dot" /> Future-release digital vault
               </div>
               <h1 className="title">
-                One day you’ll be gone, <br /> but your <em style={{ fontStyle: "normal", color: "#fff" }}>words</em> can remain.
+                One day you’ll be gone, <br /> but your <em style={{ fontStyle: "normal", color: "#fff" }}>words</em> can
+                remain.
               </h1>
               <p className="subtitle">
-                <strong>After.Me</strong> — your digital vault of final words, memories, and messages. Write now, store encrypted, deliver later.
+                <strong>After.Me</strong> — your digital vault of final words, memories, and messages. Write now, store
+                encrypted, deliver later.
               </p>
               <div className="cta">
-                <Link href="/signup" className="btn btn--light">Sign Up Now</Link>
-                <Link href="/login" className="btn">Log In</Link>
+                <Link href="/signup" className="btn btn--light">
+                  Sign Up Now
+                </Link>
+                <Link href="/login" className="btn">
+                  Log In
+                </Link>
               </div>
             </motion.div>
 
@@ -118,7 +138,7 @@ export default function HomePage() {
               transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
             >
               <code className="code">
-{`// Client-side AES (planned)
+                {`// Client-side AES (planned)
 const secret = generateKey();
 const ciphertext = encrypt(message, secret);
 await supabase.from("vault").insert({ ciphertext });`}
@@ -128,92 +148,9 @@ await supabase.from("vault").insert({ ciphertext });`}
         </div>
       </header>
 
-      {/* KPIs (from your visual) */}
+      {/* KPIs */}
       <section className="section">
         <div className="container">
           <div className="stats">
             <div className="kpi">
               <b>12,842</b>
-              <span>Messages stored</span>
-            </div>
-            <div className="kpi">
-              <b>3,427</b>
-              <span>Time capsules waiting</span>
-            </div>
-            <div className="kpi">
-              <b>529</b>
-              <span>Final letters delivered</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Process title (from your visual text) */}
-      <section className="section">
-        <div className="container">
-          <h3 className="section-title">🕰️ How your words travel through time.</h3>
-          <div style={{ color: "var(--muted)" }}>A simple process built to last beyond us.</div>
-          <div className="hr" />
-          <div className="steps">
-            <div className="step">
-              <h4>1) Write</h4>
-              <p>Compose letters, memories, and instructions. Save drafts whenever you need.</p>
-            </div>
-            <div className="step">
-              <h4>2) Store</h4>
-              <p>Encrypted in your vault. You control visibility and release conditions.</p>
-            </div>
-            <div className="step">
-              <h4>3) Deliver</h4>
-              <p>Schedule to loved ones or your future self — only when the time is right.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonial (from your visual text) */}
-      <section className="section">
-        <div className="container">
-          <div className="quote">
-            “He left us his voice. We still hear it every year on his birthday.”
-            <small>A Daughter</small>
-          </div>
-        </div>
-      </section>
-
-      {/* Contact (from your visual layout & labels) */}
-      <section className="section">
-        <div className="container">
-          <h2 style={{ margin: 0, fontWeight: 800 }}>Contact After.Me</h2>
-          <div style={{ marginTop: 2, color: "var(--muted)", fontSize: 22, fontWeight: 700 }}>
-            We’re here to help.
-          </div>
-
-          <form className="form" onSubmit={(e) => e.preventDefault()}>
-            <div>
-              <label style={{ fontSize: 13, color: "var(--muted)" }}>Name</label>
-              <input className="input" placeholder="Jane Smith" />
-            </div>
-            <div>
-              <label style={{ fontSize: 13, color: "var(--muted)" }}>Email</label>
-              <input className="input" placeholder="jane@framer.com" type="email" />
-            </div>
-            <div>
-              <label style={{ fontSize: 13, color: "var(--muted)" }}>Message</label>
-              <textarea className="textarea" placeholder="Your message..." />
-            </div>
-            <div>
-              <button className="btn btn--light" type="submit" style={{ width: 160 }}>Submit</button>
-            </div>
-          </form>
-        </div>
-      </section>
-
-      {/* Footer (black & white) */}
-      <section className="container">
-        <div className="footer">
-          <div style={{ display: "flex", gap: 18 }}>
-            <span style={{ opacity: 0.8 }}>Contact</span>
-            <a href="#" style={{ color: "#fff" }}>Email</a>
-            <a href="#" style={{ color: "#fff" }}>Twitter</a>
-            <a href="#" style={{ color: "#fff" }
