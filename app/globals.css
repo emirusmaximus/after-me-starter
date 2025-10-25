@@ -24,3 +24,46 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+:root{
+  --max-w:1120px;
+  --pad-x:24px;
+}
+
+.container{
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 var(--pad-x);
+}
+
+.hero h1{ font-size:40px; line-height:1.15; letter-spacing:-0.5px; }
+.hero p{ font-size:22px; font-weight:700; opacity:.9; }
+
+.grid-3{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap:18px;
+}
+.stats-grid{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap:24px;
+  text-align:center;
+}
+
+/* --- Tablet (iPad) --- */
+@media (max-width: 1024px){
+  .hero h1{ font-size:36px; }
+  .grid-3{ grid-template-columns: repeat(2, 1fr); }
+  .stats-grid{ grid-template-columns: repeat(3, 1fr); }
+}
+
+/* --- Telefon --- */
+@media (max-width: 640px){
+  body{ padding: 0 !important; }
+  .hero h1{ font-size:28px; }
+  .hero p{ font-size:18px; }
+  .grid-3{ grid-template-columns: 1fr; }
+  .stats-grid{ grid-template-columns: 1fr; gap:16px; }
+  .cta-btn{ display:block; width:100%; text-align:center; }
+  header .nav-hide-mobile{ display:none; } /* istersek üst menüyü sadeleştir */
+}
