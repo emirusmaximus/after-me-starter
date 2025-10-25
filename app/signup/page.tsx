@@ -1,36 +1,56 @@
 "use client";
-import { useState } from "react";
+
 import { useRouter } from "next/navigation";
-import { supabase } from "../../lib/supabaseClient";
+import { useState } from "react";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export default function SignupPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [err, setErr] = useState("");
+  const [error, setError] = useState("");
 
-  const onSubmit = async (e: React.FormEvent) => {
+  async function handleSignup(e: any) {
     e.preventDefault();
-    setErr("");
     const { error } = await supabase.auth.signUp({ email, password });
-    if (error) return setErr(error.message);
-    router.push("/dashboard");
-  };
+    if (error) setError(error.message);
+    else router.push("/dashboard");
+  }
 
   return (
-    <main style={{ padding: 40, maxWidth: 520, margin: "0 auto" }}>
-      <h1 style={{ fontSize: 26, fontWeight: 800 }}>Sign Up</h1>
-      <form onSubmit={onSubmit} style={{ display: "grid", gap: 12, marginTop: 16 }}>
-        <input placeholder="Email" value={email} onChange={(e)=>setEmail(e.target.value)} />
-        <input type="password" placeholder="Password (min 6)" value={password} onChange={(e)=>setPassword(e.target.value)} />
-        {err && <p style={{ color: "#ff8a8a" }}>{err}</p>}
-        <button style={{ padding: 10, borderRadius: 10, background: "#fff", color: "#000", fontWeight: 700 }}>
-          Create Account
-        </button>
-      </form>
-      <p style={{ opacity: .8, marginTop: 10 }}>
-        Already have an account? <a href="/login" style={{ textDecoration: "underline", color: "white" }}>Log In</a>
-      </p>
+    <main className="auth-page">
+      <div className="auth-card">
+        <h1>Create your vault ✨</h1>
+        <p>Write now. Deliver later.</p>
+
+        <form onSubmit={handleSignup}>
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <button type="submit">Sign Up</button>
+          {error && <p className="error">{error}</p>}
+        </form>
+
+        <p className="switch">
+          Already have an account? <a href="/login">Log in</a>
+        </p>
+      </div>
     </main>
   );
 }
