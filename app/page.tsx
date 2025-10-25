@@ -1,481 +1,115 @@
 "use client";
 
-import Link from "next/link";
-import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@supabase/supabase-js";
 
-export default function HomePage(): JSX.Element {
-  const [messages, setMessages] = useState(0);
-  const [capsules, setCapsules] = useState(0);
-  const [letters, setLetters] = useState(0);
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
-  useEffect(() => {
-    const animate = (setter: (v: number) => void, target: number, ms = 1800) => {
-      const start = performance.now();
-      const tick = (now: number) => {
-        const p = Math.min((now - start) / ms, 1);
-        setter(Math.floor(target * p));
-        if (p < 1) requestAnimationFrame(tick);
-      };
-      requestAnimationFrame(tick);
-    };
-    animate(setMessages, 12842);
-    animate(setCapsules, 3427);
-    animate(setLetters, 529);
-  }, []);
+export default function Dashboard() {
+  const router = useRouter();
+  const [user, setUser] = useState<any>(null);
+  const [username, setUsername] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [plan, setPlan] = useState("free");
 
   useEffect(() => {
-    // Waitlist thank-you animation
-    if (typeof window !== "undefined") {
-      const form = document.querySelector("form");
-      if (form) {
-        form.addEventListener("submit", (e) => {
-          e.preventDefault();
-          form.classList.add("submitted");
-          setTimeout(() => form.reset(), 1000);
-        });
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) {
+        router.push("/login");
+        return;
       }
-    }
-  }, []);
+      setUser(data.user);
+      setUsername(data.user.user_metadata?.username || "");
+      setLoading(false);
+    });
+  }, [router]);
 
-  return (
-    <>
-      {/* Navbar */}
-      <nav className="navbar">
-        <div className="container navbar-inner">
-          <div className="brand">
-            <span className="brand-badge">
-              <img src="/logo.svg" alt="After.Me logo" width={28} height={28} />
-            </span>
-            <span>After.Me</span>
-          </div>
-          <div className="nav-actions">
-            <Link href="/login" className="btn">
-              Log In
-            </Link>
-            <Link href="/signup" className="btn btn--light">
-              Sign Up
-            </Link>
-          </div>
-        </div>
-      </nav>
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    router.push("/login");
+  }
 
-      {/* Hero */}
-      <motion.header
-        className="hero"
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, ease: "easeOut" }}
-      >
-        <div className="container">
-          <div className="hero-wrap">
-            <div className="eyebrow">
-              <span className="dot" /> Future-release digital vault
-            </div>
+  async function saveUsername(e: any) {
+    e.preventDefault();
+    if (!username) return;
+    await supabase.auth.updateUser({ data: { username } });
+    window.location.reload();
+  }
 
-            <h1 className="title">
-              One day you’ll be gone, <br />
-              but your <em style={{ fontStyle: "normal" }}>words</em> can remain.
-            </h1>
+  if (loading) {
+    return (
+      <div style={{ textAlign: "center", paddingTop: 100 }}>
+        <h2>Loading your vault...</h2>
+      </div>
+    );
+  }
 
-            <p className="subtitle">
-              <strong>After.Me</strong> — your digital vault of final words,
-              memories, and messages. Write now, store encrypted, deliver later.
-            </p>
-
-            <div className="cta">
-              <Link href="/signup" className="btn btn--light pulse">
-                Sign Up Now
-              </Link>
-              <Link href="/login" className="btn">
-                Log In
-              </Link>
-            </div>
-
-            <p className="quote-top">
-              “He left us his voice. We still hear it every year on his
-              birthday.”
-              <small>A Daughter</small>
-            </p>
-          </div>
-        </div>
-      </motion.header>
-
-      {/* Stats */}
-      <motion.section
-        className="section"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        transition={{ duration: 0.6 }}
-      >
-        <div className="container">
-          <div className="stats">
-            <div className="kpi">
-              <b>{messages.toLocaleString()}</b>
-              <span>Messages stored</span>
-            </div>
-            <div className="kpi">
-              <b>{capsules.toLocaleString()}</b>
-              <span>Time capsules waiting</span>
-            </div>
-            <div className="kpi">
-              <b>{letters.toLocaleString()}</b>
-              <span>Final letters delivered</span>
-            </div>
-          </div>
-        </div>
-      </motion.section>
-
-      {/* WHY AFTER.ME EXISTS */}
-      <motion.section
-        className="section"
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-      >
-        <div className="container" style={{ textAlign: "center" }}>
-          <h2 style={{ fontSize: 26, marginBottom: 16 }}>Why After.Me Exists</h2>
-          <p
-            style={{
-              color: "var(--muted)",
-              maxWidth: 680,
-              margin: "0 auto",
-              lineHeight: 1.7,
-            }}
-          >
-            People vanish. Words remain. <br />
-            After.Me was born from the desire to preserve our voices — not data,
-            but <em>legacy</em>. It’s where silence meets continuity; where what
-            you write today can comfort someone tomorrow.
-          </p>
-        </div>
-      </motion.section>
-
-      {/* SECURITY & PRIVACY */}
-      <motion.section
-        className="section"
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-      >
-        <div
-          className="container"
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            alignItems: "center",
-            gap: "40px",
-          }}
-        >
-          <div style={{ flex: "1 1 320px", textAlign: "center" }}>
-            <img
-              src="https://cdn-icons-png.flaticon.com/512/3064/3064197.png"
-              alt="lock icon"
-              style={{ width: 90, filter: "invert(1)", opacity: 0.9 }}
-            />
-          </div>
-          <div style={{ flex: "2 1 480px" }}>
-            <h3 style={{ fontSize: 22, marginBottom: 8 }}>
-              Security & Privacy First
-            </h3>
-            <p style={{ color: "var(--muted)", lineHeight: 1.7 }}>
-              Every message is encrypted <strong>before</strong> it leaves your
-              device. We can’t read your words — and that’s the point. Your vault
-              belongs only to you, protected with client-side AES-256 encryption
-              and stored securely on distributed Supabase servers.
-            </p>
-          </div>
-        </div>
-      </motion.section>
-
-      {/* ADVANCED FEATURES */}
-      <motion.section
-        className="section"
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-      >
-        <div className="container" style={{ textAlign: "center" }}>
-          <h2 style={{ fontSize: 26, marginBottom: 20 }}>Beyond a Time Capsule</h2>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))",
-              gap: 24,
-            }}
-          >
-            <div
-              style={{
-                border: "1px solid var(--border)",
-                borderRadius: 12,
-                padding: 20,
-              }}
-            >
-              <h4>Trusted Contacts</h4>
-              <p style={{ color: "var(--muted)" }}>
-                Nominate people who can access your vault after confirmation of
-                life events.
-              </p>
-            </div>
-            <div
-              style={{
-                border: "1px solid var(--border)",
-                borderRadius: 12,
-                padding: 20,
-              }}
-            >
-              <h4>Posthumous Delivery</h4>
-              <p style={{ color: "var(--muted)" }}>
-                Automated releases triggered after inactivity periods or verified
-                passing.
-              </p>
-            </div>
-            <div
-              style={{
-                border: "1px solid var(--border)",
-                borderRadius: 12,
-                padding: 20,
-              }}
-            >
-              <h4>Time-Locked Messages</h4>
-              <p style={{ color: "var(--muted)" }}>
-                Choose a specific date in the future — your message will unlock
-                only then.
-              </p>
-            </div>
-          </div>
-        </div>
-      </motion.section>
-
-      {/* HUMAN STORIES */}
-      <motion.section
-        className="section"
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-      >
-        <div className="container" style={{ textAlign: "center" }}>
-          <h2 style={{ fontSize: 26, marginBottom: 16 }}>
-            Real Messages. Real People.
-          </h2>
-          <p
-            style={{
-              color: "var(--muted)",
-              maxWidth: 640,
-              margin: "0 auto 28px",
-            }}
-          >
-            Anonymous stories from those who’ve already left their mark.
-          </p>
-
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))",
-              gap: 20,
-            }}
-          >
-            <div
-              style={{
-                border: "1px solid var(--border)",
-                borderRadius: 12,
-                padding: 20,
-              }}
-            >
-              <p style={{ fontStyle: "italic", color: "#eaeaea" }}>
-                “To my son: May you never fear the unknown. The stars are closer
-                than they look.”
-              </p>
-              <small style={{ color: "var(--muted)" }}>– A Father, 2024</small>
-            </div>
-            <div
-              style={{
-                border: "1px solid var(--border)",
-                borderRadius: 12,
-                padding: 20,
-              }}
-            >
-              <p style={{ fontStyle: "italic", color: "#eaeaea" }}>
-                “I wrote this letter when I was 25. If you’re reading it, it means
-                I finally had courage.”
-              </p>
-              <small style={{ color: "var(--muted)" }}>– A Stranger, 2023</small>
-            </div>
-            <div
-              style={{
-                border: "1px solid var(--border)",
-                borderRadius: 12,
-                padding: 20,
-              }}
-            >
-              <p style={{ fontStyle: "italic", color: "#eaeaea" }}>
-                “He left us his voice. We still hear it every year on his
-                birthday.”
-              </p>
-              <small style={{ color: "var(--muted)" }}>– A Daughter</small>
-            </div>
-          </div>
-        </div>
-      </motion.section>
-
-      {/* JOIN THE WAITLIST */}
-      <motion.section
-        className="section"
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-      >
-        <div className="container" style={{ textAlign: "center" }}>
-          <h2 style={{ fontSize: 26, marginBottom: 12 }}>Join the Waitlist</h2>
-          <p style={{ color: "var(--muted)", marginBottom: 20 }}>
-            Be among the first to experience the full release of After.Me Premium.
-          </p>
-          <form
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              gap: 10,
-              flexWrap: "wrap",
-            }}
-          >
+  // === Eğer username yoksa, isim seçimi ekranı ===
+  if (!username) {
+    return (
+      <main className="dashboard choose-username">
+        <div className="auth-card">
+          <h1>Welcome {user.email.split("@")[0]} 👋</h1>
+          <p>Before continuing, choose your display name.</p>
+          <form onSubmit={saveUsername}>
             <input
-              type="email"
-              placeholder="Your email address"
-              style={{
-                padding: "12px 14px",
-                borderRadius: 10,
-                border: "1px solid var(--border)",
-                background: "#0c0c0c",
-                color: "#fff",
-                width: 260,
-              }}
+              type="text"
+              placeholder="Pick a username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
             />
-            <button
-              type="submit"
-              className="btn btn--light pulse"
-              style={{ minWidth: 140 }}
-            >
-              Notify Me
-            </button>
+            <button type="submit">Save & Continue</button>
           </form>
         </div>
-      </motion.section>
+      </main>
+    );
+  }
 
-      {/* MEMORY SPARKS */}
-      <motion.section
-        className="section"
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1.2 }}
-      >
-        <div
-          className="container"
-          style={{
-            textAlign: "center",
-            padding: "80px 20px",
-            background:
-              "radial-gradient(circle at center, #111 0%, #050505 100%)",
-            borderRadius: 20,
-            boxShadow: "0 0 60px rgba(255,255,255,0.02) inset",
-          }}
-        >
-          <motion.h2
-            style={{
-              fontSize: 28,
-              marginBottom: 12,
-              background: "linear-gradient(90deg,#fff,#bfbfbf)",
-              WebkitBackgroundClip: "text",
-              color: "transparent",
-            }}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            “A million words waiting for their moment.”
-          </motion.h2>
-          <motion.p
-            style={{ color: "var(--muted)" }}
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ delay: 0.4, duration: 1.2 }}
-          >
-            Every 14 seconds, someone writes their final message.
-          </motion.p>
-          <motion.div
-            className="sparkle"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 0.3 }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              repeatType: "mirror",
-            }}
-            style={{
-              width: 6,
-              height: 6,
-              borderRadius: "50%",
-              background: "#fff",
-              margin: "24px auto 0",
-              boxShadow: "0 0 20px 4px #fff",
-            }}
-          />
-        </div>
-      </motion.section>
+  // === Asıl Dashboard ===
+  return (
+    <main className="dashboard">
+      <header className="dash-header">
+        <h1>Welcome, {username} 🌙</h1>
+        <button onClick={handleLogout}>Log Out</button>
+      </header>
 
-      {/* Footer */}
-      <section className="container">
-        <div className="footer">
-          <div style={{ display: "flex", gap: 18 }}>
-            <span style={{ opacity: 0.8 }}>Contact</span>
-            <a href="#">Email</a>
-            <a href="#">Twitter</a>
-            <a href="#">Instagram</a>
-          </div>
-          <div>
-            <div>
-              © 2025 After.Me — A product of <b>CobsVault Labs</b>
+      <section className="plans">
+        <h2>Your Plan</h2>
+        <div className="plan-grid">
+          {["Free", "Premium", "Lifetime"].map((p) => (
+            <div
+              key={p}
+              className={`plan-card ${plan === p.toLowerCase() ? "active" : ""}`}
+              onClick={() => setPlan(p.toLowerCase())}
+            >
+              <h3>{p}</h3>
+              <p>
+                {p === "Free" && "Basic storage and 5 messages"}
+                {p === "Premium" && "Unlimited messages + scheduled delivery"}
+                {p === "Lifetime" && "All features forever"}
+              </p>
+              {p !== "Free" && <button className="btn">Upgrade →</button>}
             </div>
-            <div style={{ display: "flex", gap: 18 }}>
-              <a href="#">Privacy Policy</a>
-              <a href="#">Terms of Service</a>
-            </div>
-          </div>
+          ))}
         </div>
       </section>
 
-      {/* Animations & Styles */}
-      <style jsx global>{`
-        .btn {
-          transition: all 0.3s ease;
-        }
-        .btn:hover {
-          transform: scale(1.05);
-          box-shadow: 0 0 18px rgba(255, 255, 255, 0.12);
-        }
-        .kpi:hover,
-        .step:hover {
-          transform: translateY(-4px);
-          transition: transform 0.3s ease;
-        }
-        form.submitted::after {
-          content: "✔ Thank you for subscribing!";
-          display: block;
-          margin-top: 12px;
-          color: #8fffcc;
-          font-weight: 500;
-          animation: fadein 1s ease;
-        }
-        @keyframes fadein {
-          from {
-            opacity: 0;
-            transform: translateY(8px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
-    </>
+      <section className="vault" style={{ textAlign: "center", marginTop: 60 }}>
+        <h2>Your Vault</h2>
+        <p>You have no saved messages yet.</p>
+        <button className="btn btn--light" style={{ marginTop: 16 }}>
+          + New Message
+        </button>
+      </section>
+
+      <footer style={{ textAlign: "center", marginTop: 80, opacity: 0.6 }}>
+        <p>© 2025 After.Me • Secure digital legacy platform</p>
+      </footer>
+    </main>
   );
 }
