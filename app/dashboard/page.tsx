@@ -1,279 +1,424 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { createClient } from "@supabase/supabase-js";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
-type UserMeta = { username?: string };
-
-export default function Dashboard() {
-  const router = useRouter();
-  const [username, setUsername] = useState<string>("…");
-  const [loading, setLoading] = useState(true);
+export default function DashboardPage() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [composeOpen, setComposeOpen] = useState(false);
 
-  const [stats, setStats] = useState({ messages: 0, scheduled: 0, delivered: 0 });
-
-  useEffect(() => {
-    (async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { router.push("/login"); return; }
-      const meta = (user.user_metadata || {}) as UserMeta;
-      const u = meta.username || user.email?.split("@")[0] || "friend";
-      setUsername(u);
-      // TODO: pull real stats from Supabase
-      setStats({ messages: 0, scheduled: 0, delivered: 0 });
-      setLoading(false);
-    })();
-  }, [router]);
-
-  const onLogout = async () => { await supabase.auth.signOut(); router.push("/"); };
-  const onCompose = () => alert("Composer modal (client-side AES-GCM) — coming next.");
+  // Demo data (placeholder)
+  const username = "emir";
+  const vaultStats = { letters: 2, scheduled: 1, delivered: 1 };
+  const timeline = [
+    { id: 1, title: "Letter to Mom", status: "Delivered", date: "Aug 12, 2025" },
+    { id: 2, title: "18th Birthday Letter", status: "Scheduled", date: "Jan 03, 2033" },
+  ];
+  const trustProgress = { contacts: 1, required: 2 }; // e.g., 2-of-N
 
   return (
-    <div className="wrap">
-      {/* TOPBAR — logo => landing (/) */}
+    <>
+      {/* Top Bar */}
       <header className="topbar">
-        <Link className="logoBtn" href="/" aria-label="Home">
-          <div className="logoWrap">
-            <Image src="/logo.svg" alt="After.Me" width={28} height={28} priority />
+        <div className="container tb-in">
+          <div className="left">
+            <Link href="/" className="brand" title="Go to Home">
+              <img src="/logo.svg" alt="After.Me logo" width={26} height={26} />
+              <span>After.Me</span>
+            </Link>
+            <Link href="/" className="ghost small hide-mobile">Back to Home</Link>
           </div>
-          <span className="brand">After.Me</span>
-        </Link>
-        <div className="topRight">
-          {!loading && <div className="userPill">@{username}</div>}
-          <button className="hamburger" onClick={() => setMenuOpen(v => !v)} aria-label="Menu">
-            <span/><span/><span/>
-          </button>
+
+          <div className="right">
+            <button className="ghost small hide-mobile" onClick={() => setComposeOpen(true)}>
+              Start a Letter
+            </button>
+            <div className="avatar" aria-label="User menu" onClick={() => setMenuOpen(!menuOpen)}>
+              {username.slice(0,1).toUpperCase()}
+            </div>
+            {/* Hamburger (mobile) */}
+            <button className="hamburger show-mobile" onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">
+              <span/><span/><span/>
+            </button>
+          </div>
         </div>
       </header>
 
-      {/* WELCOME */}
-      <section className="hero">
-        <h1>Welcome back, {loading ? "…" : username}.</h1>
-        <p className="sub">Your words are encrypted on your device. Deliver on a date, on inactivity, or posthumously.</p>
-        <div className="cta">
-          <button className="primary" onClick={onCompose}>+ Write a new message</button>
-          <Link href="#vault" className="ghost">Open your vault</Link>
-          <Link href="#accounts" className="ghost">Connect accounts</Link>
-        </div>
-        <ul className="kpis">
-          <li><b>{stats.messages}</b><span>Messages</span></li>
-          <li><b>{stats.scheduled}</b><span>Scheduled</span></li>
-          <li><b>{stats.delivered}</b><span>Delivered</span></li>
-        </ul>
-      </section>
-
-      {/* TWO COLUMNS */}
-      <section className="cols">
-        {/* Vault */}
-        <div className="panel" id="vault">
-          <div className="panelHead">
-            <h2>Your Vault</h2>
-            <button className="mini" onClick={onCompose}>+ New</button>
-          </div>
-
-          <div className="empty">
-            <div className="placeholder" />
-            <p className="muted">No messages yet. Start with your first letter.</p>
-            <button className="primary" onClick={onCompose}>Start a letter</button>
-          </div>
-
-          <div className="timeline">
-            <div className="tTitle">Recent & upcoming</div>
-            <div className="tLine"><span className="dot past" />“To my mother” — delivered</div>
-            <div className="tLine"><span className="dot future" />“18th birthday letter” — scheduled for 2033</div>
-          </div>
-        </div>
-
-        {/* Accounts */}
-        <div className="panel" id="accounts">
-          <div className="panelHead">
-            <h2>Connected Accounts</h2>
-            <span className="hint">Recommended for inactivity checks</span>
-          </div>
-          <ul className="accList">
-            {["Google","Instagram","X (Twitter)"].map((n)=>(
-              <li key={n}>
-                <div className="accLeft"><span className="badge" />{n}</div>
-                <button className="primary small">Connect</button>
-              </li>
-            ))}
-          </ul>
-          <div className="checkin">
-            <div className="mini">Next “are you there?” check-in</div>
-            <div className="date">Nov 12, 2025</div>
-            <p className="muted sm">If you don’t confirm via email, your designated messages will be released to your contacts.</p>
-          </div>
-        </div>
-      </section>
-
-      {/* PLANS (clean, no ring/quarter-circle) */}
-      <section className="plans" id="plans">
-        <h2 className="plansTitle">Digital continuity, without noise.</h2>
-        <div className="grid">
-          <article className="plan">
-            <h3>Free</h3>
-            <p className="muted">Enough to begin.</p>
-            <ul>
-              <li>Up to 3 messages</li>
-              <li>Date-based scheduling</li>
-              <li>1 recipient per message</li>
-              <li>Client-side AES-256 encryption</li>
-            </ul>
-            <button className="ghost wide">Continue</button>
-          </article>
-
-          <article className="plan featured">
-            <h3>Premium</h3>
-            <p className="muted">More memories, more control.</p>
-            <ul>
-              <li>Unlimited messages & recipients</li>
-              <li>Advanced scheduling (date + inactivity)</li>
-              <li>Trusted Contacts quorum (2-of-N)</li>
-              <li>Priority release queue & audit log</li>
-            </ul>
-            <a className="primaryLink wide" href="https://checkout.stripe.com/c/test_..." target="_blank" rel="noreferrer">Upgrade</a>
-          </article>
-
-          <article className="plan">
-            <h3>Lifetime</h3>
-            <p className="muted">Once, forever.</p>
-            <ul>
-              <li>All Premium features</li>
-              <li>Lifetime access</li>
-              <li>Priority support</li>
-              <li>Legacy certificate (optional)</li>
-            </ul>
-            <a className="ghostLink wide" href="https://checkout.stripe.com/c/test_..." target="_blank" rel="noreferrer">Own forever</a>
-          </article>
-        </div>
-      </section>
-
-      {/* Drawer */}
-      {menuOpen && <button className="backdrop" aria-label="Close" onClick={()=>setMenuOpen(false)} />}
-      <aside className={`drawer ${menuOpen ? "open":""}`} aria-hidden={!menuOpen}>
-        <div className="drawerHead">
-          <Link className="logoBtn mini" href="/" aria-label="Home">
-            <div className="logoWrap mini">
-              <Image src="/logo.svg" alt="After.Me" width={22} height={22}/>
+      {/* Flyout Menu */}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.nav
+            className="menu"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.18 }}
+          >
+            <div className="container menu-in">
+              <Link href="/dashboard" onClick={() => setMenuOpen(false)}>Dashboard</Link>
+              <button onClick={() => { setComposeOpen(true); setMenuOpen(false); }}>Start a Letter</button>
+              <Link href="/settings" onClick={() => setMenuOpen(false)}>Settings</Link>
+              <a href="/logout">Log out</a>
             </div>
-            <span className="brand">After.Me</span>
-          </Link>
-          <button className="close" onClick={()=>setMenuOpen(false)}>✕</button>
-        </div>
-        <nav className="menu">
-          <button onClick={onCompose}>+ Write a new message</button>
-          <a href="#vault">Your Vault</a>
-          <a href="#accounts">Accounts</a>
-          <a href="#plans">Plans</a>
-          <hr/>
-          <button className="danger" onClick={onLogout}>Log out</button>
-        </nav>
-      </aside>
+          </motion.nav>
+        )}
+      </AnimatePresence>
 
-      <style jsx>{styles}</style>
+      {/* Hero / Narrative */}
+      <motion.section
+        className="section hero"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25 }}
+      >
+        <div className="container">
+          <div className="eyebrow"><span className="dot" /> Your private legacy workspace</div>
+          <h1 className="title">Welcome back, @{username}</h1>
+          <p className="subtitle">
+            Your vault is where warm, encrypted messages become future moments. Write now. Decide when they unlock.
+          </p>
+
+          <div className="cta">
+            <button className="btn solid lg" onClick={() => setComposeOpen(true)}>Start a Letter</button>
+            <Link className="btn ghost lg" href="/dashboard/vault">Open Vault</Link>
+          </div>
+
+          {/* Soft narrative ribbon */}
+          <p className="note">
+            “A letter takes five minutes, but it may live for decades.”
+          </p>
+        </div>
+      </motion.section>
+
+      {/* Quick Actions + Vault Health */}
+      <section className="section">
+        <div className="container grid-3">
+          {/* Quick Start */}
+          <motion.div className="card lift" initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+            <div className="card-hd">
+              <IconFeather/><h3>What do you want to write?</h3>
+            </div>
+            <ul className="quick">
+              <li><button onClick={() => setComposeOpen(true)}>A Letter to Someone I Love</button></li>
+              <li><button onClick={() => setComposeOpen(true)}>A Message to My Future Self</button></li>
+              <li><button onClick={() => setComposeOpen(true)}>Instructions & Accounts</button></li>
+            </ul>
+            <div className="hint">Encrypted on your device before saving.</div>
+          </motion.div>
+
+          {/* Vault Health */}
+          <motion.div className="card lift" initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+            <div className="card-hd">
+              <IconShield/><h3>Vault</h3>
+            </div>
+            <div className="stats2">
+              <div><b>{vaultStats.letters}</b><span>Letters</span></div>
+              <div><b>{vaultStats.scheduled}</b><span>Scheduled</span></div>
+              <div><b>{vaultStats.delivered}</b><span>Delivered</span></div>
+            </div>
+            <Link className="btn ghost full" href="/dashboard/vault">Open Vault →</Link>
+          </motion.div>
+
+          {/* Trust Setup */}
+          <motion.div className="card lift" initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+            <div className="card-hd">
+              <IconKey/><h3>Trusted Contacts</h3>
+            </div>
+            <p className="muted">Choose who can receive or unlock your words when rules are met.</p>
+            <div className="progress">
+              <div className="bar"><span style={{ width: `${(trustProgress.contacts / trustProgress.required) * 100}%` }} /></div>
+              <small>{trustProgress.contacts}/{trustProgress.required} set</small>
+            </div>
+            <Link className="btn solid full" href="/dashboard/trust">Set Up Contacts</Link>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Timeline */}
+      <section className="section">
+        <div className="container">
+          <div className="row-hd">
+            <h3 className="h3">Journey Timeline</h3>
+            <Link href="/dashboard/vault" className="muted small-link">See all →</Link>
+          </div>
+          <div className="timeline">
+            {timeline.map(item => (
+              <div key={item.id} className="node">
+                <div className={`dot ${item.status === "Delivered" ? "ok" : "pending"}`} />
+                <div className="node-body">
+                  <div className="node-top">
+                    <span className="n-title">{item.title}</span>
+                    <span className={`badge ${item.status === "Delivered" ? "green" : "amber"}`}>{item.status}</span>
+                  </div>
+                  <div className="muted">{item.date}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Gentle Upsell (not pushy) */}
+      <section className="section">
+        <div className="container plans">
+          <div className="plans-hd">
+            <h3 className="h3">Grow your vault at your pace</h3>
+            <p className="muted">Quiet upgrades that protect more of your story.</p>
+          </div>
+          <div className="plan-grid">
+            <Plan
+              name="Free"
+              price="$0"
+              ctaText="Continue Free"
+              href="/dashboard/upgrade?plan=free"
+              features={[
+                "3 letters",
+                "Client-side encryption",
+                "Date-based delivery",
+              ]}
+            />
+            <Plan
+              name="Premium"
+              price="$10/mo"
+              ctaText="Upgrade"
+              href="/dashboard/upgrade?plan=premium"
+              features={[
+                "Unlimited letters",
+                "Inactivity timer (heartbeat)",
+                "Trusted contacts quorum",
+              ]}
+              featured
+            />
+            <Plan
+              name="Lifetime"
+              price="$199"
+              ctaText="Buy Lifetime"
+              href="/dashboard/upgrade?plan=lifetime"
+              features={[
+                "All Premium features",
+                "One-time payment",
+                "Priority support",
+              ]}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Stories Strip (emotional nudge) */}
+      <section className="section">
+        <div className="container stories">
+          <StoryCard quote="“He left us his voice. We still hear it every year on his birthday.”" by="A Daughter" />
+          <StoryCard quote="“To my son: May you never fear the unknown.”" by="A Father" />
+          <StoryCard quote="“I wrote this when I was 25. If you’re reading this, I found the courage.”" by="A Stranger" />
+        </div>
+      </section>
+
+      {/* Composer Modal */}
+      <ComposeModal open={composeOpen} onClose={() => setComposeOpen(false)} />
+
+      {/* Styles */}
+      <style jsx>{`
+        :root{
+          --bg:#050505; --fg:#f5f5f5; --muted:#c7c7c7; --card:#0b0b0b; --border:#1a1a1a;
+        }
+        body{background:var(--bg);color:var(--fg)}
+        .container{max-width:1100px;margin:0 auto;padding:0 20px}
+        .topbar{position:sticky;top:0;z-index:20;border-bottom:1px solid var(--border);background:rgba(5,5,5,.7);backdrop-filter:saturate(1.1) blur(8px)}
+        .tb-in{display:flex;justify-content:space-between;align-items:center;height:64px}
+        .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:600}
+        .ghost{border:1px solid #2f2f2f;background:#0c0c0c;color:#fff;border-radius:10px;padding:8px 12px}
+        .ghost.small{padding:6px 10px;font-size:13px}
+        .avatar{width:32px;height:32px;border-radius:10px;border:1px solid var(--border);display:grid;place-items:center;background:#0d0d0d;font-weight:700;cursor:pointer}
+        .hamburger{display:none;border:1px solid var(--border);background:#0c0c0c;border-radius:10px;padding:6px 8px}
+        .hamburger span{display:block;width:18px;height:2px;background:#fff;margin:3px 0;border-radius:2px}
+        .left{display:flex;align-items:center;gap:12px}
+        .right{display:flex;align-items:center;gap:10px}
+        .hide-mobile{display:inline-flex}
+        .show-mobile{display:none}
+        .menu{position:sticky;top:64px;z-index:19;background:#070707;border-bottom:1px solid var(--border)}
+        .menu-in{display:flex;gap:16px;padding:12px 20px}
+        .menu a, .menu button{color:#fff;opacity:.9}
+        .section{padding:32px 0}
+        .hero{text-align:center;padding:48px 0 30px}
+        .eyebrow{display:inline-flex;align-items:center;gap:8px;border:1px solid #2b2b2b;border-radius:999px;padding:6px 12px;color:#bdbdbd;font-size:12.5px}
+        .dot{width:6px;height:6px;border-radius:50%;background:#fff;box-shadow:0 0 12px #fff}
+        .title{font-size:30px;line-height:1.2;margin:14px 0}
+        .subtitle{max-width:760px;margin:0 auto;color:#e6e6e6}
+        .cta{display:flex;gap:10px;justify-content:center;margin-top:16px;flex-wrap:wrap}
+        .btn{border-radius:10px;padding:10px 14px;font-weight:600;transition:.2s}
+        .btn.solid{background:#fff;color:#000}
+        .btn.ghost{border:1px solid #3a3a3a;color:#fff}
+        .btn.lg{padding:12px 18px}
+        .note{margin-top:12px;color:#ddd;opacity:.9}
+
+        .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+        .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px}
+        .card.lift{transition:.2s;box-shadow:0 0 16px rgba(255,255,255,.04)}
+        .card.lift:hover{transform:translateY(-4px);box-shadow:0 0 22px rgba(255,255,255,.06)}
+        .card-hd{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+        .card-hd h3{font-size:18px;margin:0}
+        .muted{color:var(--muted)}
+        .quick{display:grid;gap:8px;margin:8px 0 10px}
+        .quick li{list-style:none}
+        .quick button{width:100%;text-align:left;background:#0a0a0a;border:1px solid var(--border);color:#fff;border-radius:10px;padding:10px 12px}
+        .hint{font-size:12.5px;color:#a9a9a9;margin-top:4px}
+        .stats2{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:8px 0 14px}
+        .stats2 div{background:#0a0a0a;border:1px solid var(--border);border-radius:12px;padding:12px;text-align:center}
+        .stats2 b{display:block;font-size:20px}
+        .progress{display:grid;gap:8px;margin:10px 0}
+        .bar{height:8px;background:#0a0a0a;border:1px solid var(--border);border-radius:999px;overflow:hidden}
+        .bar span{display:block;height:100%;background:#fff}
+
+        .row-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+        .h3{font-size:20px;margin:0}
+        .small-link{font-size:14px}
+        .timeline{display:grid;gap:12px}
+        .node{display:flex;gap:12px;align-items:flex-start;background:#0a0a0a;border:1px solid var(--border);border-radius:14px;padding:12px 14px}
+        .dot{width:10px;height:10px;border-radius:50%}
+        .dot.ok{background:#7aff9a}
+        .dot.pending{background:#ffd56a}
+        .node-top{display:flex;gap:8px;align-items:center}
+        .n-title{font-weight:600}
+        .badge{border:1px solid var(--border);border-radius:999px;padding:2px 8px;font-size:12px}
+        .badge.green{background:rgba(122,255,154,.1);border-color:rgba(122,255,154,.2)}
+        .badge.amber{background:rgba(255,213,106,.1);border-color:rgba(255,213,106,.2)}
+
+        .plans{display:grid;gap:12px}
+        .plans-hd{text-align:center}
+        .plan-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+        .plan{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;display:grid;gap:12px;position:relative}
+        .plan.featured{box-shadow:0 0 22px rgba(255,255,255,.06)}
+        .plan .price{font-size:22px;font-weight:700}
+        .plan ul{margin:0;padding-left:18px;color:#ddd}
+        .plan .cta{justify-content:flex-start}
+        .btn.full{width:100%;text-align:center}
+        .stories{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+        .story{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px}
+        .story p{font-style:italic;margin:0 0 6px}
+
+        @media (max-width: 860px){
+          .grid-3{grid-template-columns:1fr}
+          .plan-grid{grid-template-columns:1fr}
+          .stories{grid-template-columns:1fr}
+          .hide-mobile{display:none}
+          .show-mobile{display:inline-flex}
+        }
+      `}</style>
+    </>
+  );
+}
+
+/* ---------- Small components ---------- */
+
+function Plan({
+  name, price, ctaText, href, features, featured=false
+}: {
+  name:string; price:string; ctaText:string; href:string; features:string[]; featured?:boolean
+}) {
+  return (
+    <div className={`plan ${featured ? "featured": ""}`}>
+      <div className="row" style={{display:"flex", justifyContent:"space-between", alignItems:"center"}}>
+        <h4 style={{margin:0}}>{name}</h4>
+        <div className="price">{price}</div>
+      </div>
+      <ul>
+        {features.map((f,i)=><li key={i}>{f}</li>)}
+      </ul>
+      <div className="cta">
+        <Link className="btn ghost" href={href}>{ctaText}</Link>
+      </div>
     </div>
   );
 }
 
-const styles = /* css */`
-.wrap{ --bg:#050505; --fg:#f5f5f5; --card:#0b0b0b; --border:#1a1a1a; --muted:#c7c7c7;
-  background:var(--bg); color:var(--fg); min-height:100dvh; padding:18px 16px 60px; display:grid; gap:24px; justify-items:center;
+function StoryCard({quote, by}:{quote:string; by:string}) {
+  return (
+    <div className="story">
+      <p>“{quote.replace(/(^“|”$)/g,"")}”</p>
+      <small className="muted">— {by}</small>
+    </div>
+  );
 }
 
-/* topbar */
-.topbar{ width:100%; max-width:1240px; display:flex; justify-content:space-between; align-items:center; }
-.logoBtn{ display:flex; align-items:center; gap:10px; color:var(--fg); text-decoration:none; }
-.logoWrap{ width:32px; height:32px; border-radius:10px; border:1px solid var(--border); background:#0f0f0f; display:grid; place-items:center; box-shadow: inset 0 0 24px rgba(255,255,255,.06); }
-.logoWrap.mini{ width:26px; height:26px; border-radius:8px; }
-.brand{ font-weight:600; }
-.topRight{ display:flex; gap:10px; align-items:center; }
-.userPill{ color:var(--muted); font-size:14px; }
-.hamburger{ width:38px; height:32px; border:1px solid var(--border); background:#0f0f0f; border-radius:10px; display:grid; place-items:center; padding:0 6px; }
-.hamburger span{ display:block; width:100%; height:2px; background:#dcdcdc; margin:3px 0; border-radius:2px; }
+function ComposeModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const [title, setTitle] = useState("");
+  const [to, setTo] = useState("");
+  const [date, setDate] = useState("");
+  const [content, setContent] = useState("");
 
-/* hero */
-.hero{ text-align:center; display:grid; gap:10px; max-width:980px; }
-.hero h1{ margin:0; font-size:34px; }
-.sub{ color:#d8d8d8; max-width:720px; margin:0 auto; }
-.cta{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
-.primary{ background:#fff; color:#000; border:0; border-radius:14px; padding:10px 14px; font-weight:700; }
-.ghost{ background:transparent; color:var(--fg); border:1px solid var(--border); border-radius:14px; padding:10px 14px; }
-.kpis{ list-style:none; display:flex; gap:12px; justify-content:center; padding:0; margin:6px 0 0; }
-.kpis li{ display:grid; place-items:center; text-align:center; }
-.kpis b{ font-size:22px; }
-.kpis span{ color:var(--muted); font-size:13px; }
+  return (
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          className="overlay"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <motion.div
+            className="modal"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            transition={{ duration: 0.18 }}
+          >
+            <div className="modal-hd">
+              <h3 style={{margin:0}}>New Letter</h3>
+              <button className="ghost" onClick={onClose}>Close</button>
+            </div>
+            <div className="form">
+              <label>Title</label>
+              <input value={title} onChange={e=>setTitle(e.target.value)} placeholder="E.g., Letter to Mom" />
 
-/* columns */
-.cols{ width:100%; max-width:1240px; display:grid; grid-template-columns:1.4fr .9fr; gap:12px; }
-.panel{ border:1px solid var(--border); background:var(--card); border-radius:18px; padding:18px; }
-.panelHead{ display:flex; justify-content:space-between; align-items:center; }
-.mini{ padding:8px 12px; border-radius:12px; border:1px solid var(--border); background:#0f0f0f; color:#f5f5f5; }
-.mini:hover{ background:#141414; }
-.empty{ border:1px dashed var(--border); border-radius:14px; padding:20px; display:grid; gap:10px; place-items:center; text-align:center; margin:10px 0 14px; }
-.placeholder{ width:56px; height:56px; border-radius:14px; background:linear-gradient(180deg,#111,#0a0a0a); border:1px solid var(--border); box-shadow: inset 0 0 24px rgba(255,255,255,.06); }
-.muted{ color:var(--muted); }
-.timeline{ display:grid; gap:8px; }
-.tTitle{ color:#eaeaea; font-weight:600; margin:6px 0 2px; }
-.tLine{ display:flex; align-items:center; gap:10px; color:#d0d0d0; }
-.dot{ width:10px; height:10px; border-radius:999px; }
-.dot.past{ background:#2a2a2a; border:1px solid #333; }
-.dot.future{ background:#fafafa; border:1px solid #bbb; }
+              <label>Recipient Email</label>
+              <input value={to} onChange={e=>setTo(e.target.value)} placeholder="name@example.com" />
 
-.hint{ color:#bdbdbd; font-size:13px; }
-.accList{ list-style:none; padding:0; margin:8px 0 0; display:grid; gap:8px; }
-.accList li{ display:flex; justify-content:space-between; align-items:center; gap:10px; border:1px solid var(--border); border-radius:12px; padding:10px 12px; }
-.accLeft{ display:flex; align-items:center; gap:8px; }
-.badge{ width:10px; height:10px; border-radius:999px; background:#f5d0b8; border:1px solid #c08b79; }
+              <label>Unlock Date</label>
+              <input type="date" value={date} onChange={e=>setDate(e.target.value)} />
 
-.small{ padding:8px 12px; border-radius:12px; font-size:14px; }
-.primary.small{ background:#fff; color:#000; border:0; }
-.primary.small:hover{ filter:brightness(.95) }
+              <label>Message</label>
+              <textarea rows={6} value={content} onChange={e=>setContent(e.target.value)} placeholder="Write your words here..." />
 
-.checkin{ margin-top:12px; border:1px solid var(--border); border-radius:14px; padding:12px; background: radial-gradient(140% 120% at 50% -10%, rgba(255,255,255,0.04), rgba(0,0,0,0)), var(--card); }
-.mini{ color:#cfcfcf; font-size:13px; }
-.date{ font-weight:700; margin:4px 0 4px; }
-.sm{ font-size:13px; }
+              <button className="btn solid full" onClick={()=>{
+                // NOTE: Here we will plug client-side AES + Supabase insert in the next step.
+                // For now, just close with a fake success.
+                onClose();
+                alert("Draft saved locally (demo). Next step: client-side AES + Supabase.");
+              }}>Encrypt & Save (Demo)</button>
+            </div>
+          </motion.div>
 
-/* plans */
-.plans{ width:100%; max-width:1240px; text-align:center; display:grid; gap:12px; }
-.plansTitle{ margin:6px 0 0; }
-.grid{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
-.plan{ border:1px solid var(--border); background:var(--card); border-radius:18px; padding:18px; text-align:left; transition: transform 120ms ease, background 120ms ease; }
-.plan:hover{ transform: translateY(-2px); background:#0d0d0d; }
-.plan h3{ margin:0 0 6px; }
-.plan ul{ margin:10px 0 0 18px; color:#d0d0d0; }
-.wide{ width:100%; margin-top:12px; }
-.primaryLink, .ghostLink{ display:inline-block; text-decoration:none; padding:10px 14px; border-radius:14px; border:1px solid var(--border); }
-.primaryLink{ background:#fff; color:#000; border:0; font-weight:700; }
-.primaryLink:hover{ filter:brightness(.95); }
-.ghostLink{ background:#0f0f0f; color:#f5f5f5; }
-.ghostLink:hover{ background:#141414; }
-.featured{ box-shadow: 0 0 24px rgba(255,255,255,.06); } /* ring tamamen kaldırıldı */
-
-/* drawer */
-.backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.35); z-index:30; border:0; }
-.drawer{ position:fixed; top:0; right:-320px; width:300px; height:100dvh; background:#0b0b0b; border-left:1px solid var(--border); transition:right 180ms ease; z-index:40; display:flex; flex-direction:column; padding:14px; }
-.drawer.open{ right:0; }
-.drawerHead{ display:flex; justify-content:space-between; align-items:center; }
-.close{ background:#111; color:#eee; border:1px solid var(--border); border-radius:10px; padding:6px 10px; cursor:pointer; }
-.menu{ display:grid; gap:8px; margin-top:10px; }
-.menu a, .menu button{ text-align:left; padding:10px 12px; border:1px solid var(--border); background:#0f0f0f; color:#f5f5f5; border-radius:12px; cursor:pointer; text-decoration:none; }
-.menu a:hover, .menu button:hover{ background:#141414; }
-.menu .danger{ border-color:#3a1a1a; background:#140f0f; }
-
-/* responsive */
-@media (max-width:1020px){
-  .cols{ grid-template-columns:1fr; }
-  .grid{ grid-template-columns:1fr; }
-  .hero h1{ font-size:28px; }
+          <style jsx>{`
+            .overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:grid;place-items:center;z-index:50}
+            .modal{width:min(720px,92vw);background:#0b0b0b;border:1px solid var(--border);border-radius:16px;padding:16px}
+            .modal-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+            .form{display:grid;gap:8px}
+            label{font-size:13px;color:#cfcfcf}
+            input,textarea{background:#0a0a0a;border:1px solid var(--border);border-radius:10px;color:#fff;padding:10px 12px}
+          `}</style>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
 }
-`;
+
+/* ---------- Minimal icon components (monochrome) ---------- */
+function IconFeather(){ return (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
+    <path d="M20 5c-4 0-8 3-10 7L4 18l6-2c4-2 7-6 7-11z" stroke="#fff" strokeOpacity=".9"/>
+  </svg>
+);}
+
+function IconShield(){ return (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
+    <path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6l7-3z" stroke="#fff" strokeOpacity=".9"/>
+  </svg>
+);}
+
+function IconKey(){ return (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
+    <circle cx="8" cy="9" r="3" stroke="#fff" strokeOpacity=".9"/>
+    <path d="M11 9h9l-2 2 2 2" stroke="#fff" strokeOpacity=".9"/>
+  </svg>
+);}
