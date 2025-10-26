@@ -1,12 +1,26 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
 export default function UsernamePage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="auth-shell">
+          <div className="glass">Loading…</div>
+        </main>
+      }
+    >
+      <UsernameInner />
+    </Suspense>
+  );
+}
+
+function UsernameInner() {
   const router = useRouter();
   const params = useSearchParams();
   const redirectTo = params.get("redirectTo") || "/dashboard";
@@ -17,7 +31,7 @@ export default function UsernamePage() {
   const [err, setErr] = useState("");
   const [saving, setSaving] = useState(false);
 
-  // Guard + mevcut profil verisini çek
+  // Guard + mevcut profil verisi
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -25,7 +39,6 @@ export default function UsernamePage() {
       if (cancelled) return;
 
       if (!user) {
-        // Kayıt olmuş ama confirm gerektiren projelerde user boş olabilir
         setEmailConfirmed(false);
         setUserReady(true);
         return;
@@ -52,7 +65,6 @@ export default function UsernamePage() {
 
     setSaving(true);
     const { data: { user } } = await supabase.auth.getUser();
-
     if (!user) {
       setSaving(false);
       return setErr("Please confirm your email, then come back to set your name.");
