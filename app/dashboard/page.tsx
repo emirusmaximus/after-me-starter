@@ -70,7 +70,7 @@ export default function InverseDashboard() {
               <span>Most Chosen</span>
             </div>
 
-            <h2 className="serif">
+            <h2 className="plan-title serif">
               <span aria-hidden="true">💜 </span>Premium Plan
             </h2>
             <p className="price">$2 / month</p>
@@ -84,7 +84,7 @@ export default function InverseDashboard() {
 
           {/* FREE */}
           <div className="card free">
-            <h2 className="sans">
+            <h2 className="plan-title sans">
               <span aria-hidden="true">🩶 </span>Free Plan
             </h2>
             <p className="price">$0</p>
@@ -98,7 +98,7 @@ export default function InverseDashboard() {
 
           {/* LIFETIME */}
           <div className="card lifetime">
-            <h2 className="serif">
+            <h2 className="plan-title serif">
               <span aria-hidden="true">✨ </span>Lifetime Plan
             </h2>
             <p className="price">$15 (one-time)</p>
@@ -284,7 +284,19 @@ export default function InverseDashboard() {
         .serif{ font-family: "DM Serif Display", serif; font-weight:400; }
         .sans{ font-family: Inter, system-ui, sans-serif; font-weight:900; }
 
-        .card h2{ font-size:24px; margin:0 0 8px }
+        /* === PLAN BAŞLIĞI KUTUSU === */
+        .plan-title{
+          display:inline-block;
+          margin:0 0 10px;
+          padding:6px 14px;
+          border:2px solid rgba(255,255,255,.92);
+          border-radius:12px;
+          background:rgba(255,255,255,.08); /* hafif kutu dolgusu */
+          box-shadow:0 2px 10px rgba(255,255,255,.10), inset 0 0 0 1px rgba(255,255,255,.06);
+          letter-spacing:.2px;
+        }
+
+        .card h2{ font-size:24px }
         .price{ font-size:21px; margin:0 0 12px }
         ul{ list-style:none; margin:0 0 18px; padding:0; display:grid; gap:6px }
         li{ font-size:18px; opacity:.95 }
