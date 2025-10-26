@@ -142,7 +142,7 @@ export default function HomePage(): JSX.Element {
         </div>
       </motion.section>
 
-      {/* SECURITY (Minimal Slab + clean lock) */}
+      {/* SECURITY (Minimal Slab + centered lock) */}
       <motion.section
         className="section"
         initial={{ opacity: 0, y: 22 }}
@@ -153,10 +153,11 @@ export default function HomePage(): JSX.Element {
         <div className="container">
           <div className="slab">
             <div className="slab-icon" aria-hidden>
-              {/* lock */}
+              {/* lock — shackle centered */}
               <svg width="48" height="48" viewBox="0 0 48 48" fill="none" role="img" aria-label="Lock">
                 <rect x="12" y="22" width="24" height="16" rx="6" stroke="white" strokeOpacity=".9" />
-                <path d="M16 22 v-3 c0-5.8 4.7-10.5 10.5-10.5S37 13.2 37 19v3" stroke="white" strokeOpacity=".9" />
+                {/* centered shackle: vertical + arc (8 radius) */}
+                <path d="M16 22 v-3 a8 8 0 0 1 16 0 v3" stroke="white" strokeOpacity=".9" />
                 <circle cx="24" cy="30" r="2" fill="white" />
               </svg>
             </div>
@@ -171,7 +172,106 @@ export default function HomePage(): JSX.Element {
         </div>
       </motion.section>
 
-      {/* FOOTER (kısa) */}
+      {/* FEATURES (orijinal) */}
+      <motion.section
+        className="section"
+        initial={{ opacity: 0, y: 22 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+      >
+        <div className="container grid">
+          <div className="card">
+            <h4>Trusted Contacts</h4>
+            <p className="muted">Nominate people who can access your vault after verified events.</p>
+          </div>
+          <div className="card">
+            <h4>Posthumous Delivery</h4>
+            <p className="muted">Automated releases after inactivity periods or confirmed passing.</p>
+          </div>
+          <div className="card">
+            <h4>Time-Locked Messages</h4>
+            <p className="muted">Unlock on a specific future date — not a moment sooner.</p>
+          </div>
+        </div>
+      </motion.section>
+
+      {/* HUMAN STORIES (orijinal) */}
+      <motion.section
+        className="section"
+        initial={{ opacity: 0, y: 22 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+      >
+        <div className="container center">
+          <h2 className="h2">Real Messages. Real People.</h2>
+          <p className="muted narrow">Anonymous stories from those who’ve already left their mark.</p>
+        </div>
+        <div className="container grid">
+          <div className="card">
+            <p className="quote-sm">“To my son: May you never fear the unknown. The stars are closer than they look.”</p>
+            <small className="muted">— A Father, 2024</small>
+          </div>
+          <div className="card">
+            <p className="quote-sm">“I wrote this letter when I was 25. If you’re reading it, it means I finally had courage.”</p>
+            <small className="muted">— A Stranger, 2023</small>
+          </div>
+          <div className="card">
+            <p className="quote-sm">“He left us his voice. We still hear it every year on his birthday.”</p>
+            <small className="muted">— A Daughter</small>
+          </div>
+        </div>
+      </motion.section>
+
+      {/* WAITLIST (orijinal) */}
+      <motion.section
+        className="section"
+        initial={{ opacity: 0, y: 22 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+      >
+        <div className="container center">
+          <h2 className="h2">Join the Waitlist</h2>
+          <p className="muted">Be among the first to experience After.Me Premium.</p>
+          <form className="waitlist" onSubmit={(e) => e.preventDefault()}>
+            <input type="email" placeholder="Your email address" />
+            <button className="btn solid">Notify Me</button>
+          </form>
+        </div>
+      </motion.section>
+
+      {/* MEMORY SPARKS (orijinal) */}
+      <motion.section
+        className="section"
+        initial={{ opacity: 0, y: 22 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+      >
+        <div className="container sparks">
+          <h3 className="sparks-title">“A million words waiting for their moment.”</h3>
+          <p className="muted">Every 14 seconds, someone writes their final message.</p>
+          <span className="spark" aria-hidden />
+        </div>
+      </motion.section>
+
+      {/* PROCESS (orijinal) */}
+      <section className="section">
+        <div className="container center">
+          <h3 className="h3 muted">🕰️ How your words travel through time.</h3>
+          <div className="muted">A simple process built to last beyond us.</div>
+        </div>
+        <div className="hr" />
+        <div className="container steps">
+          <div className="step"><h4>1) Write</h4><p>Compose letters, memories, instructions. Save drafts anytime.</p></div>
+          <div className="step"><h4>2) Store</h4><p>Encrypted in your vault. You control visibility and rules.</p></div>
+          <div className="step"><h4>3) Deliver</h4><p>Schedule to loved ones or your future self — only when it’s time.</p></div>
+        </div>
+      </section>
+
+      {/* FOOTER (orijinal) */}
       <section className="container footer">
         <div className="links">
           <span>Contact</span>
@@ -179,7 +279,7 @@ export default function HomePage(): JSX.Element {
         </div>
         <div className="legal">
           <div>© 2025 After.Me — A product of <b>CobsVault Labs</b></div>
-          <div className="legal-links"><a href="#">Privacy Policy</a><a href="#">Terms</a></div>
+          <div className="legal-links"><a href="#">Privacy Policy</a><a href="#">Terms of Service</a></div>
         </div>
       </section>
 
@@ -214,10 +314,31 @@ export default function HomePage(): JSX.Element {
         .kpi b{display:block;font-size:28px}
         .kpi span{color:var(--muted)}
         .center{text-align:center}
-        .h2{font-size:28px;margin-bottom:12px}
-        .h3{font-size:24px;margin:0}
+        .h2{font-size:26px;margin-bottom:10px}
+        .h3{font-size:22px;margin-bottom:8px}
         .muted{color:var(--muted)}
         .narrow{max-width:700px;margin:0 auto}
+        .two{display:flex;gap:40px;align-items:center;flex-wrap:wrap}
+        .illu{flex:1 1 260px;display:flex;justify-content:center}
+        .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+        .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;transition:.2s}
+        .card:hover{transform:translateY(-3px);box-shadow:0 0 24px rgba(255,255,255,.05)}
+        .quote-sm{font-style:italic;color:#eaeaea}
+        .waitlist{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+        .waitlist input{width:260px;border:1px solid var(--border);background:#0a0a0a;color:#fff;border-radius:10px;padding:12px 14px}
+        .sparks{background:radial-gradient(80% 80% at 50% 50%, #111 0%, #050505 100%);border:1px solid var(--border);border-radius:20px;text-align:center;padding:60px 20px}
+        .sparks-title{font-size:28px;margin-bottom:10px;background:linear-gradient(90deg,#fff,#bfbfbf);-webkit-background-clip:text;color:transparent}
+        .spark{display:block;width:6px;height:6px;border-radius:50%;background:#fff;margin:16px auto 0;box-shadow:0 0 20px 4px #fff;animation:pulse 2s ease-in-out infinite alternate}
+        @keyframes pulse{from{opacity:.15;transform:translateY(0)}to{opacity:.35;transform:translateY(-2px)}}
+        .hr{height:1px;background:var(--border);margin:28px 0}
+        .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
+        .step{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px}
+        .footer{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:24px 0;border-top:1px solid var(--border);flex-wrap:wrap}
+        .footer .links{display:flex;gap:16px;align-items:center}
+        .footer .links span{opacity:.8}
+        .footer a{color:#fff;opacity:.85}
+        .legal{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+        .legal-links{display:flex;gap:16px}
 
         /* === Intro: WHAT IS AFTER.ME === */
         .intro{
@@ -228,8 +349,7 @@ export default function HomePage(): JSX.Element {
         }
         .intro-icon{
           display:grid;place-items:center;
-          width:68px;height:68px;
-          border-radius:16px;
+          width:68px;height:68px;border-radius:16px;
           background:rgba(255,255,255,0.04);
           border:1px solid rgba(255,255,255,0.1);
           margin:0 auto 18px;
@@ -254,16 +374,8 @@ export default function HomePage(): JSX.Element {
         .slab-title{margin:0;font-size:24px;line-height:1.2}
         .slab-muted{margin:0;color:var(--muted);max-width:760px}
 
-        /* FOOTER */
-        .footer{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:24px 0;border-top:1px solid var(--border);flex-wrap:wrap}
-        .footer .links{display:flex;gap:16px;align-items:center}
-        .footer .links span{opacity:.8}
-        .footer a{color:#fff;opacity:.85}
-        .legal{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
-        .legal-links{display:flex;gap:16px}
-
+        @media (max-width:640px){.title{font-size:34px}}
         @media (max-width:720px){
-          .title{font-size:34px}
           .slab{flex-direction:column;text-align:center}
           .slab-icon{width:64px;height:64px;min-width:64px;min-height:64px}
           .slab-title{font-size:22px}
