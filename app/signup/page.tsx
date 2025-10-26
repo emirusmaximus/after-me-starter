@@ -1,10 +1,24 @@
 "use client";
 
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
 export default function SignupPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="auth-page">
+          <div className="auth-card">Loading…</div>
+        </main>
+      }
+    >
+      <SignupInner />
+    </Suspense>
+  );
+}
+
+function SignupInner() {
   const router = useRouter();
   const params = useSearchParams();
   const redirectTo = params.get("redirectTo") || "/dashboard";
@@ -18,13 +32,15 @@ export default function SignupPage() {
     e.preventDefault();
     setError("");
     setLoading(true);
+
     const { error } = await supabase.auth.signUp({ email, password });
+
     setLoading(false);
     if (error) {
       setError(error.message);
       return;
     }
-    // Eğer email confirm açıksa: kullanıcı önce mailini onaylar, sonra login olur.
+    // Email confirm açıksa kullanıcı e-postasını onayladıktan sonra giriş yapar.
     router.replace(redirectTo);
   }
 
