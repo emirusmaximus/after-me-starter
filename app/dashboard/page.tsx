@@ -42,9 +42,9 @@ export default function DashboardPage() {
           <p className="ph-sub">Choose your legacy.</p>
         </div>
 
-        {/* KÜÇÜK ve ORTALI DIŞ ÇERÇEVE */}
+        {/* Ortalı ve kısa dış çerçeve */}
         <div className="frame">
-          {/* Dikey ayırıcı düz beyaz çizgiler */}
+          {/* Dikey beyaz ayırıcı çizgiler */}
           <span className="divider d1" aria-hidden />
           <span className="divider d2" aria-hidden />
 
@@ -55,6 +55,7 @@ export default function DashboardPage() {
               features={["Encrypted vault", "Priority support", "Early access"]}
               cta="Upgrade 💎"
               type="premium"
+              showBadge
             />
             <Compartment
               title="Free"
@@ -72,9 +73,6 @@ export default function DashboardPage() {
             />
           </div>
         </div>
-
-        {/* POST CHOOSEN: Ayrı küçük dikdörtgen (beyaz çerçeve + beyaz iç, siyah yazı) */}
-        <div className="postCard" aria-label="post choosen">post choosen</div>
       </section>
 
       <style jsx>{`
@@ -89,16 +87,16 @@ export default function DashboardPage() {
         .brand{ display:flex; align-items:center; gap:8px; font-weight:800 }
         .nav a{ color:#9aa; margin-left:16px } .nav a:hover{ color:#fff }
 
-        .hero{ text-align:center; padding:38px 0 18px }
+        .hero{ text-align:center; padding:36px 0 18px }
         .muted{ color:var(--muted) }
         .progress{ width:280px; margin:10px auto; height:6px; border:1px solid #222; background:#050505 }
         .progress span{ display:block; height:100%; background:#fff }
 
-        .plans{ text-align:center; padding:30px 0 50px }
+        .plans{ text-align:center; padding:28px 0 48px }
         .ph-title{ font-size:28px; font-weight:800; margin-bottom:4px }
         .ph-sub{ color:var(--muted); margin-bottom:18px; font-weight:600 }
 
-        /* DIŞ ÇERÇEVE (kısaltılmış ve ortalı) */
+        /* Dış çerçeve */
         .frame{
           position:relative;
           width:100%;
@@ -112,17 +110,17 @@ export default function DashboardPage() {
           overflow:hidden;
         }
 
-        /* DİKEY BEYAZ AYIRICI ÇİZGİLER */
+        /* Dikey ayırıcı çizgiler */
         .divider{
           position:absolute;
           top:20px; bottom:20px;
           width:0; border-left:2px solid #fff;
           z-index:20;
         }
-        .d1{ left:calc(33.333%); }
-        .d2{ left:calc(66.666%); }
+        .d1{ left:calc(33.333%) }
+        .d2{ left:calc(66.666%) }
 
-        /* 3 bölme */
+        /* Üç bölme */
         .grid{
           display:grid;
           grid-template-columns:repeat(3,1fr);
@@ -132,88 +130,96 @@ export default function DashboardPage() {
           z-index:10;
         }
 
-        /* ——— YAZILARI BÜYÜTTÜM (yaklaşık 16pt ve üstü) ——— */
+        /* ——— FONT BOYUTLARI: Başlıklar 25pt ≈ 33px, diğerleri 22pt ≈ 29px ——— */
         .compartment{
           background:#000;
-          padding:22px 22px 24px;            /* içeriyi daha dolu göstersin */
+          padding:22px 22px 24px;
           display:flex;
           flex-direction:column;
-          justify-content:flex-start;
           position:relative;
         }
         .hdr h3{
-          font-size:22px;                    /* ~16pt+ (12→22px) */
+          font-size:33px;               /* ~25pt */
           text-transform:uppercase;
           font-weight:900;
           margin:0 0 10px;
-          line-height:1.15;
-        }
-        .price{
-          font-size:38px;                    /* başlıca vurgu */
-          font-weight:900;
-          margin-bottom:14px;
           line-height:1.05;
         }
+        .price{
+          font-size:29px;               /* ~22pt */
+          font-weight:900;
+          margin-bottom:12px;
+          line-height:1.1;
+        }
         .feat{
-          list-style:none; padding:0; margin:14px 0 26px; text-align:left
+          list-style:none; padding:0; margin:12px 0 22px; text-align:left
         }
         .feat li{
           margin:8px 0;
-          font-size:22px;                    /* 14→22px */
+          font-size:29px;               /* ~22pt */
           color:#eee;
-          line-height:1.3;
+          line-height:1.25;
         }
         .cta{
-          width:100%; height:54px; border-radius:14px;
-          font-weight:900; font-size:24px;   /* 15→24px */
+          width:100%; height:56px; border-radius:14px;
+          font-weight:900; font-size:29px;  /* ~22pt */
           cursor:pointer; transition:.18s;
           border:1px solid #fff; background:#111; color:#fff; margin-top:auto
         }
         .cta:hover{ background:#161616 }
 
-        /* POST CHOOSEN — AYRI KÜÇÜK DİKDÖRTGEN (beyaz çerçeve + beyaz iç, siyah yazı) */
-        .postCard{
-          margin:18px auto 0;
-          width: 220px;
-          border:2px solid #fff;    /* dış çevresi beyaz */
-          border-radius:8px;
-          background:#fff;          /* içi beyaz */
-          color:#000;               /* yazı siyah */
+        /* Premium başlığına çapraz küçük beyaz dikdörtgen: "most choosen" */
+        .badge{
+          position:absolute;
+          /* başlığın üst ve sol kenarını çapraz kessin */
+          top:-12px;
+          left:-14px;
+          width:200px;
+          transform:rotate(-32deg);
+          transform-origin:left top;
+          z-index:30;
+          background:#fff;
+          color:#000;
+          border:2px solid #fff;
+          border-radius:6px;
           font-weight:900;
           text-transform:uppercase;
           letter-spacing:.6px;
           font-size:16px;
           line-height:1;
-          padding:12px 14px;
           text-align:center;
-          box-shadow:0 4px 18px rgba(255,255,255,.25), 0 6px 22px rgba(0,0,0,.35);
+          padding:10px 12px;
+          box-shadow:0 6px 22px rgba(0,0,0,.45);
+          pointer-events:none;
         }
 
         @media(max-width:1000px){
           .frame{ max-width:90vw; min-height:auto; padding:16px }
           .divider{ display:none }
           .grid{ grid-template-columns:1fr }
-          .hdr h3{ font-size:20px }
-          .price{ font-size:34px }
-          .feat li{ font-size:20px }
-          .cta{ font-size:22px; height:52px }
-          .postCard{ width:200px; font-size:15px; padding:10px 12px }
+          .hdr h3{ font-size:31px }
+          .price{ font-size:27px }
+          .feat li{ font-size:27px }
+          .cta{ font-size:27px; height:52px }
+          .badge{ width:180px; font-size:15px; top:-10px; left:-12px; transform:rotate(-30deg) }
         }
       `}</style>
     </main>
   );
 }
 
-/* === BÖLME === */
+/* === Bölme === */
 function Compartment({
-  title, price, features, cta, type
+  title, price, features, cta, type, showBadge
 }:{
   title:string; price:string; features:string[]; cta:string;
-  type:"premium"|"free"|"lifetime";
+  type:"premium"|"free"|"lifetime"; showBadge?:boolean;
 }){
   return(
     <div className={`compartment ${type}`}>
-      {/* DİKKAT: "most choosen" burada YOK (tamamen kaldırıldı) */}
+      {/* Sadece Premium'da, başlığın üzerine çapraz küçük beyaz dikdörtgen */}
+      {type==="premium" && showBadge ? <div className="badge">most choosen</div> : null}
+
       <div className="hdr">
         <h3>{title}</h3>
         <div className="price">{price}</div>
