@@ -74,8 +74,8 @@ export default function DashboardPage() {
           <p className="ph-sub">Choose your legacy.</p>
         </div>
 
-        {/* Ortada duran tek dikdörtgen kapsayıcı */}
-        <div className="plans-container">
+        {/* Sadece üç kart, tek satır, ortalanmış — DIŞTA BÜYÜK KUTU YOK */}
+        <div className="container plans-row">
           {plans.map((p) => (
             <PlanCard
               key={p.key}
@@ -91,18 +91,26 @@ export default function DashboardPage() {
       </section>
 
       <style jsx>{`
+        /* Fonts (yalnız bu dosyada uygulanır) */
+        @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+
         :root{
-          --bg:#000; --fg:#fff; --muted:#bbb;
+          --bg:#000; --fg:#fff; --muted:#BBB; --border:#1a1a1a;
           --free-a:#1A1A1A; --free-b:#2A2A2A;
           --prem-a:#6C63FF; --prem-b:#8A7CFF;
           --life-a:#F2C94C; --life-b:#F9E79F;
         }
-        body, .dashboard { background:var(--bg); color:var(--fg); }
+
+        *{ box-sizing:border-box }
+        body, .dashboard { background:var(--bg); color:var(--fg); font-family: Manrope, "Plus Jakarta Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
 
         .container{ max-width:1100px; margin:0 auto; padding:0 20px; }
         .top{ border-bottom:1px solid #111; padding:14px 0; background:rgba(0,0,0,.6); backdrop-filter:blur(6px); }
         .topin{ display:flex; align-items:center; justify-content:space-between; }
         .brand{ display:flex; align-items:center; gap:8px; font-weight:800; }
+
+        .nav a{ color:#9aa; margin-left:16px; }
+        .nav a:hover{ color:#fff; }
 
         .hero{ text-align:center; padding:40px 0 20px; }
         .muted{ color:var(--muted); }
@@ -110,121 +118,129 @@ export default function DashboardPage() {
         .progress span{ display:block; height:100%; background:#fff; }
 
         .plans{ text-align:center; padding:40px 0 60px; }
-        .ph-title{ font-size:28px; margin-bottom:4px; }
-        .ph-sub{ color:var(--muted); margin-bottom:20px; }
+        .ph-title{ font-size:28px; font-weight:800; margin-bottom:4px; }
+        .ph-sub{ color:var(--muted); margin-bottom:24px; font-weight:600; }
 
-        /* === Ortadaki büyük kapsayıcı === */
-        .plans-container {
-          width: 90%;
-          max-width: 1000px;
-          margin: 0 auto;
-          background: #0e0e0e;
-          border: 1px solid #222;
-          border-radius: 24px;
-          padding: 40px;
-          display: flex;
-          justify-content: center;
-          align-items: stretch;
-          gap: 24px;
-          box-shadow: 0 0 25px rgba(255,255,255,0.05);
+        /* === ÜÇ KART TEK SATIR, ORTADA — MOBİLDE YATAY SCROLL === */
+        .plans-row{
+          display:flex;
+          gap:24px;
+          align-items:stretch;
+          justify-content:center;
+          flex-wrap:nowrap;           /* alta düşürme */
+          overflow-x:auto;            /* mobilde yana kaydır */
+          padding:4px;
+          -webkit-overflow-scrolling:touch;
+          scrollbar-width: thin;
+        }
+        @media (max-width:900px){
+          .plans-row{ gap:16px; justify-content:flex-start; }
         }
 
-        /* Her plan dik duran kutu */
-        .plan {
-          flex: 1;
-          min-width: 260px;
-          background: #111;
-          border: 1px solid #222;
-          border-radius: 16px;
-          padding: 24px;
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-          position: relative;
-          transition: all 0.25s ease;
+        /* === KART: DİKEY DİKDÖRTGEN === */
+        .plan{
+          position:relative;
+          width:320px;                 /* dikey: en dar */
+          height:560px;                /* dikey: boy uzun */
+          border-radius:20px;
+          padding:22px;
+          border:1px solid var(--border);
+          display:flex;
+          flex-direction:column;
+          justify-content:space-between;
+          text-align:left;
+          background:#111;
+          box-shadow:0 0 14px rgba(255,255,255,.05);
+          transition: transform .2s ease, box-shadow .2s ease, outline-color .2s ease;
+          outline: 0px solid rgba(255,255,255,0);
         }
-
-        .plan:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 0 20px rgba(255,255,255,0.1);
+        .plan:hover{
+          transform: translateY(-4px);
+          box-shadow:0 0 36px rgba(255,255,255,.16);
+          outline: 2px solid rgba(255,255,255,.10);
         }
+        .plan:focus-within{ outline:2px solid rgba(255,255,255,.2); }
 
-        /* Plan tipleri */
-        .premium {
-          background: linear-gradient(160deg, rgba(108,99,255,0.25), rgba(138,124,255,0.1));
-          border-color: rgba(124,118,255,0.35);
+        /* Başlık ve fiyat */
+        .hdr h3{ font-size:13px; letter-spacing:.6px; text-transform:uppercase; font-weight:700; opacity:.9; margin:0 0 6px; }
+        .price{ font-size:34px; font-weight:800; margin-bottom:12px; line-height:1; }
+
+        /* Özellik listesi */
+        .feat{ list-style:none; padding:0; margin:0 0 22px; }
+        .feat li{ position:relative; padding-left:20px; margin-bottom:10px; font-size:15px; }
+        .feat li::before{ content:"✓"; position:absolute; left:0; top:0; opacity:.9; }
+
+        /* CTA — tema varyantlarına göre butonlar */
+        .cta{ width:100%; height:48px; border-radius:16px; font-weight:800; font-size:16px; cursor:pointer; transition:.2s; user-select:none; }
+
+        /* Premium (glass + gradient border) */
+        .premium{
+          background: linear-gradient(160deg, rgba(108,99,255,.22), rgba(138,124,255,.10)) #0c0c0f;
+          border-color: rgba(124,118,255,.35);
+          box-shadow: 0 0 24px rgba(124,118,255,.12);
         }
+        .premium:hover{ box-shadow:0 0 36px rgba(124,118,255,.24); }
+        .cta-premium{
+          color:#fff;
+          background:rgba(255,255,255,.06);
+          border:1px solid transparent;
+          background-clip: padding-box, border-box;
+          border-image: linear-gradient(90deg, var(--prem-a), var(--prem-b)) 1;
+        }
+        .cta-premium:hover{ background:rgba(255,255,255,.10); }
+        .cta-premium:focus-visible{ box-shadow:0 0 0 3px rgba(124,118,255,.35); outline:0; }
 
-        .free {
+        /* Free (inverted beyaz) */
+        .free{
           background: linear-gradient(160deg, var(--free-a), var(--free-b));
+          border-color:#2E2E2E;
         }
+        .cta-free{
+          background:#fff; color:#111; border:1px solid #E9E9E9;
+        }
+        .cta-free:hover{ background:#f2f2f2; }
+        .cta-free:focus-visible{ box-shadow:0 0 0 3px rgba(255,255,255,.35); outline:0; }
 
-        .lifetime {
+        /* Lifetime (gold + shimmer) */
+        .lifetime{
           background: linear-gradient(160deg, var(--life-a), var(--life-b));
-          color: #241a00;
-          border-color: rgba(242,201,76,0.5);
-          overflow: hidden;
+          color:#241A00;
+          border-color: rgba(242,201,76,.55);
+          position:relative; overflow:hidden;
         }
-
-        .lifetime::after {
-          content: "";
-          position: absolute;
-          top: -20%;
-          left: -60%;
-          width: 40%;
-          height: 140%;
+        .lifetime::after{
+          content:"";
+          position:absolute; top:-20%; left:-60%;
+          width:40%; height:140%;
           transform: rotate(20deg);
           background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.45), rgba(255,255,255,0));
           filter: blur(8px);
-          animation: shimmer 3s linear infinite;
+          animation: shimmer 3.2s linear infinite;
         }
-
-        @keyframes shimmer {
-          0% { left: -60%; }
-          100% { left: 130%; }
+        @keyframes shimmer{ 0%{left:-60%} 100%{left:130%} }
+        .cta-life{
+          color:#241A00;
+          background: rgba(255, 214, 102, .18);
+          border:1px solid rgba(242,201,76,.65);
         }
+        .cta-life:hover{ background: rgba(255, 214, 102, .28); }
+        .cta-life:focus-visible{ box-shadow:0 0 0 3px rgba(242,201,76,.55); outline:0; }
 
-        /* Ribbon (sadece Premium’da) */
-        .ribbon {
-          position: absolute;
-          top: 16px;
-          right: -36px;
-          transform: rotate(35deg);
+        /* Premium şeridi */
+        .ribbon{
+          position:absolute; top:16px; right:-36px; transform: rotate(35deg);
           background: linear-gradient(90deg, var(--prem-a), var(--prem-b));
-          color: #fff;
-          font-weight: 900;
-          font-size: 12px;
-          padding: 6px 44px;
-          border-radius: 6px;
+          color:#fff; font-weight:900; font-size:12px; letter-spacing:.6px;
+          padding:6px 44px; border-radius:6px; box-shadow:0 6px 14px rgba(0,0,0,.35);
         }
-
-        .plan h3 { font-size: 14px; text-transform: uppercase; opacity: 0.9; margin: 0 0 6px; }
-        .plan .price { font-size: 30px; font-weight: 800; margin-bottom: 12px; }
-        .plan ul { list-style: none; padding: 0; margin: 0 0 20px; }
-        .plan li { position: relative; padding-left: 18px; margin-bottom: 8px; }
-        .plan li::before { content: "✓"; position: absolute; left: 0; top: 0; }
-        .plan button {
-          border: none;
-          border-radius: 12px;
-          padding: 12px;
-          font-weight: 700;
-          cursor: pointer;
-        }
-        .plan.dark button { background: #1a1a1a; color: #fff; }
-        .plan.light button { background: #fff; color: #000; }
       `}</style>
     </main>
   );
 }
 
-/* PLAN CARD */
+/* === PLAN CARD === */
 function PlanCard({
-  title,
-  price,
-  features,
-  button,
-  variant,
-  ribbon,
+  title, price, features, button, variant, ribbon,
 }: {
   title: string;
   price: string;
@@ -235,17 +251,28 @@ function PlanCard({
 }) {
   return (
     <div className={`plan ${variant}`}>
-      {ribbon && <div className="ribbon">{ribbon}</div>}
+      {ribbon ? <div className="ribbon">{ribbon}</div> : null}
+
       <div>
-        <h3>{title}</h3>
-        <div className="price">{price}</div>
-        <ul>
-          {features.map((f, i) => (
-            <li key={i}>{f}</li>
-          ))}
+        <div className="hdr">
+          <h3>{title}</h3>
+          <div className="price">{price}</div>
+        </div>
+
+        <ul className="feat">
+          {features.map((f, i) => <li key={i}>{f}</li>)}
         </ul>
       </div>
-      <button>{button}</button>
+
+      <button
+        className={
+          variant === "premium" ? "cta cta-premium" :
+          variant === "lifetime" ? "cta cta-life" :
+          "cta cta-free"
+        }
+      >
+        {button}
+      </button>
     </div>
   );
 }
