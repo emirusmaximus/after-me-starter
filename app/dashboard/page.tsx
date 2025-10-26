@@ -17,7 +17,7 @@ export default function InverseDashboard() {
         {/* === BACKGROUND FX (Animated Mesh + Grain) === */}
         <div className="bgfx" aria-hidden="true" />
 
-        {/* Topbar (hamburger tamamen kaldırıldı) */}
+        {/* Topbar */}
         <div className="topbar">
           <Link href="/" className="brand" aria-label="After.Me — Home">
             <img src="/logo.svg" width={36} height={36} alt="After.Me" />
@@ -95,25 +95,36 @@ export default function InverseDashboard() {
           <div className="kpi"><b>3,427</b><span>Time capsules</span></div>
           <div className="kpi"><b>529</b><span>Delivered letters</span></div>
         </section>
-
-        {/* Tri mini-cards */}
+                {/* Tri mini-cards */}
         <section className="tri">
           <div className="mini-card">
             <div className="mini-hd">Memory Sparks</div>
-            <p className="mini-txt">“A letter takes five minutes, but it may live for decades.”</p>
+            <p className="mini-txt">
+              “A letter takes five minutes, but it may live for decades.”
+            </p>
             <p className="mini-sub">People vanish. Words remain.</p>
           </div>
 
           <div className="mini-card">
             <div className="mini-hd">Inspiration</div>
-            <p className="mini-txt">Write one sentence your future self needs to hear.</p>
-            <button className="mini-btn" onClick={() => setOpen(true)}>Write Now</button>
+            <p className="mini-txt">
+              Write one sentence your future self needs to hear.
+            </p>
+            {/* ✅ Değiştirildi */}
+            <Link href="/dashboard/write" className="mini-btn">
+              Write Now
+            </Link>
           </div>
 
           <div className="mini-card">
             <div className="mini-hd">Heartbeat</div>
-            <p className="mini-txt">Monthly email ping keeps your vault “alive”.</p>
-            <button className="mini-btn solid">Renew Heartbeat</button>
+            <p className="mini-txt">
+              Monthly email ping keeps your vault “alive”.
+            </p>
+            {/* ✅ Değiştirildi */}
+            <Link href="/dashboard/heartbeat" className="mini-btn solid">
+              Renew Heartbeat
+            </Link>
             <small className="mini-sub">Premium feature</small>
           </div>
         </section>
@@ -122,7 +133,9 @@ export default function InverseDashboard() {
         <section className="timeline">
           <div className="tl-hd">
             <h3>Journey Timeline</h3>
-            <Link className="tiny-link" href="/dashboard/vault">See all →</Link>
+            <Link className="tiny-link" href="/dashboard/vault">
+              See all →
+            </Link>
           </div>
 
           <div className="tl-list">
@@ -164,31 +177,57 @@ export default function InverseDashboard() {
 
       {/* Compose Modal (demo) */}
       {open && (
-        <div className="overlay" role="dialog" aria-modal="true" aria-label="Write Letter">
+        <div
+          className="overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Write Letter"
+        >
           <div className="modal">
             <div className="modal-hd">
               <h4>New Letter</h4>
-              <button className="close" onClick={() => setOpen(false)}>Close</button>
+              <button className="close" onClick={() => setOpen(false)}>
+                Close
+              </button>
             </div>
 
             <div className="form">
               <label>Title</label>
-              <input value={title} onChange={(e)=>setTitle(e.target.value)} placeholder="E.g., Letter to Mom" />
+              <input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="E.g., Letter to Mom"
+              />
 
               <label>Recipient Email</label>
-              <input value={to} onChange={(e)=>setTo(e.target.value)} placeholder="name@example.com" />
+              <input
+                value={to}
+                onChange={(e) => setTo(e.target.value)}
+                placeholder="name@example.com"
+              />
 
               <label>Unlock Date</label>
-              <input type="date" value={date} onChange={(e)=>setDate(e.target.value)} />
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+              />
 
               <label>Message</label>
-              <textarea rows={6} value={content} onChange={(e)=>setContent(e.target.value)} placeholder="Write your words…" />
+              <textarea
+                rows={6}
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                placeholder="Write your words…"
+              />
 
               <button
                 className="mini-btn solid full"
-                onClick={()=>{
+                onClick={() => {
                   setOpen(false);
-                  alert("Draft saved locally (demo). V1: client-side AES + Supabase.");
+                  alert(
+                    "Draft saved locally (demo). V1: client-side AES + Supabase."
+                  );
                 }}
               >
                 Encrypt & Save (Demo)
@@ -197,11 +236,14 @@ export default function InverseDashboard() {
           </div>
         </div>
       )}
-
       {/* Fonts (global) */}
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;700;800;900&display=swap');
-        html, body, * { font-family: Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol", sans-serif; }
+        html, body, * {
+          font-family: Inter, -apple-system, BlinkMacSystemFont, Segoe UI,
+            Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji",
+            "Segoe UI Symbol", sans-serif;
+        }
       `}</style>
 
       <style jsx>{`
@@ -302,8 +344,8 @@ export default function InverseDashboard() {
         }
         .card:hover{ transform:translateY(-6px); box-shadow:0 10px 26px rgba(255,255,255,.12); border-color:#eaeaea; filter:saturate(1.04) }
 
-        .serif{ font-family: "DM Serif Display", serif; font-weight:400; }
-        .sans{ font-family: Inter, system-ui, sans-serif; font-weight:900; }
+        .serif{ font-family:"DM Serif Display", serif; font-weight:400; }
+        .sans{ font-family:Inter, system-ui, sans-serif; font-weight:900; }
 
         .plan-title{
           display:inline-block;
@@ -319,7 +361,6 @@ export default function InverseDashboard() {
         .card h2{ font-size:24px }
         .price{ font-size:21px; margin:0 0 12px }
 
-        /* ÖZELLİKLER (çarpıcı nokta simgesi) */
         ul.features{ list-style:none; margin:0; padding:0; display:grid; gap:10px; width:100%; }
         ul.features li{
           position:relative; padding-left:38px; font-size:18px; opacity:.98; text-align:left;
@@ -336,7 +377,6 @@ export default function InverseDashboard() {
           box-shadow: 0 0 0 6px var(--accentGlow), 0 0 28px var(--accent), inset 0 0 7px rgba(0,0,0,.45);
         }
 
-        /* CTA — kompakt ve tabanda aynı hiza */
         .cta-wrap{ margin-top:auto; width:100%; display:flex; justify-content:center; }
         .btn{
           background:#fff; color:#000; text-decoration:none;
@@ -346,50 +386,46 @@ export default function InverseDashboard() {
         .btn:hover{ filter:brightness(.92); transform:translateY(-1px) }
         .btn-compact{ display:inline-block; }
 
-        /* Zemin + accent */
         .premium{
-          background: linear-gradient(160deg, #2b205a 0%, #4a3fb3 100%);
+          background: linear-gradient(160deg,#2b205a 0%,#4a3fb3 100%);
           --accent:#9b8dff;
-          --accentGlow: rgba(108, 99, 255, .28);
+          --accentGlow: rgba(108,99,255,.28);
         }
         .free{
-          background: linear-gradient(160deg, #0f1014 0%, #1b1c22 100%);
+          background: linear-gradient(160deg,#0f1014 0%,#1b1c22 100%);
           --accent:#e8e8e8;
           --accentGlow: rgba(255,255,255,.20);
         }
         .lifetime{
-          background: linear-gradient(160deg, #6e5a09 0%, #a67a00 100%);
+          background: linear-gradient(160deg,#6e5a09 0%,#a67a00 100%);
           --accent:#f2c94c;
           --accentGlow: rgba(242,201,76,.30);
         }
 
-        /* Kurdela */
         .corner-ribbon{
           position:absolute; top:10px; left:-34px; z-index:3; transform:rotate(-45deg); pointer-events:none;
         }
-        .corner-ribbon > span{
-          display:inline-block; background:#ffffff; color:#000;
+        .corner-ribbon>span{
+          display:inline-block; background:#fff; color:#000;
           font-weight:900; text-transform:uppercase; letter-spacing:.35px; font-size:12px;
           padding:5px 18px; box-shadow:0 4px 12px rgba(255,255,255,.18); position:relative;
         }
-        .corner-ribbon > span::before,
-        .corner-ribbon > span::after{
+        .corner-ribbon>span::before,
+        .corner-ribbon>span::after{
           content:""; position:absolute; top:0; bottom:0; width:0; height:0;
           border-top:11px solid transparent; border-bottom:11px solid transparent;
         }
-        .corner-ribbon > span::before{ left:-11px; border-right:11px solid #ffffff; }
-        .corner-ribbon > span::after{ right:-11px; border-left:11px solid #ffffff; }
+        .corner-ribbon>span::before{ left:-11px; border-right:11px solid #fff; }
+        .corner-ribbon>span::after{ right:-11px; border-left:11px solid #fff; }
 
         .hr{ height:1px; background:rgba(255,255,255,.15); margin:28px 0; border-radius:999px }
 
-        /* KPIs */
         .kpis{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; text-align:center; margin-bottom:8px; position:relative; z-index:1; }
         .kpi{ background:#0c0c0c; border:1px solid rgba(255,255,255,.14); border-radius:14px; padding:16px; transition:.2s; }
         .kpi:hover{ transform:translateY(-3px); box-shadow:0 0 22px rgba(255,255,255,.08) }
         .kpi b{ display:block; font-size:22px }
         .kpi span{ opacity:.9 }
 
-        /* Tri cards */
         .tri{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:16px; position:relative; z-index:1; }
         .mini-card{ background:#0c0c0c; border:1px solid rgba(255,255,255,.14); border-radius:14px; padding:16px; text-align:left; display:grid; gap:8px; transition:.2s; }
         .mini-card:hover{ transform:translateY(-3px); box-shadow:0 0 22px rgba(255,255,255,.08) }
@@ -401,7 +437,6 @@ export default function InverseDashboard() {
         .mini-btn:hover{ transform:translateY(-1px) }
         .mini-btn.full{ width:100% }
 
-        /* Timeline */
         .timeline{ margin-top:20px; text-align:left; position:relative; z-index:1; }
         .tl-hd{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px }
         .tl-hd h3{ margin:0; font-size:19px }
@@ -417,7 +452,6 @@ export default function InverseDashboard() {
         .pill.wait{ background:rgba(255,224,138,.12); border-color:rgba(255,255,224,.25) }
         .pill.draft{ background:rgba(184,184,184,.12); border-color:rgba(184,184,184,.25) }
 
-        /* Responsive */
         @media (max-width:900px){
           .wrap{ padding:28px 16px; }
           .outer{ padding:36px 16px 28px; max-width:100%; }
