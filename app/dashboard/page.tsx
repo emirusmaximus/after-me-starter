@@ -19,7 +19,6 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // demo
   const [stats, setStats] = useState({ messages: 0, scheduled: 0, delivered: 0 });
 
   useEffect(() => {
@@ -29,20 +28,23 @@ export default function Dashboard() {
       const meta = (user.user_metadata || {}) as UserMeta;
       const u = meta.username || user.email?.split("@")[0] || "friend";
       setUsername(u);
+      // TODO: pull real stats from Supabase
       setStats({ messages: 0, scheduled: 0, delivered: 0 });
       setLoading(false);
     })();
   }, [router]);
 
   const onLogout = async () => { await supabase.auth.signOut(); router.push("/"); };
-  const onCompose = () => alert("Composer modal will open (client-side AES-GCM encryption) — coming next.");
+  const onCompose = () => alert("Composer modal (client-side AES-GCM) — coming next.");
 
   return (
     <div className="wrap">
-      {/* TOP */}
+      {/* TOPBAR — logo => landing (/) */}
       <header className="topbar">
         <Link className="logoBtn" href="/" aria-label="Home">
-          <div className="logoWrap"><Image src="/logo.svg" alt="After.Me" width={28} height={28} priority /></div>
+          <div className="logoWrap">
+            <Image src="/logo.svg" alt="After.Me" width={28} height={28} priority />
+          </div>
           <span className="brand">After.Me</span>
         </Link>
         <div className="topRight">
@@ -77,13 +79,13 @@ export default function Dashboard() {
             <h2>Your Vault</h2>
             <button className="mini" onClick={onCompose}>+ New</button>
           </div>
+
           <div className="empty">
             <div className="placeholder" />
             <p className="muted">No messages yet. Start with your first letter.</p>
-            <button className="primary" onClick={onCompose}>Start writing</button>
+            <button className="primary" onClick={onCompose}>Start a letter</button>
           </div>
 
-          {/* Timeline preview moved here (no contradiction with empty state) */}
           <div className="timeline">
             <div className="tTitle">Recent & upcoming</div>
             <div className="tLine"><span className="dot past" />“To my mother” — delivered</div>
@@ -93,11 +95,14 @@ export default function Dashboard() {
 
         {/* Accounts */}
         <div className="panel" id="accounts">
-          <div className="panelHead"><h2>Connected Accounts</h2><span className="hint">Recommended for inactivity checks</span></div>
+          <div className="panelHead">
+            <h2>Connected Accounts</h2>
+            <span className="hint">Recommended for inactivity checks</span>
+          </div>
           <ul className="accList">
-            {["Google","Instagram","X (Twitter)"].map((n,i)=>(
+            {["Google","Instagram","X (Twitter)"].map((n)=>(
               <li key={n}>
-                <div className="accLeft"><span className="badge no" />{n}</div>
+                <div className="accLeft"><span className="badge" />{n}</div>
                 <button className="primary small">Connect</button>
               </li>
             ))}
@@ -110,8 +115,8 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {/* PLANS (clean CTAs, no ring/quarter-circle) */}
-      <section className="plans">
+      {/* PLANS (clean, no ring/quarter-circle) */}
+      <section className="plans" id="plans">
         <h2 className="plansTitle">Digital continuity, without noise.</h2>
         <div className="grid">
           <article className="plan">
@@ -156,14 +161,19 @@ export default function Dashboard() {
       {menuOpen && <button className="backdrop" aria-label="Close" onClick={()=>setMenuOpen(false)} />}
       <aside className={`drawer ${menuOpen ? "open":""}`} aria-hidden={!menuOpen}>
         <div className="drawerHead">
-          <Link className="logoBtn mini" href="/"><div className="logoWrap mini"><Image src="/logo.svg" alt="After.Me" width={22} height={22}/></div><span className="brand">After.Me</span></Link>
+          <Link className="logoBtn mini" href="/" aria-label="Home">
+            <div className="logoWrap mini">
+              <Image src="/logo.svg" alt="After.Me" width={22} height={22}/>
+            </div>
+            <span className="brand">After.Me</span>
+          </Link>
           <button className="close" onClick={()=>setMenuOpen(false)}>✕</button>
         </div>
         <nav className="menu">
           <button onClick={onCompose}>+ Write a new message</button>
           <a href="#vault">Your Vault</a>
           <a href="#accounts">Accounts</a>
-          <a href=".plans">Plans</a>
+          <a href="#plans">Plans</a>
           <hr/>
           <button className="danger" onClick={onLogout}>Log out</button>
         </nav>
@@ -183,6 +193,7 @@ const styles = /* css */`
 .topbar{ width:100%; max-width:1240px; display:flex; justify-content:space-between; align-items:center; }
 .logoBtn{ display:flex; align-items:center; gap:10px; color:var(--fg); text-decoration:none; }
 .logoWrap{ width:32px; height:32px; border-radius:10px; border:1px solid var(--border); background:#0f0f0f; display:grid; place-items:center; box-shadow: inset 0 0 24px rgba(255,255,255,.06); }
+.logoWrap.mini{ width:26px; height:26px; border-radius:8px; }
 .brand{ font-weight:600; }
 .topRight{ display:flex; gap:10px; align-items:center; }
 .userPill{ color:var(--muted); font-size:14px; }
@@ -246,14 +257,13 @@ const styles = /* css */`
 .primaryLink:hover{ filter:brightness(.95); }
 .ghostLink{ background:#0f0f0f; color:#f5f5f5; }
 .ghostLink:hover{ background:#141414; }
-.featured{ box-shadow: 0 0 24px rgba(255,255,255,.06); } /* ring KALDIRILDI */
+.featured{ box-shadow: 0 0 24px rgba(255,255,255,.06); } /* ring tamamen kaldırıldı */
 
 /* drawer */
 .backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.35); z-index:30; border:0; }
 .drawer{ position:fixed; top:0; right:-320px; width:300px; height:100dvh; background:#0b0b0b; border-left:1px solid var(--border); transition:right 180ms ease; z-index:40; display:flex; flex-direction:column; padding:14px; }
 .drawer.open{ right:0; }
 .drawerHead{ display:flex; justify-content:space-between; align-items:center; }
-.logoBtn.mini .logoWrap{ width:26px; height:26px; border-radius:8px; }
 .close{ background:#111; color:#eee; border:1px solid var(--border); border-radius:10px; padding:6px 10px; cursor:pointer; }
 .menu{ display:grid; gap:8px; margin-top:10px; }
 .menu a, .menu button{ text-align:left; padding:10px 12px; border:1px solid var(--border); background:#0f0f0f; color:#f5f5f5; border-radius:12px; cursor:pointer; text-decoration:none; }
