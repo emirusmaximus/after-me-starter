@@ -1,25 +1,31 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+import { supabase } from "@/lib/supabaseClient";
 
 export default function SignupPage() {
   const router = useRouter();
+  const params = useSearchParams();
+  const redirectTo = params.get("redirectTo") || "/dashboard";
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  async function handleSignup(e: any) {
+  async function handleSignup(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setError("");
+    setLoading(true);
     const { error } = await supabase.auth.signUp({ email, password });
-    if (error) setError(error.message);
-    else router.push("/dashboard");
+    setLoading(false);
+    if (error) {
+      setError(error.message);
+      return;
+    }
+    // Eğer email confirm açıksa: kullanıcı önce mailini onaylar, sonra login olur.
+    router.replace(redirectTo);
   }
 
   return (
@@ -32,6 +38,7 @@ export default function SignupPage() {
           <input
             type="email"
             placeholder="Email"
+            autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -39,16 +46,22 @@ export default function SignupPage() {
           <input
             type="password"
             placeholder="Password"
+            autoComplete="new-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <button type="submit">Sign Up</button>
+
+          <button type="submit" disabled={loading}>
+            {loading ? "Creating…" : "Sign Up"}
+          </button>
+
           {error && <p className="error">{error}</p>}
         </form>
 
         <p className="switch">
-          Already have an account? <a href="/login">Log in</a>
+          Already have an account?{" "}
+          <a href={`/login?redirectTo=${encodeURIComponent(redirectTo)}`}>Log in</a>
         </p>
       </div>
     </main>
