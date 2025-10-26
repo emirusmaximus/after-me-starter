@@ -74,7 +74,7 @@ export default function DashboardPage() {
           <p className="ph-sub">Choose your legacy.</p>
         </div>
 
-        {/* ÜÇ AYRI BEYAZ KENARLI DİKDÖRTGEN — YAN YANA */}
+        {/* === ÜÇ AYRI BEYAZ KENARLI DİKDÖRTGEN — YAN YANA === */}
         <div className="container plans-row">
           {plans.map((p) => (
             <PlanCard
@@ -95,8 +95,8 @@ export default function DashboardPage() {
 
         :root{
           --bg:#000; --fg:#fff; --muted:#BBB;
-          --prem-a:#6C63FF; --prem-b:#8A7CFF;
-          --life-a:#F2C94C; --life-b:#F9E79F;
+          --prem-a:#6C63FF; --prem-b:#8A7CFF;      /* Premium gradient */
+          --life-a:#F2C94C; --life-b:#F9E79F;      /* Lifetime gradient */
         }
         *{ box-sizing:border-box }
         body, .dashboard { background:var(--bg); color:var(--fg); font-family: Manrope, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
@@ -123,30 +123,36 @@ export default function DashboardPage() {
           justify-content:center;
           align-items:stretch;
           flex-wrap:nowrap;
-          overflow-x:auto;           /* mobilde yana kaydır */
+          overflow-x:auto;             /* mobilde yana kaydır */
           -webkit-overflow-scrolling:touch;
           padding:4px;
-          scrollbar-width: thin;
+          scrollbar-width:thin;
         }
-        @media (max-width:900px){ .plans-row{ gap:16px; justify-content:flex-start; } }
+        @media (max-width:900px){
+          .plans-row{ gap:16px; justify-content:flex-start; }
+        }
 
         /* === KART: BEYAZ KENARLI, DİKEY DİKDÖRTGEN === */
         .plan{
-          flex:0 0 320px;             /* sabit genişlik -> dikey görünüm */
-          height:560px;               /* dikey dikdörtgen (kare değil) */
-          border:1px solid #FFFFFF;   /* *** BEYAZ KENAR *** */
+          flex:0 0 320px;               /* sabit genişlik -> dikey görünüm */
+          height:560px;                 /* dikey dikdörtgen (kare değil) */
+          border:1px solid #FFFFFF;     /* *** BEYAZ KENAR *** */
           border-radius:18px;
-          background:#0b0b0b;         /* koyu zemin, kenarı belirgin kılar */
+          background:#0b0b0b;           /* koyu zemin, kenarı belirgin kılar */
           padding:22px;
           display:flex;
           flex-direction:column;
           position:relative;
-          overflow:visible;           /* ribbon dışarı taşsın */
-          box-shadow:0 0 0 rgba(0,0,0,0);
+          overflow:visible;             /* ribbon dışarı taşsın */
           transition:transform .2s, box-shadow .2s, outline-color .2s;
           outline:0 solid transparent;
         }
-        .plan:hover{ transform:translateY(-4px); box-shadow:0 0 28px rgba(255,255,255,.08); }
+
+        /* Hover glow (varyanta göre renk) */
+        .plan:hover{ transform:translateY(-4px); }
+        .plan.premium:hover{ box-shadow:0 0 36px rgba(124,118,255,.35); }
+        .plan.free:hover{    box-shadow:0 0 32px rgba(255,255,255,.10); }
+        .plan.lifetime:hover{box-shadow:0 0 40px rgba(242,201,76,.45); }
 
         /* İç hiza */
         .hdr{ min-height:96px; display:grid; align-content:start; }
@@ -180,7 +186,7 @@ export default function DashboardPage() {
         .cta-life:hover{ background: rgba(255,214,102,.28); }
         .cta-life:focus-visible{ box-shadow:0 0 0 3px rgba(242,201,76,.55); outline:0; }
 
-        /* === VARYANT ARKAPLANLARI (kenar beyaz kalır) === */
+        /* === VARYANT ARKAPLANLARI (kenar BEYAZ kalır) === */
         .premium{ background: linear-gradient(160deg, rgba(108,99,255,.16), rgba(138,124,255,.06)) #0b0b0b; }
         .free{ background: linear-gradient(160deg, #1A1A1A, #2A2A2A); }
         .lifetime{
@@ -188,7 +194,7 @@ export default function DashboardPage() {
           color:#241A00;
         }
 
-        /* === “Most Chosen” RIBBON — dıştan, beyaz kenarı KAPATIR === */
+        /* === “Most Chosen” RIBBON — DIŞTAN, BEYAZ KENARI KAPATIR === */
         .ribbon{
           position:absolute;
           top:-16px;                  /* DIŞARIDA başlasın */
@@ -205,6 +211,34 @@ export default function DashboardPage() {
           text-align:center;
           pointer-events:none;        /* tıklama engellemesin */
           box-shadow:0 6px 14px rgba(0,0,0,.35);
+        }
+
+        /* === Lifetime shimmer (light sweep) === */
+        .lifetime .shimmer{
+          position:absolute;
+          inset:0;
+          overflow:hidden;
+          border-radius:18px;
+          pointer-events:none;
+        }
+        .lifetime .shimmer::before{
+          content:"";
+          position:absolute;
+          top:-60%;
+          left:-40%;
+          width:60%;
+          height:220%;
+          transform:rotate(20deg);
+          background:linear-gradient(90deg,
+            rgba(255,255,255,0) 0%,
+            rgba(255,255,255,.35) 45%,
+            rgba(255,255,255,0) 100%);
+          filter:blur(8px);
+          animation: sweep 3.2s linear infinite;
+        }
+        @keyframes sweep{
+          0%{ transform:translateX(-120%) rotate(20deg); }
+          100%{ transform:translateX(220%) rotate(20deg); }
         }
       `}</style>
     </main>
@@ -223,9 +257,12 @@ function PlanCard({
   ribbon?: string;
 }) {
   return (
-    <div className={`plan ${variant}`}>
-      {/* Sadece Premium'a dıştan çapraz şerit */}
+    <div className={`plan ${variant}`} data-variant={variant}>
+      {/* Sadece Premium'a dıştan çapraz şerit (beyaz kenarı kapatır) */}
       {variant === "premium" && ribbon ? <div className="ribbon">{ribbon}</div> : null}
+
+      {/* Lifetime için shimmer overlay */}
+      {variant === "lifetime" ? <div className="shimmer" aria-hidden /> : null}
 
       <div className="hdr">
         <h3>{title}</h3>
