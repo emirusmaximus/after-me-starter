@@ -18,8 +18,7 @@ export default function InverseDashboard() {
         {/* Topbar */}
         <div className="topbar">
           <Link href="/" className="brand" aria-label="After.Me — Home">
-            <span className="dot" />
-            <span>After.Me</span>
+            <img src="/logo.svg" width={26} height={26} alt="After.Me" />
           </Link>
 
           <div className="menu-wrap">
@@ -34,9 +33,26 @@ export default function InverseDashboard() {
 
             {menu && (
               <nav className="menu" role="menu" aria-label="Quick actions">
-                <button className="menu-item" onClick={() => { setOpen(true); setMenu(false); }}>Write Letter</button>
-                <Link className="menu-item" href="/dashboard/plan" onClick={() => setMenu(false)}>Manage Plan</Link>
-                <Link className="menu-item" href="/dashboard/contacts" onClick={() => setMenu(false)}>Trusted Contacts</Link>
+                <button
+                  className="menu-item"
+                  onClick={() => { setOpen(true); setMenu(false); }}
+                >
+                  Write Letter
+                </button>
+                <Link
+                  className="menu-item"
+                  href="/dashboard/plan"
+                  onClick={() => setMenu(false)}
+                >
+                  Manage Plan
+                </Link>
+                <Link
+                  className="menu-item"
+                  href="/dashboard/contacts"
+                  onClick={() => setMenu(false)}
+                >
+                  Trusted Contacts
+                </Link>
               </nav>
             )}
           </div>
@@ -198,19 +214,19 @@ export default function InverseDashboard() {
       <style jsx>{`
         .wrap{
           min-height:100vh; background:#000; color:#fff;
-          display:flex; justify-content:center; align-items:center; padding:40px 20px;
+          display:flex; justify-content:center; align-items:center; padding:32px 16px;
         }
 
+        /* Dış dikdörtgen KÜÇÜLTÜLDÜ */
         .outer{
           position:relative; background:#000; border:3px solid #fff; border-radius:22px;
-          max-width:1100px; width:100%; padding:50px 30px 38px; text-align:center;
+          max-width:980px; width:100%; padding:40px 24px 30px; text-align:center;
           box-shadow:0 0 32px rgba(255,255,255,0.06);
         }
 
         /* Topbar */
-        .topbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
-        .brand{ display:inline-flex; align-items:center; gap:10px; color:#fff; text-decoration:none; font-weight:900; letter-spacing:.25px }
-        .dot{ width:8px; height:8px; border-radius:50%; background:#fff; box-shadow:0 0 10px #fff; display:inline-block }
+        .topbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+        .brand{ display:inline-flex; align-items:center; gap:10px; text-decoration:none; }
 
         /* Hamburger + Menu */
         .menu-wrap{ position:relative }
@@ -220,7 +236,7 @@ export default function InverseDashboard() {
         }
         .hamburger span{ width:20px; height:2px; background:#fff; border-radius:2px }
 
-        /* ORANTILI MENU (dikey liste, eşit satırlar) */
+        /* ORANTILI MENU — tüm maddeler aynı tipografi & ortalı */
         .menu{
           position:absolute; top:44px; right:0; z-index:20;
           background:#0b0b0b; border:1px solid rgba(255,255,255,.18); border-radius:12px;
@@ -231,32 +247,31 @@ export default function InverseDashboard() {
         .menu-item{
           display:block; width:100%; height:44px; line-height:44px;
           padding:0 14px; border:0; border-radius:10px; background:transparent;
-          color:#fff; text-align:left; font-weight:800; font-size:15px; letter-spacing:.2px;
+          color:#fff; text-align:center; font-weight:900; font-size:15px; letter-spacing:.2px;
         }
         .menu-item:hover{ background:#101010 }
-        .menu :global(a.menu-item){ height:44px; line-height:44px; }
 
-        .title{ font-size:32px; margin:8px 0 26px; font-weight:900; letter-spacing:.2px }
+        .title{ font-size:30px; margin:6px 0 22px; font-weight:900; letter-spacing:.2px }
 
-        .plans{ display:grid; grid-template-columns:repeat(3,1fr); gap:24px }
+        .plans{ display:grid; grid-template-columns:repeat(3,1fr); gap:20px }
 
         .card{
           position:relative; border:2px solid #fff; border-radius:18px;
-          padding:24px 20px 28px;
+          padding:22px 18px 26px;
           display:flex; flex-direction:column; align-items:center; text-align:center;
           transition:transform .2s ease, box-shadow .2s ease, border-color .2s, filter .2s;
-          overflow:visible; /* RIBBON görünürlüğü için */
+          overflow:visible;
         }
         .card:hover{ transform:translateY(-6px); box-shadow:0 10px 26px rgba(255,255,255,.12); border-color:#eaeaea; filter:saturate(1.04) }
 
-        .card h2{ font-size:25px; font-weight:900; margin:0 0 8px }
-        .price{ font-size:22px; margin:0 0 14px }
-        ul{ list-style:none; margin:0 0 20px; padding:0; display:grid; gap:6px }
+        .card h2{ font-size:24px; font-weight:900; margin:0 0 8px }
+        .price{ font-size:21px; margin:0 0 12px }
+        ul{ list-style:none; margin:0 0 18px; padding:0; display:grid; gap:6px }
         li{ font-size:18px; opacity:.95 }
 
         .btn{
           background:#fff; color:#000; text-decoration:none;
-          padding:12px 18px; border-radius:12px; font-weight:900; transition:filter .15s, transform .15s;
+          padding:11px 16px; border-radius:12px; font-weight:900; transition:filter .15s, transform .15s;
         }
         .btn:hover{ filter:brightness(.92); transform:translateY(-1px) }
 
@@ -271,14 +286,14 @@ export default function InverseDashboard() {
         }
         @keyframes shimmer{ 0%{transform:translateX(-120%)} 60%{transform:translateX(120%)} 100%{transform:translateX(120%)} }
 
-        /* KLASİK KÖŞE RIBBON — düz ve okunur */
+        /* KLASİK KÖŞE RIBBON — okunur */
         .corner-ribbon{
-          position:absolute; top:18px; left:-38px;
-          width:200px; text-align:center;
+          position:absolute; top:16px; left:-36px;
+          width:190px; text-align:center;
           transform:rotate(-45deg);
           background:#fff; color:#000;
           font-weight:900; letter-spacing:.35px; text-transform:uppercase;
-          font-size:13px; padding:7px 0;
+          font-size:13px; padding:6px 0;
           box-shadow:0 4px 12px rgba(255,255,255,.18);
           z-index:2;
         }
@@ -288,18 +303,18 @@ export default function InverseDashboard() {
         .corner-ribbon::before{ left:-12px; }
         .corner-ribbon::after{ right:-12px; }
 
-        .hr{ height:1px; background:rgba(255,255,255,.15); margin:28px 0; border-radius:999px }
+        .hr{ height:1px; background:rgba(255,255,255,.15); margin:24px 0; border-radius:999px }
 
         /* KPIs */
-        .kpis{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; text-align:center; margin-bottom:8px; }
-        .kpi{ background:#0c0c0c; border:1px solid rgba(255,255,255,.14); border-radius:14px; padding:16px; transition:.2s; }
+        .kpis{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; text-align:center; margin-bottom:6px; }
+        .kpi{ background:#0c0c0c; border:1px solid rgba(255,255,255,.14); border-radius:14px; padding:14px; transition:.2s; }
         .kpi:hover{ transform:translateY(-3px); box-shadow:0 0 22px rgba(255,255,255,.08) }
-        .kpi b{ display:block; font-size:24px }
+        .kpi b{ display:block; font-size:22px }
         .kpi span{ opacity:.9 }
 
         /* Tri cards */
-        .tri{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:14px; }
-        .mini-card{ background:#0c0c0c; border:1px solid rgba(255,255,255,.14); border-radius:14px; padding:16px; text-align:left; display:grid; gap:8px; transition:.2s; }
+        .tri{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:12px; }
+        .mini-card{ background:#0c0c0c; border:1px solid rgba(255,255,255,.14); border-radius:14px; padding:14px; text-align:left; display:grid; gap:8px; transition:.2s; }
         .mini-card:hover{ transform:translateY(-3px); box-shadow:0 0 22px rgba(255,255,255,.08) }
         .mini-hd{ font-weight:900; letter-spacing:.2px }
         .mini-txt{ opacity:.96 }
@@ -310,9 +325,9 @@ export default function InverseDashboard() {
         .mini-btn.full{ width:100% }
 
         /* Timeline */
-        .timeline{ margin-top:18px; text-align:left }
+        .timeline{ margin-top:16px; text-align:left }
         .tl-hd{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px }
-        .tl-hd h3{ margin:0; font-size:20px }
+        .tl-hd h3{ margin:0; font-size:19px }
         .tiny-link{ font-size:14px; opacity:.9 }
         .tl-list{ display:grid; gap:10px }
         .node{ display:flex; gap:12px; align-items:flex-start; background:#0b0b0b; border:1px solid rgba(255,255,255,.14); border-radius:12px; padding:12px 14px; }
@@ -322,17 +337,17 @@ export default function InverseDashboard() {
         .n-title{ font-weight:800 }
         .pill{ border:1px solid rgba(255,255,255,.2); border-radius:999px; padding:2px 8px; font-size:12px; opacity:.95 }
         .pill.ok{ background:rgba(154,255,192,.12); border-color:rgba(154,255,192,.25) }
-        .pill.wait{ background:rgba(255,224,138,.12); border-color:rgba(255,224,138,.25) }
+        .pill.wait{ background:rgba(255,224,138,.12); border-color:rgba(255,255,224,.25) }
         .pill.draft{ background:rgba(184,184,184,.12); border-color:rgba(184,184,184,.25) }
         .muted{ opacity:.8 }
 
         /* Responsive */
         @media (max-width:900px){
           .plans{ grid-template-columns:1fr }
-          .outer{ padding:32px 18px }
+          .outer{ padding:28px 16px }
           .kpis{ grid-template-columns:1fr }
           .tri{ grid-template-columns:1fr }
-          .corner-ribbon{ left:-32px; width:180px; padding:6px 0; } /* mobil uyarlama */
+          .corner-ribbon{ left:-32px; width:170px; padding:6px 0; }
         }
       `}</style>
     </main>
