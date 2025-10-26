@@ -25,22 +25,44 @@ export default function InverseDashboard() {
             <span>After.Me</span>
           </Link>
 
-          <button
-            className="hamburger"
-            aria-label="Menu"
-            aria-expanded={menu}
-            onClick={() => setMenu((v) => !v)}
-          >
-            <span /><span /><span />
-          </button>
+          <div className="menu-wrap">
+            <button
+              className="hamburger"
+              aria-label="Menu"
+              aria-expanded={menu}
+              onClick={() => setMenu((v) => !v)}
+            >
+              <span /><span /><span />
+            </button>
 
-          {menu && (
-            <nav className="menu" role="menu" aria-label="Quick actions">
-              <button role="menuitem" onClick={() => { setOpen(true); setMenu(false); }}>✍️ Write Letter</button>
-              <Link role="menuitem" href="/dashboard/plan" onClick={() => setMenu(false)}>💳 Manage Plan</Link>
-              <Link role="menuitem" href="/dashboard/contacts" onClick={() => setMenu(false)}>🔐 Trusted Contacts</Link>
-            </nav>
-          )}
+            {menu && (
+              <nav className="menu" role="menu" aria-label="Quick actions">
+                <button
+                  className="menu-item"
+                  role="menuitem"
+                  onClick={() => { setOpen(true); setMenu(false); }}
+                >
+                  Write Letter
+                </button>
+                <Link
+                  className="menu-item"
+                  role="menuitem"
+                  href="/dashboard/plan"
+                  onClick={() => setMenu(false)}
+                >
+                  Manage Plan
+                </Link>
+                <Link
+                  className="menu-item"
+                  role="menuitem"
+                  href="/dashboard/contacts"
+                  onClick={() => setMenu(false)}
+                >
+                  Trusted Contacts
+                </Link>
+              </nav>
+            )}
+          </div>
         </div>
 
         <h1 className="title">Choose Your Plan</h1>
@@ -49,6 +71,7 @@ export default function InverseDashboard() {
         <div className="plans">
           {/* PREMIUM */}
           <div className="card premium">
+            {/* RIBBON: İlk yaptığımız stile geri döndü */}
             <div className="ribbon">Most Chosen</div>
             <h2>Premium</h2>
             <p className="price">$2 / month</p>
@@ -108,19 +131,19 @@ export default function InverseDashboard() {
         {/* ---- 3’lü Kartlar: Memory / Inspiration / Heartbeat ---- */}
         <section className="tri">
           <div className="mini-card">
-            <div className="mini-hd">✨ Memory Sparks</div>
+            <div className="mini-hd">Memory Sparks</div>
             <p className="mini-txt">“A letter takes five minutes, but it may live for decades.”</p>
             <p className="mini-sub">People vanish. Words remain.</p>
           </div>
 
           <div className="mini-card">
-            <div className="mini-hd">💡 Inspiration</div>
+            <div className="mini-hd">Inspiration</div>
             <p className="mini-txt">Write one sentence your future self needs to hear.</p>
             <button className="mini-btn" onClick={() => setOpen(true)}>Write Now</button>
           </div>
 
           <div className="mini-card">
-            <div className="mini-hd">🔁 Heartbeat</div>
+            <div className="mini-hd">Heartbeat</div>
             <p className="mini-txt">Monthly email ping keeps your vault “alive”.</p>
             <button className="mini-btn solid">Renew Heartbeat</button>
             <small className="mini-sub">Premium feature</small>
@@ -236,22 +259,29 @@ export default function InverseDashboard() {
         }
         .brand{display:inline-flex;align-items:center;gap:10px;color:#fff;text-decoration:none;font-weight:900;letter-spacing:.25px}
         .dot{width:8px;height:8px;border-radius:50%;background:#fff;box-shadow:0 0 10px #fff;display:inline-block}
+
+        .menu-wrap{position:relative}
         .hamburger{
           background:#0f0f0f;border:1px solid rgba(255,255,255,.18);
-          border-radius:10px;padding:8px 9px;display:grid;gap:3px;
+          border-radius:10px;padding:8px 9px;display:grid;gap:3px;min-width:40px;
         }
         .hamburger span{width:20px;height:2px;background:#fff;border-radius:2px}
+
+        /* ORANTILI MENU */
         .menu{
-          position:absolute;top:56px;right:24px;z-index:20;
+          position:absolute;top:44px;right:0;z-index:20;
           background:#0b0b0b;border:1px solid rgba(255,255,255,.18);border-radius:12px;
-          padding:8px;display:grid;gap:6px;min-width:220px;text-align:left;
+          padding:8px;display:grid;gap:6px;width:240px;
           box-shadow:0 10px 26px rgba(255,255,255,.08);
         }
-        .menu a,.menu button{
-          color:#fff;text-align:left;background:transparent;border:0;
-          padding:10px 10px;border-radius:10px;font-weight:800;letter-spacing:.2px;
+        .menu-item{
+          width:100%;display:block;text-align:left;
+          color:#fff;background:transparent;border:0;
+          height:44px;line-height:44px;padding:0 12px;
+          border-radius:10px;font-weight:800;font-size:15px;letter-spacing:.2px;
         }
-        .menu a:hover,.menu button:hover{background:#101010}
+        .menu-item:hover{background:#101010}
+        .menu :global(a.menu-item){line-height:44px}
 
         /* Başlık */
         .title{font-size:32px;margin:8px 0 26px;font-weight:900;letter-spacing:.2px}
@@ -284,19 +314,14 @@ export default function InverseDashboard() {
         }
         .btn:hover{filter:brightness(.92);transform:translateY(-1px)}
 
-        /* -------- Premium renkleri (daha “premium” görünüm) -------- */
+        /* -------- Premium renkleri -------- */
         .premium{
-          /* Derin mor → lacivert degrade */
           background: linear-gradient(160deg, #2b205a 0%, #4a3fb3 100%);
         }
-
         .free{
-          /* Rafine füme degrade */
           background: linear-gradient(160deg, #0f1014 0%, #1b1c22 100%);
         }
-
         .lifetime{
-          /* Koyu altın degrade + shimmer */
           background: linear-gradient(160deg, #6e5a09 0%, #a67a00 100%);
         }
         .lifetime:before{
@@ -308,32 +333,15 @@ export default function InverseDashboard() {
           0%{transform:translateX(-120%)} 60%{transform:translateX(120%)} 100%{transform:translateX(120%)}
         }
 
-        /* -------- ORANTILI RIBBON (diagonal, ortalı) --------
-           - Genişlik değişkeni: --ribbon-w
-           - Desktop: %80; Mobile: %92
-        */
-        .card { --ribbon-w: 80%; }
-        @media (max-width:900px){ .card { --ribbon-w: 92%; } }
-
+        /* -------- RIBBON (ilk stile geri dönüş) -------- */
         .ribbon{
-          position:absolute;
-          top:16px;
-          left:50%;
-          width:var(--ribbon-w);
-          transform:translateX(-50%) rotate(-45deg);
-          transform-origin:center;
+          position:absolute;top:16px;left:-44px;
+          transform:rotate(-45deg);
           background:#fff;color:#000;
-          padding:8px 0;
-          text-align:center;
-          font-size:13px;font-weight:900;letter-spacing:.35px;text-transform:uppercase;
+          padding:6px 66px;
+          font-size:13px;font-weight:900;letter-spacing:.3px;text-transform:uppercase;
           box-shadow:0 4px 12px rgba(255,255,255,.18);
         }
-        /* Köşe bitişlerinde küçük kesik hissi için "notch" */
-        .ribbon:before, .ribbon:after{
-          content:""; position:absolute; top:0; bottom:0; width:14px; background:#fff;
-        }
-        .ribbon:before{ left:-14px; }
-        .ribbon:after{ right:-14px; }
 
         /* İnce ayraç */
         .hr{height:1px;background:rgba(255,255,255,.15);margin:28px 0;border-radius:999px}
