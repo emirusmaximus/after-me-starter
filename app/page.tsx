@@ -5,7 +5,6 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
 export default function HomePage(): JSX.Element {
-  // Animated counters
   const [messages, setMessages] = useState(0);
   const [capsules, setCapsules] = useState(0);
   const [letters, setLetters] = useState(0);
@@ -52,24 +51,17 @@ export default function HomePage(): JSX.Element {
       >
         <div className="container">
           <div className="eyebrow"><span className="dot" /> Future-release digital vault</div>
-
-          <h1 className="title">
-            One day you’ll be gone,<br />but your words can remain.
-          </h1>
-
+          <h1 className="title">One day you’ll be gone,<br />but your words can remain.</h1>
           <p className="subtitle">
             <strong>After.Me</strong> — your digital vault of final words, memories, and messages.
             Write now, store encrypted, deliver later.
           </p>
-
           <div className="cta">
             <Link href="/signup" className="btn solid lg">Sign Up Now</Link>
             <Link href="/login" className="btn ghost lg">Log In</Link>
           </div>
-
           <p className="quote">
-            “He left us his voice. We still hear it every year on his birthday.”
-            <small> — A Daughter</small>
+            “He left us his voice. We still hear it every year on his birthday.”<small> — A Daughter</small>
           </p>
         </div>
       </motion.header>
@@ -83,7 +75,7 @@ export default function HomePage(): JSX.Element {
         </div>
       </section>
 
-      {/* WHAT IS AFTER.ME (Stats'ın hemen altı) */}
+      {/* WHAT IS AFTER.ME */}
       <motion.section
         className="section intro"
         initial={{ opacity: 0, y: 20 }}
@@ -93,7 +85,6 @@ export default function HomePage(): JSX.Element {
       >
         <div className="container center">
           <div className="intro-icon" aria-hidden>
-            {/* minimal clock / continuity icon */}
             <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
               <circle cx="26" cy="26" r="24" stroke="rgba(255,255,255,0.12)" strokeWidth="1.6"/>
               <path d="M26 12v14l8 5" stroke="#fff" strokeWidth="1.6" strokeLinecap="round"/>
@@ -114,7 +105,7 @@ export default function HomePage(): JSX.Element {
         </div>
       </motion.section>
 
-      {/* WHY (Minimal Slab + minimal envelope icon) */}
+      {/* WHY */}
       <motion.section
         className="section"
         initial={{ opacity: 0, y: 22 }}
@@ -125,7 +116,6 @@ export default function HomePage(): JSX.Element {
         <div className="container">
           <div className="slab">
             <div className="slab-icon" aria-hidden>
-              {/* envelope */}
               <svg width="48" height="48" viewBox="0 0 48 48" fill="none" role="img" aria-label="Envelope">
                 <rect x="8" y="12" width="32" height="24" rx="6" stroke="white" strokeOpacity=".9" />
                 <path d="M10 16 L24 26 L38 16" stroke="white" strokeOpacity=".9" />
@@ -142,7 +132,7 @@ export default function HomePage(): JSX.Element {
         </div>
       </motion.section>
 
-      {/* SECURITY (Minimal Slab + centered lock) */}
+      {/* SECURITY */}
       <motion.section
         className="section"
         initial={{ opacity: 0, y: 22 }}
@@ -153,10 +143,8 @@ export default function HomePage(): JSX.Element {
         <div className="container">
           <div className="slab">
             <div className="slab-icon" aria-hidden>
-              {/* lock — shackle centered */}
               <svg width="48" height="48" viewBox="0 0 48 48" fill="none" role="img" aria-label="Lock">
                 <rect x="12" y="22" width="24" height="16" rx="6" stroke="white" strokeOpacity=".9" />
-                {/* centered shackle: vertical + arc (8 radius) */}
                 <path d="M16 22 v-3 a8 8 0 0 1 16 0 v3" stroke="white" strokeOpacity=".9" />
                 <circle cx="24" cy="30" r="2" fill="white" />
               </svg>
@@ -283,11 +271,9 @@ export default function HomePage(): JSX.Element {
         </div>
       </section>
 
-      {/* STYLES — Global */}
+      {/* STYLES */}
       <style jsx global>{`
-        :root{
-          --bg:#050505; --fg:#f5f5f5; --muted:#c7c7c7; --card:#0b0b0b; --border:#1a1a1a;
-        }
+        :root{--bg:#050505;--fg:#f5f5f5;--muted:#c7c7c7;--card:#0b0b0b;--border:#1a1a1a}
         body{background:var(--bg);color:var(--fg)}
         .container{max-width:1100px;margin:0 auto;padding:0 20px}
         .nav{border-bottom:1px solid var(--border);backdrop-filter:saturate(1.2) blur(6px)}
@@ -314,4 +300,75 @@ export default function HomePage(): JSX.Element {
         .kpi b{display:block;font-size:28px}
         .kpi span{color:var(--muted)}
         .center{text-align:center}
-        .h2{font-size:26px;margin-bottom:10
+        .h2{font-size:26px;margin-bottom:10px}
+        .h3{font-size:22px;margin-bottom:8px}
+        .muted{color:var(--muted)}
+        .narrow{max-width:700px;margin:0 auto}
+        .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+        .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;transition:.2s}
+        .card:hover{transform:translateY(-3px);box-shadow:0 0 24px rgba(255,255,255,.05)}
+        .quote-sm{font-style:italic;color:#eaeaea}
+        .waitlist{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+        .waitlist input{width:260px;border:1px solid var(--border);background:#0a0a0a;color:#fff;border-radius:10px;padding:12px 14px}
+        .sparks{background:radial-gradient(80% 80% at 50% 50%,#111 0%,#050505 100%);border:1px solid var(--border);border-radius:20px;text-align:center;padding:60px 20px}
+        .sparks-title{font-size:28px;margin-bottom:10px;background:linear-gradient(90deg,#fff,#bfbfbf);-webkit-background-clip:text;color:transparent}
+        .spark{display:block;width:6px;height:6px;border-radius:50%;background:#fff;margin:16px auto 0;box-shadow:0 0 20px 4px #fff;animation:pulse 2s ease-in-out infinite alternate}
+        @keyframes pulse{from{opacity:.15;transform:translateY(0)}to{opacity:.35;transform:translateY(-2px)}}
+        .hr{height:1px;background:var(--border);margin:28px 0}
+        .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
+        .step{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px}
+        .footer{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:24px 0;border-top:1px solid var(--border);flex-wrap:wrap}
+        .footer .links{display:flex;gap:16px;align-items:center}
+        .footer .links span{opacity:.8}
+        .footer a{color:#fff;opacity:.85}
+        .legal{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+        .legal-links{display:flex;gap:16px}
+
+        /* WHAT IS */
+        .intro{padding:64px 0 40px;background:radial-gradient(100% 90% at 50% 30%,rgba(255,255,255,0.03),transparent);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+        .intro-icon{display:grid;place-items:center;width:68px;height:68px;border-radius:16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);margin:0 auto 18px}
+
+        /* SLABS */
+        .slab{display:flex;gap:18px;align-items:center;border:1px solid var(--border);background:var(--card);border-radius:16px;padding:22px 20px;box-shadow:0 0 16px rgba(255,255,255,0.04)}
+        .slab-icon{width:72px;height:72px;min-width:72px;min-height:72px;border:1px solid var(--border);border-radius:14px;display:grid;place-items:center;background:#0c0c0c}
+        .slab-body{display:grid;gap:8px}
+        .slab-title{margin:0;font-size:24px;line-height:1.2}
+        .slab-muted{margin:0;color:var(--muted);max-width:760px}
+
+        /* Responsive (landing) */
+        @media (max-width: 1024px){
+          .container{padding:0 16px}
+          .title{font-size:40px}
+          .subtitle{max-width:700px}
+          .grid{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+          .slab{padding:20px 18px;gap:16px}
+          .intro{padding:56px 0 36px}
+        }
+        @media (max-width: 480px){
+          .nav-in{height:58px}
+          .badge{padding:3px;border-radius:8px}
+          .btn{padding:9px 12px;border-radius:9px}
+          .btn.lg{padding:10px 14px}
+          .hero{padding:56px 0 28px}
+          .title{font-size:30px;line-height:1.18}
+          .subtitle{font-size:15px}
+          .stats{grid-template-columns:1fr}
+          .kpi{padding:16px}
+          .slab{flex-direction:column;text-align:center}
+          .slab-icon{width:60px;height:60px;min-width:60px;min-height:60px}
+          .grid{grid-template-columns:1fr}
+          .waitlist{gap:8px}
+          .waitlist input{width:100%}
+          .sparks{padding:40px 16px}
+          .steps{grid-template-columns:1fr}
+          .footer{gap:14px}
+          .legal{align-items:flex-start}
+        }
+        @supports (padding:max(0px)){
+          .nav{padding-left:max(0px,env(safe-area-inset-left));padding-right:max(0px,env(safe-area-inset-right))}
+          .footer{padding-left:max(0px,env(safe-area-inset-left));padding-right:max(0px,env(safe-area-inset-right))}
+        }
+      `}</style>
+    </>
+  );
+}
