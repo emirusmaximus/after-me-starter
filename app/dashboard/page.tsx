@@ -15,6 +15,14 @@ export default function InverseDashboard() {
   return (
     <main className="wrap">
       <div className="outer">
+        {/* === BACKGROUND FX (4 köşe glow) === */}
+        <div className="bgfx" aria-hidden="true">
+          <span className="glow tl" />
+          <span className="glow tr" />
+          <span className="glow bl" />
+          <span className="glow br" />
+        </div>
+
         {/* Topbar */}
         <div className="topbar">
           <Link href="/" className="brand" aria-label="After.Me — Home">
@@ -79,8 +87,10 @@ export default function InverseDashboard() {
               <li><b>Inactivity + heartbeat</b> triggers</li>
             </ul>
 
-            {/* CTA her kartta aynı hizada */}
-            <Link href="#" className="btn">Upgrade Now</Link>
+            {/* CTA: önceki kompakt stil + aynı hiza için sarıcı */}
+            <div className="cta-wrap">
+              <Link href="#" className="btn btn-compact">Upgrade Now</Link>
+            </div>
           </div>
 
           {/* FREE */}
@@ -96,7 +106,9 @@ export default function InverseDashboard() {
               <li><b>Client-side AES-256</b> encryption</li>
             </ul>
 
-            <Link href="#" className="btn">Continue Free</Link>
+            <div className="cta-wrap">
+              <Link href="#" className="btn btn-compact">Continue Free</Link>
+            </div>
           </div>
 
           {/* LIFETIME */}
@@ -112,7 +124,9 @@ export default function InverseDashboard() {
               <li><b>Priority</b> legacy support</li>
             </ul>
 
-            <Link href="#" className="btn">Buy Lifetime</Link>
+            <div className="cta-wrap">
+              <Link href="#" className="btn btn-compact">Buy Lifetime</Link>
+            </div>
           </div>
         </div>
 
@@ -245,18 +259,33 @@ export default function InverseDashboard() {
           max-width:1180px; width:100%;
           padding:56px 28px 44px; text-align:center;
           box-shadow:0 0 32px rgba(255,255,255,0.06);
-        }
-        /* ODAK SPOTLIGHT — statik, animasyonsuz */
-        .outer::before{
-          content:"";
-          position:absolute; inset:0;
-          background:
-            radial-gradient(1200px 420px at 50% 260px, rgba(255,255,255,.10), transparent 60%),
-            radial-gradient(600px 260px at 50% 260px, rgba(108,99,255,.10), transparent 70%);
-          pointer-events:none; z-index:0;
+          overflow:hidden;   /* glow taşmalarını gizle */
         }
 
-        .topbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; position:relative; z-index:1;}
+        /* === 4 KÖŞE GLOW ANİMASYONU === */
+        .bgfx{ position:absolute; inset:-10%; z-index:0; pointer-events:none; filter:blur(42px); opacity:.60; }
+        .glow{
+          position:absolute; width:46%; height:46%;
+          background: radial-gradient(closest-side, rgba(108,99,255,.55), transparent 70%),
+                      radial-gradient(closest-side, rgba(242,201,76,.35), transparent 70%);
+          mix-blend-mode:screen; border-radius:50%;
+          animation: drift 18s ease-in-out infinite, breathe 6s ease-in-out infinite;
+        }
+        .glow.tl{ top:-8%; left:-6%; transform-origin: 100% 100%; }
+        .glow.tr{ top:-8%; right:-6%; transform-origin: 0% 100%; animation-delay:.6s; }
+        .glow.bl{ bottom:-8%; left:-6%; transform-origin: 100% 0%; animation-delay:1.2s; }
+        .glow.br{ bottom:-8%; right:-6%; transform-origin: 0% 0%; animation-delay:1.8s; }
+
+        @keyframes drift{
+          0%,100%{ transform: translate(0,0) scale(1); }
+          50%{ transform: translate(2.5%, -1.5%) scale(1.06); }
+        }
+        @keyframes breathe{
+          0%,100%{ opacity:.42; }
+          50%{ opacity:.72; }
+        }
+
+        .topbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; position:relative; z-index:1; }
         .brand{ display:inline-flex; align-items:center; gap:10px; text-decoration:none; }
 
         .menu-wrap{ position:relative }
@@ -294,9 +323,11 @@ export default function InverseDashboard() {
           display:flex; flex-direction:column; align-items:center; text-align:center;
           transition:transform .2s ease, box-shadow .2s ease, border-color .2s, filter .2s;
           overflow:visible;
-          min-height: 380px;          /* eşit yükseklik için */
+          min-height: 380px;
           --accent:#ffffff;
           --accentGlow: rgba(255,255,255,.35);
+          z-index:1; /* glow altında kalmasın */
+          backdrop-filter: saturate(120%) contrast(105%);
         }
         .card:hover{ transform:translateY(-6px); box-shadow:0 10px 26px rgba(255,255,255,.12); border-color:#eaeaea; filter:saturate(1.04) }
 
@@ -334,15 +365,15 @@ export default function InverseDashboard() {
           box-shadow: 0 0 0 6px var(--accentGlow), 0 0 28px var(--accent), inset 0 0 7px rgba(0,0,0,.45);
         }
 
-        /* CTA — hepsi aynı hizada ve aynı genişlikte */
+        /* CTA — önceki kompakt stil */
+        .cta-wrap{ margin-top:auto; width:100%; display:flex; justify-content:center; }
         .btn{
           background:#fff; color:#000; text-decoration:none;
           padding:11px 16px; border-radius:12px; font-weight:900;
           transition:filter .15s, transform .15s;
-          width:100%;
-          margin-top:auto;          /* tabanı sabitle */
         }
         .btn:hover{ filter:brightness(.92); transform:translateY(-1px) }
+        .btn-compact{ display:inline-block; }
 
         /* Zemin + accent */
         .premium{
@@ -360,7 +391,6 @@ export default function InverseDashboard() {
           --accent:#f2c94c;
           --accentGlow: rgba(242,201,76,.30);
         }
-        /* ANİMASYON KALDIRILDI: shimmer yok */
 
         /* Kurdela */
         .corner-ribbon{
@@ -425,6 +455,7 @@ export default function InverseDashboard() {
           .kpis{ grid-template-columns:1fr }
           .tri{ grid-template-columns:1fr }
           .corner-ribbon{ left:-38px; top:8px; }
+          .bgfx{ opacity:.55; filter:blur(36px); }
         }
       `}</style>
     </main>
