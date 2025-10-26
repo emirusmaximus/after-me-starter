@@ -13,5 +13,3 @@ html, body {
   color: var(--fg);
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
 }
-
-/* Global reset basit kalsın; tüm landing stilleri page.tsx içinde. */
