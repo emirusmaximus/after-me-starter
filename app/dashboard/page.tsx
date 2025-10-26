@@ -2,257 +2,356 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { createClient } from "@supabase/supabase-js";
 
-// Not: İstersen ../../lib/supabaseClient importunu kullan.
-// Burada bağımlılık sızıntısı olmasın diye local client oluşturuyoruz.
+// İstersen lib/supabaseClient.ts kullan; burada bağımsız tutuyorum.
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-type UserMeta = {
-  username?: string;
-};
+type UserMeta = { username?: string };
 
 export default function DashboardPage() {
   const router = useRouter();
   const [username, setUsername] = useState<string>("");
   const [loading, setLoading] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        router.push("/login");
-        return;
-      }
+      if (!user) { router.push("/login"); return; }
       const meta = (user.user_metadata || {}) as UserMeta;
-      setUsername(meta.username || user.email?.split("@")[0] || "friend");
+      setUsername(meta.username || user.email?.split("@")[0] || "misafir");
       setLoading(false);
     })();
   }, [router]);
 
-  const onLogout = async () => {
-    await supabase.auth.signOut();
-    router.push("/");
-  };
+  const goHome = () => router.push("/"); // GERÇEK anasayfa
+  const onLogout = async () => { await supabase.auth.signOut(); router.push("/"); };
 
-  const onCompose = () => {
-    // Geçici: Composer modal henüz yoksa /dashboard#compose anchor’ına veya gelecekteki route’a gidebilir.
-    // Şimdilik basit bir alert. Roadmap 1: Composer modal implement edilecek.
-    alert("Composer (Yeni Mesaj) burada açılacak. Roadmap #1’e göre AES-GCM ile istemci tarafında şifreleyip kaydedeceğiz.");
-  };
-
-  if (loading) {
-    return (
-      <div className="wrap">
-        <div className="topbar">
-          <button className="ghost" onClick={() => router.push("/")}>← Back to Home</button>
-          <div className="right">
-            <div className="avatar">{(username || "U").slice(0,1).toUpperCase()}</div>
-            <button className="ghost" disabled>Loading…</button>
-          </div>
-        </div>
-        <div className="skeleton" />
-        <style jsx>{styles}</style>
-      </div>
-    );
-  }
+  // Geçici: Composer gelene kadar
+  const onCompose = () => alert("Composer burada açılacak (AES-GCM istemci tarafı şifreleme ile).");
 
   return (
     <div className="wrap">
       {/* Top Bar */}
-      <div className="topbar">
-        <button className="ghost" onClick={() => router.push("/")}>← Back to Home</button>
-        <div className="right">
-          <div className="handle">@{username}</div>
-          <div className="avatar">{username.slice(0,1).toUpperCase()}</div>
-          <button className="ghost" onClick={onLogout}>Log out</button>
-        </div>
-      </div>
+      <header className="topbar" aria-label="Üst çubuk">
+        <button className="logoBtn" onClick={goHome} aria-label="After.Me ana sayfaya dön">
+          <div className="logoWrap">
+            {/* Logo yoksa kare placeholder render’lar */}
+            <Image
+              src="/logo.svg"
+              alt="After.Me"
+              width={28}
+              height={28}
+              onError={(e) => {
+                // SSR yok, client’te basit fallback rengi bırakıyoruz
+              }}
+            />
+          </div>
+          <span className="brand">After.Me</span>
+        </button>
 
-      {/* Hero — Sessiz lüks, duygusal */}
+        <div className="topRight">
+          <div className="userPill">@{username}</div>
+          <button
+            className="hamburger"
+            aria-label={menuOpen ? "Menüyü kapat" : "Menüyü aç"}
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen((v) => !v)}
+          >
+            <span /><span /><span />
+          </button>
+        </div>
+      </header>
+
+      {/* Hero — sıcak & güven */}
       <section className="hero">
-        <p className="eyebrow">Your private space</p>
-        <h1>Welcome, {username}.</h1>
-        <p className="sub">People vanish. Words remain. This is where your voice can outlive you — calm, encrypted, yours.</p>
+        <h1>Hoş geldin, {username}.</h1>
+        <p className="sub">
+          İnsanlar yok olur. Sözler kalır. Burada sözlerin cihazından çıkmadan şifrelenir.
+          Biz okuyamayız — maksat da bu.
+        </p>
         <div className="ctaRow">
-          <button className="solid" onClick={onCompose}>+ Write a new message</button>
-          <button className="ghost" onClick={() => router.push("/dashboard#vault")}>Open your vault</button>
+          <button className="primary" onClick={onCompose}>+ Yeni mesaj yaz</button>
+          <button className="ghost" onClick={() => document.getElementById("vault")?.scrollIntoView({behavior:"smooth"})}>
+            Kasayı aç
+          </button>
+        </div>
+        <ul className="trust">
+          <li>İstemci tarafı AES-256</li>
+          <li>Sıfır Bilgi (Zero-knowledge)</li>
+          <li>Zamanında / koşullu teslim</li>
+        </ul>
+      </section>
+
+      {/* Hızlı Kartlar — sade ama dolu */}
+      <section className="quick">
+        <button className="qcard" onClick={onCompose}>
+          <div className="ic" aria-hidden />
+          <div>
+            <h3>Bir mektup başlat</h3>
+            <p>Önemli olanı söyle — kendi sesinle.</p>
+          </div>
+        </button>
+        <button className="qcard" onClick={() => document.getElementById("vault")?.scrollIntoView({behavior:"smooth"})}>
+          <div className="ic" aria-hidden />
+          <div>
+            <h3>Kasana bak</h3>
+            <p>Taslakları ve planlı teslimleri gör.</p>
+          </div>
+        </button>
+        <div className="qcard static">
+          <div className="ic" aria-hidden />
+          <div>
+            <h3>Neden güvenli?</h3>
+            <p>Sözlerini görmeyiz. Yalnızca sana aittir.</p>
+          </div>
         </div>
       </section>
 
-      {/* Journey — 3 adımda hikâye */}
-      <section className="journey">
-        <div className="card">
-          <div className="node">1</div>
-          <h3>Write</h3>
-          <p>Say the thing that matters. A letter, a memory, a final word — in your own voice.</p>
-        </div>
-        <div className="card">
-          <div className="node">2</div>
-          <h3>Encrypt</h3>
-          <p>Your message is encrypted <em>before</em> it leaves your device. We can’t read your words — and that’s the point.</p>
-        </div>
-        <div className="card">
-          <div className="node">3</div>
-          <h3>Deliver</h3>
-          <p>Choose a date or a condition. Your words arrive when they should — quietly, on time.</p>
-        </div>
-      </section>
-
-      {/* Memory Sparks — yazma kıvılcımları */}
+      {/* Memory Sparks */}
       <section className="sparks">
         <p className="eyebrow">Memory Sparks</p>
         <div className="chips">
           {[
-            "A lesson I wish I learned earlier…",
-            "To my future self: please remember…",
-            "For my child on their 18th birthday…",
-            "The story I never told anyone…",
-            "If I’m gone, read this on our anniversary…",
+            "Keşke daha erken öğrenseydim…",
+            "18. yaşında okuyacağın mektup…",
+            "Eğer ben yokken, yıldönümümüzde oku…",
+            "Gelecekteki bana: lütfen hatırla…",
+            "Kimseye anlatmadığım hikâye…",
           ].map((t) => (
-            <button key={t} className="chip" onClick={() => alert(`Composer’a eklenecek öneri: ${t}`)}>{t}</button>
+            <button key={t} className="chip" onClick={() => alert(`Composer’a öneri olarak eklenecek: ${t}`)}>{t}</button>
           ))}
         </div>
       </section>
 
-      {/* Vault — boş durum */}
+      {/* Vault */}
       <section id="vault" className="vault">
-        <h2>Your Vault</h2>
+        <div className="vaultHead">
+          <h2>Kasan</h2>
+          <p className="muted">Henüz mesaj yok. İlk mektubunu bugün bırak.</p>
+        </div>
         <div className="empty">
-          <div className="homeIcon" />
-          <p>No messages yet. Start your first letter.</p>
-          <button className="solid" onClick={onCompose}>Start writing</button>
+          <div className="placeholder" />
+          <button className="primary" onClick={onCompose}>Yazmaya başla</button>
         </div>
       </section>
 
-      {/* Gentle Upsell — en altta, sessiz */}
-      <section className="upsell">
-        <div className="upsellInner">
-          <div>
-            <h3>Preserve more memories, quietly.</h3>
-            <p>Premium lifts your limits and schedules deliveries — no rush, no noise.</p>
+      {/* Planlar — biraz daha görünür ama nazik */}
+      <section className="plans">
+        <h2 className="plansTitle">Sessizce daha fazlasını koru</h2>
+        <div className="planGrid">
+          <div className="plan">
+            <h3>Free</h3>
+            <p className="muted">Başlamak için yeterli.</p>
+            <ul>
+              <li>Metin mesajları</li>
+              <li>Temel zamanlama</li>
+              <li>İstemci tarafı şifreleme</li>
+            </ul>
+            <button className="ghost" disabled>Aktif</button>
           </div>
-          <a className="softBtn" href="https://checkout.stripe.com/c/test_..." target="_blank" rel="noreferrer">
-            Consider Premium →
-          </a>
+          <div className="plan featured">
+            <div className="ring" aria-hidden />
+            <h3>Premium</h3>
+            <p className="muted">Daha çok anı, daha çok kontrol.</p>
+            <ul>
+              <li>Gelişmiş zamanlama</li>
+              <li>Öncelikli teslim kuyruğu</li>
+              <li>Güvenilen kişiler (2-of-N)</li>
+            </ul>
+            <a className="primaryLink" href="https://checkout.stripe.com/c/test_..." target="_blank" rel="noreferrer">
+              Premium’a geç →
+            </a>
+          </div>
+          <div className="plan">
+            <h3>Lifetime</h3>
+            <p className="muted">Bir kere, sonsuza dek.</p>
+            <ul>
+              <li>Tüm Premium özellikleri</li>
+              <li>Ömür boyu erişim</li>
+              <li>Öncelikli destek</li>
+            </ul>
+            <a className="ghostLink" href="https://checkout.stripe.com/c/test_..." target="_blank" rel="noreferrer">
+              Satın al →
+            </a>
+          </div>
         </div>
-        <p className="micro">© 2025 After.Me — A product of CobsVault Labs</p>
       </section>
+
+      {/* Drawer (Hamburger Menüsü) */}
+      <aside className={`drawer ${menuOpen ? "open" : ""}`} aria-hidden={!menuOpen}>
+        <div className="drawerHead">
+          <button className="logoBtn mini" onClick={goHome} aria-label="Ana sayfa">
+            <div className="logoWrap mini">
+              <Image src="/logo.svg" alt="After.Me" width={22} height={22} />
+            </div>
+            <span className="brand">After.Me</span>
+          </button>
+          <button className="close" aria-label="Menüyü kapat" onClick={() => setMenuOpen(false)}>✕</button>
+        </div>
+        <nav className="menu">
+          <button onClick={onCompose}>+ Yeni Mesaj</button>
+          <button onClick={() => document.getElementById("vault")?.scrollIntoView({behavior:"smooth"})}>Kasa</button>
+          <button onClick={() => alert("Güvenilen Kişiler yakında")}>Güvenilen Kişiler</button>
+          <button onClick={() => alert("Zaman Çizgisi yakında")}>Zaman Çizgisi</button>
+          <button onClick={() => document.querySelector(".plans")?.scrollIntoView({behavior:"smooth"})}>Planlar</button>
+          <button onClick={() => alert("Ayarlar yakında")}>Ayarlar</button>
+          <hr />
+          <button className="danger" onClick={onLogout}>Çıkış Yap</button>
+        </nav>
+      </aside>
+
+      {/* Arkaplan maske */}
+      {menuOpen && <button className="backdrop" aria-label="Menüyü kapat" onClick={() => setMenuOpen(false)} />}
 
       <style jsx>{styles}</style>
     </div>
   );
 }
 
-/** Styles (design tokensa saygılı) */
-const styles = /* css */ `
-.wrap {
+/* ======= STYLES (Design tokenlara sadık) ======= */
+const styles = /* css */`
+.wrap{
   --bg:#050505; --fg:#f5f5f5; --card:#0b0b0b; --border:#1a1a1a; --muted:#c7c7c7;
-  color: var(--fg);
-  background: var(--bg);
-  min-height: 100dvh;
-  padding: 24px 20px 64px;
-  display: grid;
-  gap: 32px;
-  justify-items: center;
+  color:var(--fg); background:var(--bg); min-height:100dvh;
+  padding:18px 16px 80px; display:grid; gap:24px; justify-items:center;
 }
-.topbar{
-  width: 100%;
-  max-width: 1100px;
-  display:flex; align-items:center; justify-content:space-between;
+
+/* Topbar */
+.topbar{ width:100%; max-width:1120px; display:flex; align-items:center; justify-content:space-between; }
+.logoBtn{
+  display:flex; align-items:center; gap:10px; background:transparent; border:0; cursor:pointer;
 }
-.right{ display:flex; gap:12px; align-items:center; }
-.avatar{
-  width:32px; height:32px; border-radius:50%; background:#111; border:1px solid var(--border);
-  display:grid; place-items:center; font-weight:600;
+.logoWrap{
+  width:32px; height:32px; border-radius:10px; border:1px solid var(--border); background:#0f0f0f;
+  display:grid; place-items:center; box-shadow: inset 0 0 24px rgba(255,255,255,.06);
+  animation: logoGlow 3s ease-in-out infinite;
 }
-.handle{ color:var(--muted); font-size:14px; }
-.ghost{
-  background:transparent; color:var(--fg); border:1px solid var(--border);
-  padding:8px 12px; border-radius:12px; cursor:pointer;
-  transition:transform 120ms ease, background 120ms ease;
-}
-.ghost:hover{ transform:scale(1.03); background:#0a0a0a; }
-.solid{
-  background:#fff; color:#000; border:none; padding:10px 14px; border-radius:14px; cursor:pointer; font-weight:600;
+.logoWrap:hover{ animation-play-state: paused; }
+@keyframes logoGlow{ 0%{box-shadow: inset 0 0 18px rgba(255,255,255,.05)} 50%{box-shadow: inset 0 0 28px rgba(255,255,255,.09)} 100%{box-shadow: inset 0 0 18px rgba(255,255,255,.05)} }
+.brand{ font-weight:600; letter-spacing:.2px; }
+.topRight{ display:flex; align-items:center; gap:10px; }
+.userPill{ color:var(--muted); font-size:14px; }
+.hamburger{ width:38px; height:32px; border:1px solid var(--border); background:#0f0f0f; border-radius:10px; cursor:pointer;
+  display:grid; place-items:center; padding:0 6px; }
+.hamburger span{ display:block; width:100%; height:2px; background:#dcdcdc; margin:3px 0; border-radius:2px; }
+
+/* Hero */
+.hero{ width:100%; max-width:900px; text-align:center; display:grid; gap:10px; margin-top:4px; }
+.hero h1{ margin:0; font-size:34px; line-height:1.15; }
+.sub{ color:#d8d8d8; margin:0 auto; max-width:720px; }
+.ctaRow{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:8px; }
+.primary{
+  background:#fff; color:#000; border:0; border-radius:14px; padding:10px 14px; font-weight:700; cursor:pointer;
   transition:transform 120ms ease, filter 120ms ease;
 }
-.solid:hover{ transform:scale(1.04); filter:brightness(0.95); }
-
-.hero{
-  width:100%; max-width:900px; text-align:center; margin-top:8px;
-  display:grid; gap:14px;
+.primary:hover{ transform:scale(1.04); filter:brightness(.95); }
+.ghost{
+  background:transparent; color:var(--fg); border:1px solid var(--border);
+  padding:10px 14px; border-radius:14px; cursor:pointer; transition:transform 120ms ease, background 120ms ease;
 }
+.ghost:hover{ transform:scale(1.03); background:#0d0d0d; }
+.trust{ list-style:none; padding:0; margin:8px 0 0 0; display:flex; gap:12px; justify-content:center; flex-wrap:wrap; color:#bdbdbd; font-size:14px; }
+
+/* Quick cards */
+.quick{ width:100%; max-width:1120px; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+.qcard{
+  display:flex; gap:12px; align-items:flex-start; text-align:left; width:100%;
+  border:1px solid var(--border); border-radius:16px; background:var(--card); padding:16px;
+  transition:transform 120ms ease, background 120ms ease; cursor:pointer;
+}
+.qcard:hover{ transform:scale(1.02); background:#0e0e0e; }
+.qcard.static{ cursor:default; }
+.qcard.static:hover{ transform:none; background:var(--card); }
+.qcard h3{ margin:0 0 4px 0; }
+.qcard p{ margin:0; color:#d0d0d0; }
+.ic{
+  width:36px; height:36px; border-radius:10px; border:1px solid var(--border); background:#111;
+  box-shadow: inset 0 0 24px rgba(255,255,255,.06);
+}
+
+/* Sparks */
+.sparks{ width:100%; max-width:1120px; display:grid; gap:10px; text-align:center; }
 .eyebrow{ color:var(--muted); font-size:13px; letter-spacing:.3px; }
-.hero h1{ font-size:40px; line-height:1.1; margin:0; }
-.sub{ color:#d9d9d9; max-width:720px; margin:0 auto; }
-.ctaRow{ display:flex; gap:10px; justify-content:center; margin-top:4px; flex-wrap:wrap; }
-
-.journey{
-  width:100%; max-width:1000px;
-  display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:16px;
-}
-.card{
-  background: radial-gradient(120% 120% at 50% 0%, rgba(255,255,255,0.03), rgba(0,0,0,0)) , var(--card);
-  border:1px solid var(--border); border-radius:16px; padding:18px; box-shadow: 0 0 24px rgba(255,255,255,0.05);
-}
-.card h3{ margin:8px 0 6px; }
-.card p{ color:#d0d0d0; }
-.node{
-  width:28px; height:28px; border-radius:999px; display:grid; place-items:center;
-  background:#0f0f0f; border:1px solid var(--border); color:#bbb; font-weight:600; font-size:13px;
-}
-
-.sparks{
-  width:100%; max-width:1000px; text-align:center; display:grid; gap:12px; margin-top:4px;
-}
 .chips{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; }
 .chip{
-  border:1px solid var(--border); background:#0c0c0c; color:#eaeaea; border-radius:999px; padding:8px 12px;
+  border:1px solid var(--border); background:#0c0c0c; color:#ededed; border-radius:999px; padding:8px 12px;
   cursor:pointer; transition:transform 120ms ease, background 120ms ease;
 }
 .chip:hover{ transform:scale(1.03); background:#111; }
 
-.vault{ width:100%; max-width:1000px; text-align:center; display:grid; gap:14px; }
-.vault h2{ margin-top:8px; }
+/* Vault */
+.vault{ width:100%; max-width:1120px; display:grid; gap:12px; }
+.vaultHead{ display:flex; align-items:baseline; gap:10px; }
+.vault h2{ margin:0; }
+.muted{ color:var(--muted); }
 .empty{
-  border:1px solid var(--border); background:var(--card); border-radius:18px;
-  padding:28px; display:grid; gap:10px; place-items:center;
+  border:1px solid var(--border); background:var(--card); border-radius:18px; padding:24px;
+  display:grid; gap:12px; place-items:center; text-align:center;
 }
-.homeIcon{
-  width:56px; height:56px; border-radius:14px; background: linear-gradient(180deg, #111, #0a0a0a);
-  border:1px solid var(--border); box-shadow: inset 0 0 24px rgba(255,255,255,.05);
+.placeholder{
+  width:56px; height:56px; border-radius:14px; background:linear-gradient(180deg,#111,#0a0a0a);
+  border:1px solid var(--border); box-shadow: inset 0 0 24px rgba(255,255,255,.06);
 }
-.upsell{
-  width:100%; max-width:1000px; margin-top:6px;
-}
-.upsellInner{
-  display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap;
-  border:1px solid var(--border); background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0)) , var(--card);
-  border-radius:18px; padding:16px 18px;
-}
-.softBtn{
-  display:inline-block; padding:10px 14px; border-radius:12px;
-  background:#111; color:#f5f5f5; border:1px solid var(--border); text-decoration:none;
-  transition:transform 120ms ease, background 120ms ease;
-}
-.softBtn:hover{ transform:scale(1.03); background:#141414; }
-.micro{ color:var(--muted); margin-top:8px; text-align:center; font-size:12px; }
 
-.skeleton{
-  width:100%; max-width:900px; height:180px; border-radius:18px; background:#0a0a0a; border:1px solid var(--border);
-  animation: pulse 1.2s ease-in-out infinite;
+/* Plans */
+.plans{ width:100%; max-width:1120px; display:grid; gap:12px; text-align:center; }
+.plansTitle{ margin:6px 0 0 0; }
+.planGrid{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:12px; }
+.plan{
+  border:1px solid var(--border); background:var(--card); border-radius:18px; padding:18px; text-align:left;
+  position:relative; overflow:hidden;
 }
-@keyframes pulse{
-  0%{opacity:.6} 50%{opacity:1} 100%{opacity:.6}
+.plan h3{ margin:0 0 6px 0; }
+.plan ul{ margin:10px 0 0 18px; color:#d0d0d0; }
+.plan .ghost{ width:100%; margin-top:12px; }
+.plan .primaryLink, .plan .ghostLink{
+  display:inline-block; margin-top:12px; text-decoration:none; padding:10px 14px; border-radius:14px; border:1px solid var(--border);
+}
+.plan .primaryLink{ background:#fff; color:#000; border:0; font-weight:700; }
+.plan .primaryLink:hover{ filter:brightness(.95); }
+.plan .ghostLink{ background:#0f0f0f; color:#f5f5f5; }
+.plan .ghostLink:hover{ background:#141414; }
+.plan.featured{ box-shadow: 0 0 24px rgba(255,255,255,.06); }
+.plan.featured .ring{
+  position:absolute; inset:-40% -20% auto auto; width:260px; height:260px; border-radius:50%;
+  border:1px solid rgba(255,255,255,.09); pointer-events:none;
+}
+
+/* Drawer */
+.drawer{
+  position:fixed; top:0; right:-320px; width:300px; height:100dvh; background:#0b0b0b; border-left:1px solid var(--border);
+  transition:right 180ms ease; z-index:40; display:flex; flex-direction:column; padding:14px;
+}
+.drawer.open{ right:0; }
+.drawerHead{ display:flex; align-items:center; justify-content:space-between; }
+.logoBtn.mini .logoWrap{ width:26px; height:26px; border-radius:8px; }
+.logoWrap.mini{ animation:none; }
+.close{
+  background:#111; color:#eee; border:1px solid var(--border); border-radius:10px; padding:6px 10px; cursor:pointer;
+}
+.menu{ display:grid; gap:8px; margin-top:10px; }
+.menu button{
+  text-align:left; padding:10px 12px; border:1px solid var(--border); background:#0f0f0f; color:#f5f5f5; border-radius:12px; cursor:pointer;
+}
+.menu button:hover{ background:#141414; }
+.menu .danger{ border-color:#3a1a1a; background:#140f0f; }
+.menu hr{ border:0; height:1px; background:#1a1a1a; margin:8px 0; }
+
+/* Backdrop */
+.backdrop{
+  position:fixed; inset:0; background:rgba(0,0,0,.35); z-index:30; border:0;
 }
 
 /* Responsive */
 @media (max-width: 900px){
-  .hero h1{ font-size:32px; }
-  .journey{ grid-template-columns: 1fr; }
+  .quick{ grid-template-columns:1fr; }
+  .planGrid{ grid-template-columns:1fr; }
+  .hero h1{ font-size:28px; }
 }
 `;
