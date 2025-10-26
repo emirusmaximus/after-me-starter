@@ -5,6 +5,10 @@ import { useState } from "react";
 export default function InverseDashboard() {
   // Compose modal state
   const [open, setOpen] = useState(false);
+  // Hamburger state
+  const [menu, setMenu] = useState(false);
+
+  // Form states (demo)
   const [title, setTitle] = useState("");
   const [to, setTo] = useState("");
   const [date, setDate] = useState("");
@@ -14,9 +18,34 @@ export default function InverseDashboard() {
     <main className="wrap">
       {/* ---- OUTER: Büyük siyah çerçeve ---- */}
       <div className="outer">
+        {/* Top bar: logo + hamburger */}
+        <div className="topbar">
+          <Link href="/" className="brand" aria-label="After.Me — Home">
+            <span className="dot" />
+            <span>After.Me</span>
+          </Link>
+
+          <button
+            className="hamburger"
+            aria-label="Menu"
+            aria-expanded={menu}
+            onClick={() => setMenu((v) => !v)}
+          >
+            <span /><span /><span />
+          </button>
+
+          {menu && (
+            <nav className="menu" role="menu" aria-label="Quick actions">
+              <button role="menuitem" onClick={() => { setOpen(true); setMenu(false); }}>✍️ Write Letter</button>
+              <Link role="menuitem" href="/dashboard/plan" onClick={() => setMenu(false)}>💳 Manage Plan</Link>
+              <Link role="menuitem" href="/dashboard/contacts" onClick={() => setMenu(false)}>🔐 Trusted Contacts</Link>
+            </nav>
+          )}
+        </div>
+
         <h1 className="title">Choose Your Plan</h1>
 
-        {/* ---- PLANS (MEVCUT BLOK, DOKUNMADIM) ---- */}
+        {/* ---- PLANS ---- */}
         <div className="plans">
           {/* PREMIUM */}
           <div className="card premium">
@@ -74,13 +103,6 @@ export default function InverseDashboard() {
             <b>529</b>
             <span>Delivered letters</span>
           </div>
-        </section>
-
-        {/* ---- Quick Actions ---- */}
-        <section className="quick">
-          <button className="qbtn solid" onClick={() => setOpen(true)}>✍️ Write Letter</button>
-          <Link href="/dashboard/plan" className="qbtn ghost">💳 Manage Plan</Link>
-          <Link href="/dashboard/contacts" className="qbtn ghost">🔐 Trusted Contacts</Link>
         </section>
 
         {/* ---- 3’lü Kartlar: Memory / Inspiration / Heartbeat ---- */}
@@ -198,34 +220,59 @@ export default function InverseDashboard() {
 
         /* Dış büyük dikdörtgen: siyah zemin, beyaz çerçeve */
         .outer{
+          position:relative;
           background:#000;
           border:3px solid #fff;
           border-radius:22px;
           max-width:1100px;width:100%;
-          padding:50px 30px;
+          padding:50px 30px 38px;
           text-align:center;
           box-shadow:0 0 32px rgba(255,255,255,0.06);
         }
 
-        /* Tipografi hiyerarşisi (kullanılabilirlik) */
-        .title{font-size:32px;margin-bottom:38px;font-weight:900;letter-spacing:.2px}
+        /* Topbar (brand + hamburger) */
+        .topbar{
+          display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;
+        }
+        .brand{display:inline-flex;align-items:center;gap:10px;color:#fff;text-decoration:none;font-weight:900;letter-spacing:.25px}
+        .dot{width:8px;height:8px;border-radius:50%;background:#fff;box-shadow:0 0 10px #fff;display:inline-block}
+        .hamburger{
+          background:#0f0f0f;border:1px solid rgba(255,255,255,.18);
+          border-radius:10px;padding:8px 9px;display:grid;gap:3px;
+        }
+        .hamburger span{width:20px;height:2px;background:#fff;border-radius:2px}
+        .menu{
+          position:absolute;top:56px;right:24px;z-index:20;
+          background:#0b0b0b;border:1px solid rgba(255,255,255,.18);border-radius:12px;
+          padding:8px;display:grid;gap:6px;min-width:220px;text-align:left;
+          box-shadow:0 10px 26px rgba(255,255,255,.08);
+        }
+        .menu a,.menu button{
+          color:#fff;text-align:left;background:transparent;border:0;
+          padding:10px 10px;border-radius:10px;font-weight:800;letter-spacing:.2px;
+        }
+        .menu a:hover,.menu button:hover{background:#101010}
+
+        /* Başlık */
+        .title{font-size:32px;margin:8px 0 26px;font-weight:900;letter-spacing:.2px}
+
+        /* Planlar grid */
         .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
 
-        /* İç küçük dikdörtgenler: siyah arka plan, beyaz yazı */
+        /* Kart iskeleti */
         .card{
           position:relative;
-          background:#111;
           border:2px solid #fff;
           border-radius:18px;
-          padding:24px 20px;
+          padding:24px 20px 28px;
           display:flex;flex-direction:column;align-items:center;text-align:center;
-          transition:transform .2s ease, box-shadow .2s ease, border-color .2s;
+          transition:transform .2s ease, box-shadow .2s ease, border-color .2s, filter .2s;
+          overflow:hidden;
         }
-        .card:hover{transform:translateY(-6px);box-shadow:0 10px 26px rgba(255,255,255,.12);border-color:#eaeaea}
+        .card:hover{transform:translateY(-6px);box-shadow:0 10px 26px rgba(255,255,255,.12);border-color:#eaeaea;filter:saturate(1.04)}
 
         .card h2{font-size:25px;font-weight:900;margin:0 0 8px}
         .price{font-size:22px;margin:0 0 14px}
-
         ul{list-style:none;margin:0 0 20px;padding:0;display:grid;gap:6px}
         li{font-size:18px;opacity:.95}
 
@@ -237,21 +284,20 @@ export default function InverseDashboard() {
         }
         .btn:hover{filter:brightness(.92);transform:translateY(-1px)}
 
-        /* Çapraz şerit: (zıt) beyaz zemin + siyah yazı */
-        .ribbon{
-          position:absolute;top:16px;left:-44px;
-          transform:rotate(-45deg);
-          background:#fff;color:#000;
-          padding:6px 66px;
-          font-size:13px;font-weight:900;letter-spacing:.3px;text-transform:uppercase;
-          box-shadow:0 4px 12px rgba(255,255,255,.18);
+        /* -------- Premium renkleri (daha “premium” görünüm) -------- */
+        .premium{
+          /* Derin mor → lacivert degrade */
+          background: linear-gradient(160deg, #2b205a 0%, #4a3fb3 100%);
         }
 
-        /* Varyant dokunuşları (opsiyonel farklılık) */
-        .premium{background:#181818}
-        .free{background:#141414}
+        .free{
+          /* Rafine füme degrade */
+          background: linear-gradient(160deg, #0f1014 0%, #1b1c22 100%);
+        }
+
         .lifetime{
-          background:#1a1a1a;overflow:hidden;
+          /* Koyu altın degrade + shimmer */
+          background: linear-gradient(160deg, #6e5a09 0%, #a67a00 100%);
         }
         .lifetime:before{
           content:"";position:absolute;inset:0;
@@ -261,6 +307,33 @@ export default function InverseDashboard() {
         @keyframes shimmer{
           0%{transform:translateX(-120%)} 60%{transform:translateX(120%)} 100%{transform:translateX(120%)}
         }
+
+        /* -------- ORANTILI RIBBON (diagonal, ortalı) --------
+           - Genişlik değişkeni: --ribbon-w
+           - Desktop: %80; Mobile: %92
+        */
+        .card { --ribbon-w: 80%; }
+        @media (max-width:900px){ .card { --ribbon-w: 92%; } }
+
+        .ribbon{
+          position:absolute;
+          top:16px;
+          left:50%;
+          width:var(--ribbon-w);
+          transform:translateX(-50%) rotate(-45deg);
+          transform-origin:center;
+          background:#fff;color:#000;
+          padding:8px 0;
+          text-align:center;
+          font-size:13px;font-weight:900;letter-spacing:.35px;text-transform:uppercase;
+          box-shadow:0 4px 12px rgba(255,255,255,.18);
+        }
+        /* Köşe bitişlerinde küçük kesik hissi için "notch" */
+        .ribbon:before, .ribbon:after{
+          content:""; position:absolute; top:0; bottom:0; width:14px; background:#fff;
+        }
+        .ribbon:before{ left:-14px; }
+        .ribbon:after{ right:-14px; }
 
         /* İnce ayraç */
         .hr{height:1px;background:rgba(255,255,255,.15);margin:28px 0;border-radius:999px}
@@ -280,18 +353,6 @@ export default function InverseDashboard() {
         .kpi:hover{transform:translateY(-3px);box-shadow:0 0 22px rgba(255,255,255,.08)}
         .kpi b{display:block;font-size:24px}
         .kpi span{opacity:.9}
-
-        /* Quick actions */
-        .quick{
-          display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:14px 0 4px;
-        }
-        .qbtn{
-          appearance:none;border:0;border-radius:12px;padding:12px 16px;
-          font-weight:900;letter-spacing:.2px;cursor:pointer;transition:.15s;
-        }
-        .qbtn.solid{background:#fff;color:#000}
-        .qbtn.ghost{background:#0f0f0f;color:#fff;border:1px solid rgba(255,255,255,.18)}
-        .qbtn:hover{transform:translateY(-1px)}
 
         /* Tri cards */
         .tri{
