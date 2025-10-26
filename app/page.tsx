@@ -351,7 +351,6 @@ export default function HomePage(): JSX.Element {
         .legal{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
         .legal-links{display:flex;gap:16px}
         @media (max-width:640px){.title{font-size:34px}}
-      `}</style>
-    </>
-  );
-}
+      <style jsx global>{`
+...
+`}</style>
