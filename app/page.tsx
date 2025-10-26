@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
 export default function HomePage(): JSX.Element {
-  // animated KPIs
+  // Animated counters
   const [messages, setMessages] = useState(0);
   const [capsules, setCapsules] = useState(0);
   const [letters, setLetters] = useState(0);
@@ -67,7 +67,6 @@ export default function HomePage(): JSX.Element {
             <Link href="/login" className="btn ghost lg">Log In</Link>
           </div>
 
-          {/* quote near top */}
           <p className="quote">
             “He left us his voice. We still hear it every year on his birthday.”
             <small> — A Daughter</small>
@@ -85,157 +84,35 @@ export default function HomePage(): JSX.Element {
       </section>
 
       {/* WHAT IS AFTER.ME */}
-<motion.section
-  className="section intro"
-  initial={{ opacity: 0, y: 22 }}
-  whileInView={{ opacity: 1, y: 0 }}
-  viewport={{ once: true }}
-  transition={{ duration: 0.6 }}
->
-  <div className="container center">
-    <div className="intro-icon" aria-hidden>
-      {/* Minimal clock / continuity icon */}
-      <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
-        <circle cx="26" cy="26" r="24" stroke="rgba(255,255,255,0.12)" strokeWidth="1.6"/>
-        <path d="M26 12v14l8 5" stroke="#fff" strokeWidth="1.6" strokeLinecap="round"/>
-      </svg>
-    </div>
-
-    <h2 className="h2">What is After.Me?</h2>
-
-    <p className="muted narrow">
-      After.Me is a digital vault where your words outlive you.  
-      You can write messages, memories, and letters — all encrypted before they leave your device —  
-      and have them delivered to your chosen people at the right time.
-    </p>
-
-    <p className="muted narrow">
-      It’s not about data. It’s about <em>legacy</em> — creating a bridge between who you are now  
-      and those who’ll read your words in the future.
-    </p>
-
-    <div className="cta" style={{ marginTop: '20px' }}>
-      <Link href="/signup" className="btn solid lg">Start Writing</Link>
-      <Link href="/login" className="btn ghost lg">Learn More</Link>
-    </div>
-  </div>
-</motion.section>
-
-{/* WHY (Minimal Slab) */}
-<motion.section
-  className="section"
-  initial={{ opacity: 0, y: 22 }}
-  whileInView={{ opacity: 1, y: 0 }}
-  viewport={{ once: true }}
-  transition={{ duration: 0.6 }}
->
-  <div className="container">
-    <div className="slab slab-minimal">
-      <div className="slab-icon" aria-hidden>
-        {/* Minimal envelope icon (letters/legacy) */}
-        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" role="img" aria-label="Envelope">
-          <rect x="8" y="12" width="32" height="24" rx="6" stroke="white" strokeOpacity=".9" />
-          <path d="M10 16 L24 26 L38 16" stroke="white" strokeOpacity=".9" />
-        </svg>
-      </div>
-      <div className="slab-body">
-        <h2 className="slab-title">Why After.Me Exists</h2>
-        <p className="slab-muted">
-          People vanish. Words remain. After.Me was born from the desire to preserve our voices — not data,
-          but <em>legacy</em>. It’s where silence meets continuity; where what you write today can comfort someone tomorrow.
-        </p>
-      </div>
-    </div>
-  </div>
-</motion.section>
-
-
-{/* SECURITY (Minimal Slab with centered lock) */}
-<motion.section
-  className="section"
-  initial={{ opacity: 0, y: 22 }}
-  whileInView={{ opacity: 1, y: 0 }}
-  viewport={{ once: true }}
-  transition={{ duration: 0.6 }}
->
-  <div className="container">
-    <div className="slab slab-minimal">
-      <div className="slab-icon" aria-hidden>
-        {/* Clean lock icon (aligned shackle) */}
-        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" role="img" aria-label="Lock">
-          <!-- body -->
-          <rect x="12" y="22" width="24" height="16" rx="6" stroke="white" strokeOpacity=".9" />
-          <!-- centered shackle -->
-          <path d="M16 22 v-3 c0-5.8 4.7-10.5 10.5-10.5S37 13.2 37 19v3" stroke="white" strokeOpacity=".9" />
-          <!-- keyhole (optional, minimal) -->
-          <circle cx="24" cy="30" r="2" fill="white" />
-        </svg>
-      </div>
-      <div className="slab-body">
-        <h3 className="slab-title">Security & Privacy First</h3>
-        <p className="slab-muted">
-          Every message is encrypted <strong>before</strong> it leaves your device. We can’t read your words — and that’s the point.
-          Your vault belongs only to you, protected with client-side AES-256 and stored securely on Supabase.
-        </p>
-      </div>
-    </div>
-  </div>
-</motion.section>
-
-
-      {/* FEATURES */}
       <motion.section
-        className="section"
-        initial={{ opacity: 0, y: 22 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-      >
-        <div className="container grid">
-          <div className="card">
-            <h4>Trusted Contacts</h4>
-            <p className="muted">Nominate people who can access your vault after verified events.</p>
-          </div>
-          <div className="card">
-            <h4>Posthumous Delivery</h4>
-            <p className="muted">Automated releases after inactivity periods or confirmed passing.</p>
-          </div>
-          <div className="card">
-            <h4>Time-Locked Messages</h4>
-            <p className="muted">Unlock on a specific future date — not a moment sooner.</p>
-          </div>
-        </div>
-      </motion.section>
-
-      {/* HUMAN STORIES */}
-      <motion.section
-        className="section"
-        initial={{ opacity: 0, y: 22 }}
+        className="section intro"
+        initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
       >
         <div className="container center">
-          <h2 className="h2">Real Messages. Real People.</h2>
-          <p className="muted narrow">Anonymous stories from those who’ve already left their mark.</p>
-        </div>
-        <div className="container grid">
-          <div className="card">
-            <p className="quote-sm">“To my son: May you never fear the unknown. The stars are closer than they look.”</p>
-            <small className="muted">— A Father, 2024</small>
+          <div className="intro-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M12 2L20 7v10l-8 5-8-5V7l8-5z"
+                stroke="#fff"
+                strokeOpacity=".8"
+                strokeWidth="1.5"
+              />
+            </svg>
           </div>
-          <div className="card">
-            <p className="quote-sm">“I wrote this letter when I was 25. If you’re reading it, it means I finally had courage.”</p>
-            <small className="muted">— A Stranger, 2023</small>
-          </div>
-          <div className="card">
-            <p className="quote-sm">“He left us his voice. We still hear it every year on his birthday.”</p>
-            <small className="muted">— A Daughter</small>
-          </div>
+          <h2 className="h2">What is After.Me?</h2>
+          <p>
+            After.Me is a secure digital vault where you can store your last words, thoughts, and memories.
+          </p>
+          <p>
+            If you disappear, your chosen people will receive what you left behind — encrypted, private, and timeless.
+          </p>
         </div>
       </motion.section>
 
-      {/* WAITLIST */}
+      {/* WHY */}
       <motion.section
         className="section"
         initial={{ opacity: 0, y: 22 }}
@@ -243,17 +120,32 @@ export default function HomePage(): JSX.Element {
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
       >
-        <div className="container center">
-          <h2 className="h2">Join the Waitlist</h2>
-          <p className="muted">Be among the first to experience After.Me Premium.</p>
-          <form className="waitlist" onSubmit={(e) => e.preventDefault()}>
-            <input type="email" placeholder="Your email address" />
-            <button className="btn solid">Notify Me</button>
-          </form>
+        <div className="container">
+          <div className="slab">
+            <div className="slab-icon">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M12 2L2 22h20L12 2z"
+                  stroke="#fff"
+                  strokeWidth="1.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <circle cx="12" cy="16" r="1.3" fill="#fff" />
+              </svg>
+            </div>
+            <div className="slab-body">
+              <h3 className="slab-title">Why After.Me Exists</h3>
+              <p className="slab-muted">
+                People vanish. Words remain. After.Me was born from the desire to preserve our voices — not data,
+                but <em>legacy</em>. It’s where silence meets continuity; where what you write today can comfort someone tomorrow.
+              </p>
+            </div>
+          </div>
         </div>
       </motion.section>
 
-      {/* MEMORY SPARKS */}
+      {/* SECURITY */}
       <motion.section
         className="section"
         initial={{ opacity: 0, y: 22 }}
@@ -261,26 +153,37 @@ export default function HomePage(): JSX.Element {
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
       >
-        <div className="container sparks">
-          <h3 className="sparks-title">“A million words waiting for their moment.”</h3>
-          <p className="muted">Every 14 seconds, someone writes their final message.</p>
-          <span className="spark" aria-hidden />
+        <div className="container">
+          <div className="slab">
+            <div className="slab-icon">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M6 10V8a6 6 0 0112 0v2"
+                  stroke="#fff"
+                  strokeWidth="1.4"
+                  strokeLinecap="round"
+                />
+                <rect
+                  x="5"
+                  y="10"
+                  width="14"
+                  height="10"
+                  rx="2"
+                  stroke="#fff"
+                  strokeWidth="1.4"
+                />
+              </svg>
+            </div>
+            <div className="slab-body">
+              <h3 className="slab-title">Security & Privacy First</h3>
+              <p className="slab-muted">
+                Every message is encrypted before it leaves your device. We can’t read your words — and that’s the point.
+                Your vault belongs only to you, protected with client-side AES-256 encryption and stored securely on Supabase.
+              </p>
+            </div>
+          </div>
         </div>
       </motion.section>
-
-      {/* PROCESS */}
-      <section className="section">
-        <div className="container center">
-          <h3 className="h3 muted">🕰️ How your words travel through time.</h3>
-          <div className="muted">A simple process built to last beyond us.</div>
-        </div>
-        <div className="hr" />
-        <div className="container steps">
-          <div className="step"><h4>1) Write</h4><p>Compose letters, memories, instructions. Save drafts anytime.</p></div>
-          <div className="step"><h4>2) Store</h4><p>Encrypted in your vault. You control visibility and rules.</p></div>
-          <div className="step"><h4>3) Deliver</h4><p>Schedule to loved ones or your future self — only when it’s time.</p></div>
-        </div>
-      </section>
 
       {/* FOOTER */}
       <section className="container footer">
@@ -290,67 +193,14 @@ export default function HomePage(): JSX.Element {
         </div>
         <div className="legal">
           <div>© 2025 After.Me — A product of <b>CobsVault Labs</b></div>
-          <div className="legal-links"><a href="#">Privacy Policy</a><a href="#">Terms of Service</a></div>
+          <div className="legal-links"><a href="#">Privacy Policy</a><a href="#">Terms</a></div>
         </div>
       </section>
 
-      {/* Styles scoped to this page */}
+      {/* STYLES */}
       <style jsx global>{`
-        :root{
-          --bg:#050505; --fg:#f5f5f5; --muted:#c7c7c7; --card:#0b0b0b; --border:#1a1a1a;
-        }
-        body{background:var(--bg);color:var(--fg)}
-        .container{max-width:1100px;margin:0 auto;padding:0 20px}
-        .nav{border-bottom:1px solid var(--border);backdrop-filter:saturate(1.2) blur(6px)}
-        .nav-in{display:flex;justify-content:space-between;align-items:center;height:64px}
-        .brand{display:flex;align-items:center;gap:10px;color:#fff}
-        .badge{display:grid;place-items:center;border:1px solid #2a2a2a;border-radius:10px;padding:4px;background:#0d0d0d}
-        .actions{display:flex;gap:10px}
-        .btn{border-radius:10px;padding:10px 14px;font-weight:600}
-        .btn.solid{background:#fff;color:#000}
-        .btn.ghost{border:1px solid #3a3a3a;color:#fff}
-        .btn.lg{padding:12px 18px}
-        .btn:hover{transform:translateY(-1px)}
-        .hero{padding:72px 0 36px;text-align:center}
-        .eyebrow{display:inline-flex;align-items:center;gap:8px;border:1px solid #2b2b2b;border-radius:999px;padding:6px 12px;color:#bdbdbd;font-size:12.5px}
-        .dot{width:6px;height:6px;border-radius:50%;background:#fff;box-shadow:0 0 12px #fff}
-        .title{font-size:48px;line-height:1.08;margin:16px 0;background:linear-gradient(90deg,#fff,#dcdcdc);-webkit-background-clip:text;color:transparent}
-        .subtitle{max-width:820px;margin:0 auto;color:#e6e6e6}
-        .cta{display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap}
-        .quote{margin-top:18px;opacity:.9}
-        .section{padding:48px 0}
-        .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;text-align:center}
-        .kpi{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;transition:.2s}
-        .kpi:hover{transform:translateY(-3px);box-shadow:0 0 24px rgba(255,255,255,.05)}
-        .kpi b{display:block;font-size:28px}
-        .kpi span{color:var(--muted)}
-        .center{text-align:center}
-        .h2{font-size:26px;margin-bottom:10px}
-        .h3{font-size:22px;margin-bottom:8px}
-        .muted{color:var(--muted)}
-        .narrow{max-width:700px;margin:0 auto}
-        .two{display:flex;gap:40px;align-items:center;flex-wrap:wrap}
-        .illu{flex:1 1 260px;display:flex;justify-content:center}
-        .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
-        .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;transition:.2s}
-        .card:hover{transform:translateY(-3px);box-shadow:0 0 24px rgba(255,255,255,.05)}
-        .quote-sm{font-style:italic;color:#eaeaea}
-        .waitlist{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px}
-        .waitlist input{width:260px;border:1px solid var(--border);background:#0a0a0a;color:#fff;border-radius:10px;padding:12px 14px}
-        .sparks{background:radial-gradient(80% 80% at 50% 50%, #111 0%, #050505 100%);border:1px solid var(--border);border-radius:20px;text-align:center;padding:60px 20px}
-        .sparks-title{font-size:28px;margin-bottom:10px;background:linear-gradient(90deg,#fff,#bfbfbf);-webkit-background-clip:text;color:transparent}
-        .spark{display:block;width:6px;height:6px;border-radius:50%;background:#fff;margin:16px auto 0;box-shadow:0 0 20px 4px #fff;animation:pulse 2s ease-in-out infinite alternate}
-        @keyframes pulse{from{opacity:.15;transform:translateY(0)}to{opacity:.35;transform:translateY(-2px)}}
-        .hr{height:1px;background:var(--border);margin:28px 0}
-        .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
-        .step{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px}
-        .footer{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:24px 0;border-top:1px solid var(--border);flex-wrap:wrap}
-        .footer .links{display:flex;gap:16px;align-items:center}
-        .footer .links span{opacity:.8}
-        .footer a{color:#fff;opacity:.85}
-        .legal{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
-        .legal-links{display:flex;gap:16px}
-        @media (max-width:640px){.title{font-size:34px}}
-      <style jsx global>{`
-...
-`}</style>
+        ${/* CSS blokunu kısalttım: buraya son attığım CSS’i birebir kopyala */""}
+      `}</style>
+    </>
+  );
+}
