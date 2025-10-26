@@ -74,7 +74,7 @@ export default function DashboardPage() {
           <p className="ph-sub">Choose your legacy.</p>
         </div>
 
-        {/* Sadece üç kart, tek satır, ortalanmış — DIŞTA BÜYÜK KUTU YOK */}
+        {/* SADECE 3 AYRI DİKDÖRTGEN YAN YANA */}
         <div className="container plans-row">
           {plans.map((p) => (
             <PlanCard
@@ -91,8 +91,7 @@ export default function DashboardPage() {
       </section>
 
       <style jsx>{`
-        /* Fonts (yalnız bu dosyada uygulanır) */
-        @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap');
 
         :root{
           --bg:#000; --fg:#fff; --muted:#BBB; --border:#1a1a1a;
@@ -100,17 +99,14 @@ export default function DashboardPage() {
           --prem-a:#6C63FF; --prem-b:#8A7CFF;
           --life-a:#F2C94C; --life-b:#F9E79F;
         }
-
         *{ box-sizing:border-box }
-        body, .dashboard { background:var(--bg); color:var(--fg); font-family: Manrope, "Plus Jakarta Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+        body, .dashboard { background:var(--bg); color:var(--fg); font-family: Manrope, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
 
         .container{ max-width:1100px; margin:0 auto; padding:0 20px; }
         .top{ border-bottom:1px solid #111; padding:14px 0; background:rgba(0,0,0,.6); backdrop-filter:blur(6px); }
         .topin{ display:flex; align-items:center; justify-content:space-between; }
         .brand{ display:flex; align-items:center; gap:8px; font-weight:800; }
-
-        .nav a{ color:#9aa; margin-left:16px; }
-        .nav a:hover{ color:#fff; }
+        .nav a{ color:#9aa; margin-left:16px; } .nav a:hover{ color:#fff; }
 
         .hero{ text-align:center; padding:40px 0 20px; }
         .muted{ color:var(--muted); }
@@ -121,59 +117,50 @@ export default function DashboardPage() {
         .ph-title{ font-size:28px; font-weight:800; margin-bottom:4px; }
         .ph-sub{ color:var(--muted); margin-bottom:24px; font-weight:600; }
 
-        /* === ÜÇ KART TEK SATIR, ORTADA — MOBİLDE YATAY SCROLL === */
+        /* === 3 AYRI DİKDÖRTGEN YAN YANA, ORTADA === */
         .plans-row{
           display:flex;
           gap:24px;
+          justify-content:center;  /* ortala */
           align-items:stretch;
-          justify-content:center;
-          flex-wrap:nowrap;           /* alta düşürme */
-          overflow-x:auto;            /* mobilde yana kaydır */
-          padding:4px;
+          flex-wrap:nowrap;        /* kırma yok */
+          overflow-x:auto;         /* mobilde yana kaydır */
           -webkit-overflow-scrolling:touch;
+          padding:4px;
           scrollbar-width: thin;
         }
-        @media (max-width:900px){
-          .plans-row{ gap:16px; justify-content:flex-start; }
-        }
+        @media (max-width:900px){ .plans-row{ gap:16px; justify-content:flex-start; } }
 
-        /* === KART: DİKEY DİKDÖRTGEN === */
+        /* === HER PLAN KENDİ DİKDÖRTGENİNDE === */
         .plan{
-          position:relative;
-          width:320px;                 /* dikey: en dar */
-          height:560px;                /* dikey: boy uzun */
-          border-radius:20px;
-          padding:22px;
+          flex:0 0 320px;           /* sabit en -> dikey dikdörtgen */
+          height:560px;             /* net dikey görünüm */
           border:1px solid var(--border);
+          border-radius:20px;
+          background:#111;
+          padding:22px;
           display:flex;
           flex-direction:column;
-          justify-content:space-between;
-          text-align:left;
-          background:#111;
+          position:relative;
           box-shadow:0 0 14px rgba(255,255,255,.05);
-          transition: transform .2s ease, box-shadow .2s ease, outline-color .2s ease;
-          outline: 0px solid rgba(255,255,255,0);
+          transition:transform .2s, box-shadow .2s, outline-color .2s;
+          outline:0 solid transparent;
         }
-        .plan:hover{
-          transform: translateY(-4px);
-          box-shadow:0 0 36px rgba(255,255,255,.16);
-          outline: 2px solid rgba(255,255,255,.10);
-        }
-        .plan:focus-within{ outline:2px solid rgba(255,255,255,.2); }
+        .plan:hover{ transform:translateY(-4px); box-shadow:0 0 36px rgba(255,255,255,.16); outline:2px solid rgba(255,255,255,.10); }
 
-        /* Başlık ve fiyat */
+        /* İç hiza: başlık/fiyat yüksekliği sabit, butonlar altta hizalı */
+        .hdr{ min-height:96px; display:grid; align-content:start; }
         .hdr h3{ font-size:13px; letter-spacing:.6px; text-transform:uppercase; font-weight:700; opacity:.9; margin:0 0 6px; }
-        .price{ font-size:34px; font-weight:800; margin-bottom:12px; line-height:1; }
-
-        /* Özellik listesi */
-        .feat{ list-style:none; padding:0; margin:0 0 22px; }
+        .price{ font-size:34px; font-weight:800; line-height:1; }
+        .content{ flex:1; display:flex; flex-direction:column; }
+        .feat{ list-style:none; padding:0; margin:12px 0 22px; }
         .feat li{ position:relative; padding-left:20px; margin-bottom:10px; font-size:15px; }
         .feat li::before{ content:"✓"; position:absolute; left:0; top:0; opacity:.9; }
 
-        /* CTA — tema varyantlarına göre butonlar */
+        /* CTA — üç farklı tema, aynı ölçü */
         .cta{ width:100%; height:48px; border-radius:16px; font-weight:800; font-size:16px; cursor:pointer; transition:.2s; user-select:none; }
 
-        /* Premium (glass + gradient border) */
+        /* Premium — mor-mavi + glass + köşe şerit */
         .premium{
           background: linear-gradient(160deg, rgba(108,99,255,.22), rgba(138,124,255,.10)) #0c0c0f;
           border-color: rgba(124,118,255,.35);
@@ -181,8 +168,7 @@ export default function DashboardPage() {
         }
         .premium:hover{ box-shadow:0 0 36px rgba(124,118,255,.24); }
         .cta-premium{
-          color:#fff;
-          background:rgba(255,255,255,.06);
+          color:#fff; background:rgba(255,255,255,.06);
           border:1px solid transparent;
           background-clip: padding-box, border-box;
           border-image: linear-gradient(90deg, var(--prem-a), var(--prem-b)) 1;
@@ -190,49 +176,39 @@ export default function DashboardPage() {
         .cta-premium:hover{ background:rgba(255,255,255,.10); }
         .cta-premium:focus-visible{ box-shadow:0 0 0 3px rgba(124,118,255,.35); outline:0; }
 
-        /* Free (inverted beyaz) */
-        .free{
-          background: linear-gradient(160deg, var(--free-a), var(--free-b));
-          border-color:#2E2E2E;
+        /* Köşeden çapraz ribbon (Most Chosen) */
+        .ribbon{
+          position:absolute;
+          top:14px; right:-56px;
+          width:190px; text-align:center;
+          transform:rotate(45deg);
+          background: linear-gradient(90deg, var(--prem-a), var(--prem-b));
+          color:#fff; font-weight:900; font-size:12px; letter-spacing:.6px;
+          padding:6px 0; box-shadow:0 6px 14px rgba(0,0,0,.35);
         }
-        .cta-free{
-          background:#fff; color:#111; border:1px solid #E9E9E9;
-        }
+
+        /* Free — nötr koyu + beyaz inverted buton */
+        .free{ background: linear-gradient(160deg, var(--free-a), var(--free-b)); border-color:#2E2E2E; }
+        .cta-free{ background:#fff; color:#111; border:1px solid #E9E9E9; }
         .cta-free:hover{ background:#f2f2f2; }
         .cta-free:focus-visible{ box-shadow:0 0 0 3px rgba(255,255,255,.35); outline:0; }
 
-        /* Lifetime (gold + shimmer) */
+        /* Lifetime — altın + shimmer + altın kontür buton */
         .lifetime{
           background: linear-gradient(160deg, var(--life-a), var(--life-b));
-          color:#241A00;
-          border-color: rgba(242,201,76,.55);
-          position:relative; overflow:hidden;
+          color:#241A00; border-color: rgba(242,201,76,.55);
+          overflow:hidden;
         }
         .lifetime::after{
-          content:"";
-          position:absolute; top:-20%; left:-60%;
-          width:40%; height:140%;
-          transform: rotate(20deg);
+          content:""; position:absolute; top:-20%; left:-60%;
+          width:40%; height:140%; transform:rotate(20deg);
           background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.45), rgba(255,255,255,0));
-          filter: blur(8px);
-          animation: shimmer 3.2s linear infinite;
+          filter: blur(8px); animation: shimmer 3.2s linear infinite;
         }
         @keyframes shimmer{ 0%{left:-60%} 100%{left:130%} }
-        .cta-life{
-          color:#241A00;
-          background: rgba(255, 214, 102, .18);
-          border:1px solid rgba(242,201,76,.65);
-        }
-        .cta-life:hover{ background: rgba(255, 214, 102, .28); }
+        .cta-life{ color:#241A00; background: rgba(255,214,102,.18); border:1px solid rgba(242,201,76,.65); }
+        .cta-life:hover{ background: rgba(255,214,102,.28); }
         .cta-life:focus-visible{ box-shadow:0 0 0 3px rgba(242,201,76,.55); outline:0; }
-
-        /* Premium şeridi */
-        .ribbon{
-          position:absolute; top:16px; right:-36px; transform: rotate(35deg);
-          background: linear-gradient(90deg, var(--prem-a), var(--prem-b));
-          color:#fff; font-weight:900; font-size:12px; letter-spacing:.6px;
-          padding:6px 44px; border-radius:6px; box-shadow:0 6px 14px rgba(0,0,0,.35);
-        }
       `}</style>
     </main>
   );
@@ -251,9 +227,9 @@ function PlanCard({
 }) {
   return (
     <div className={`plan ${variant}`}>
-      {ribbon ? <div className="ribbon">{ribbon}</div> : null}
+      {variant === "premium" && ribbon ? <div className="ribbon">{ribbon}</div> : null}
 
-      <div>
+      <div className="content">
         <div className="hdr">
           <h3>{title}</h3>
           <div className="price">{price}</div>
@@ -262,6 +238,8 @@ function PlanCard({
         <ul className="feat">
           {features.map((f, i) => <li key={i}>{f}</li>)}
         </ul>
+
+        <div style={{ marginTop: "auto" }} />
       </div>
 
       <button
