@@ -1,114 +1,70 @@
+// app/login/page.tsx
 "use client";
 
-import { Suspense, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { supabase } from "@/lib/supabaseClient";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
 
 export default function LoginPage() {
-  return (
-    <Suspense
-      fallback={
-        <main className="auth-shell"><div className="glass">Loading…</div></main>
-      }
-    >
-      <LoginInner />
-    </Suspense>
-  );
-}
-
-function LoginInner() {
   const router = useRouter();
-  const params = useSearchParams();
-  const redirectTo = params.get("redirectTo") || "/dashboard";
-
+  const qp = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [err, setErr] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [show, setShow] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
 
-  async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setErr("");
-    setLoading(true);
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault(); setBusy(true); setErr(null);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setLoading(false);
-    if (error) return setErr(error.message);
-    router.replace(redirectTo);
-  }
+    setBusy(false);
+    if (error) setErr(error.message);
+    else router.replace(qp.get("redirectTo") || "/dashboard");
+  };
 
   return (
-    <main className="auth-shell">
-      <motion.div
-        className="glass"
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-      >
-        <Link href="/" className="brand">
-          <span className="badge"><img src="/logo.svg" alt="" width={22} height={22}/></span>
-          <span>After.Me</span>
-        </Link>
+    <main className="auth">
+      <div className="box">
+        <header className="hd">
+          <Link href="/" className="brand">
+            <img src="/logo.svg" width={24} height={24} alt="After.Me"/><span>After.Me</span>
+          </Link>
+          <h1>Sign in</h1>
+          <p className="muted">Welcome back. Enter your email and password.</p>
+        </header>
 
-        <h1>Welcome back 👋</h1>
-        <p className="muted">Your words outlive you. Access your vault.</p>
-
-        <form onSubmit={handleLogin} className="form">
+        <form onSubmit={onSubmit} className="form">
           <label>Email</label>
-          <input
-            type="email" autoComplete="email" placeholder="you@example.com"
-            value={email} onChange={e=>setEmail(e.target.value)} required
-          />
+          <input required type="email" placeholder="you@example.com" value={email} onChange={e=>setEmail(e.target.value)} />
           <label>Password</label>
-          <input
-            type="password" autoComplete="current-password" placeholder="••••••••"
-            value={password} onChange={e=>setPassword(e.target.value)} required
-          />
-          <button className="btn solid" type="submit" disabled={loading}>
-            {loading ? "Logging in…" : "Log In"}
-          </button>
-          {err && <p className="error">{err}</p>}
+          <div className="pw">
+            <input required type={show ? "text" : "password"} placeholder="Your password" value={password} onChange={e=>setPassword(e.target.value)} />
+            <button type="button" className="tog" onClick={()=>setShow(s=>!s)}>{show ? "Hide" : "Show"}</button>
+          </div>
+          {err && <p className="err">{err}</p>}
+          <button className="btn solid full" disabled={busy}>{busy ? "Signing in…" : "Sign in"}</button>
         </form>
 
-        <p className="switch muted">
-          Don’t have an account?{" "}
-          <Link href={`/signup?redirectTo=${encodeURIComponent(redirectTo)}`} className="link">Sign up</Link>
-        </p>
-
-        <div className="tiny muted">
-          AES-256 client-side encryption. We can’t read your words — that’s the point.
+        <div className="row">
+          <span className="muted">New here?</span> <Link href="/signup">Create an account</Link>
         </div>
-      </motion.div>
+      </div>
 
       <style jsx>{`
-        :root{--bg:#050505;--fg:#f5f5f5;--muted:#c7c7c7;--border:#1a1a1a}
-        body{background:radial-gradient(60% 60% at 50% 20%, #0e0e0e 0%, #050505 100%);color:var(--fg)}
-        .auth-shell{min-height:100dvh;display:grid;place-items:center;padding:24px}
-        .glass{
-          width:min(440px,92vw);
-          background:rgba(255,255,255,0.06);
-          border:1px solid rgba(255,255,255,0.12);
-          border-radius:18px;padding:22px 20px;backdrop-filter: blur(10px) saturate(1.2);
-          box-shadow:0 0 32px rgba(255,255,255,.05);
-          display:grid;gap:12px;text-align:left;
-        }
-        .brand{display:inline-flex;align-items:center;gap:10px;color:#fff;font-weight:600;text-decoration:none}
-        .badge{display:grid;place-items:center;border:1px solid #2a2a2a;border-radius:10px;padding:4px;background:#0d0d0d}
-        h1{margin:6px 0 2px;font-size:24px}
-        .muted{color:var(--muted)}
-        .form{display:grid;gap:8px;margin-top:6px}
-        label{font-size:13px;color:#d8d8d8}
-        input{
-          background:#0a0a0a;border:1px solid var(--border);border-radius:10px;color:#fff;padding:12px 12px;
-        }
-        .btn{border-radius:10px;padding:12px 14px;font-weight:700;transition:.2s}
-        .btn.solid{background:#fff;color:#000}
-        .btn:disabled{opacity:.7}
-        .switch{margin-top:4px}
-        .link{color:#fff;border-bottom:1px dashed #3a3a3a}
-        .tiny{font-size:12px;margin-top:2px}
-        .error{color:#ffb4b4;border:1px solid rgba(255,180,180,.3);background:rgba(255,100,100,.1);padding:8px;border-radius:10px}
+        .auth{ min-height:100dvh; display:grid; place-items:center; background:var(--bg); color:var(--fg) }
+        .box{ width:min(420px,92vw); border:1px solid var(--line); background:#0a0a0a; padding:22px }
+        .hd{ display:grid; gap:6px; text-align:center }
+        .brand{ display:inline-flex; gap:10px; align-items:center; margin:0 auto 4px; color:#fff; font-weight:800 }
+        .muted{ color:var(--muted) }
+        .form{ display:grid; gap:8px; margin-top:10px }
+        input{ background:#0a0a0a; border:1px solid var(--line); color:#fff; padding:12px 12px; border-radius:0 }
+        .pw{ display:grid; grid-template-columns:1fr auto; align-items:center; gap:8px }
+        .tog{ border:1px solid var(--line); background:#0c0c0c; color:#fff; padding:10px 12px; border-radius:0 }
+        .err{ color:#ffb3b3; margin:6px 0 0 }
+        .btn{ border:1px solid #2f2f2f; background:#fff; color:#000; padding:12px 14px; font-weight:800; border-radius:0 }
+        .btn.full{ width:100% }
+        .row{ display:flex; gap:8px; justify-content:center; margin-top:12px }
       `}</style>
     </main>
   );
