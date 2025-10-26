@@ -84,48 +84,67 @@ export default function HomePage(): JSX.Element {
         </div>
       </section>
 
-      {/* WHY */}
-      <motion.section
-        className="section"
-        initial={{ opacity: 0, y: 22 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-      >
-        <div className="container center">
-          <h2 className="h2">Why After.Me Exists</h2>
-          <p className="muted narrow">
-            People vanish. Words remain. After.Me was born from the desire to preserve our voices — not data,
-            but <em>legacy</em>. It’s where silence meets continuity; where what you write today can comfort someone tomorrow.
-          </p>
-        </div>
-      </motion.section>
+      {/* WHY (Framed Slab) */}
+<motion.section
+  className="section"
+  initial={{ opacity: 0, y: 22 }}
+  whileInView={{ opacity: 1, y: 0 }}
+  viewport={{ once: true }}
+  transition={{ duration: 0.6 }}
+>
+  <div className="container">
+    <div className="slab">
+      <div className="slab-icon" aria-hidden>
+        {/* Minimal “spark/quill” style icon */}
+        <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+          <circle cx="28" cy="28" r="26" stroke="rgba(255,255,255,.14)" />
+          <path d="M18 33 C24 26, 32 21, 40 19" stroke="#ffffff" strokeOpacity=".9" strokeWidth="1.8" fill="none"/>
+          <path d="M24 38 L32 30" stroke="#ffffff" strokeOpacity=".9" strokeWidth="1.8" />
+          <circle cx="41" cy="17" r="2" fill="#ffffff" />
+        </svg>
+      </div>
+      <div className="slab-body">
+        <h2 className="slab-title">Why After.Me Exists</h2>
+        <p className="slab-muted">
+          People vanish. Words remain. After.Me was born from the desire to preserve our voices — not data,
+          but <em>legacy</em>. It’s where silence meets continuity; where what you write today can comfort someone tomorrow.
+        </p>
+      </div>
+    </div>
+  </div>
+</motion.section>
 
-      {/* SECURITY */}
-      <motion.section
-        className="section"
-        initial={{ opacity: 0, y: 22 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-      >
-        <div className="container two">
-          <div className="illu">
-            <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
-              <circle cx="60" cy="60" r="46" stroke="rgba(255,255,255,.14)" strokeWidth="2"/>
-              <rect x="42" y="66" width="36" height="24" rx="8" fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.18)"/>
-              <path d="M40 66 L60 44 L80 66" stroke="#fff" strokeOpacity=".9" strokeWidth="2" fill="none"/>
-            </svg>
-          </div>
-          <div>
-            <h3 className="h3">Security & Privacy First</h3>
-            <p className="muted">
-              Every message is encrypted <strong>before</strong> it leaves your device. We can’t read your words — and that’s the point.
-              Your vault belongs only to you, protected with client-side AES-256 and stored securely on Supabase.
-            </p>
-          </div>
-        </div>
-      </motion.section>
+
+{/* SECURITY (Framed Slab with Lock) */}
+<motion.section
+  className="section"
+  initial={{ opacity: 0, y: 22 }}
+  whileInView={{ opacity: 1, y: 0 }}
+  viewport={{ once: true }}
+  transition={{ duration: 0.6 }}
+>
+  <div className="container">
+    <div className="slab">
+      <div className="slab-icon" aria-hidden>
+        {/* Large lock icon */}
+        <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+          <circle cx="28" cy="28" r="26" stroke="rgba(255,255,255,.14)" />
+          <rect x="16" y="28" width="24" height="16" rx="6" fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.22)" />
+          <path d="M20 28 v-3 c0-5.5 4.5-10 10-10s10 4.5 10 10v3" stroke="#ffffff" strokeOpacity=".9" strokeWidth="2" fill="none"/>
+          <circle cx="28" cy="36" r="2.6" fill="#ffffff" />
+        </svg>
+      </div>
+      <div className="slab-body">
+        <h3 className="slab-title">Security & Privacy First</h3>
+        <p className="slab-muted">
+          Every message is encrypted <strong>before</strong> it leaves your device. We can’t read your words — and that’s the point.
+          Your vault belongs only to you, protected with client-side AES-256 and stored securely on Supabase.
+        </p>
+      </div>
+    </div>
+  </div>
+</motion.section>
+
 
       {/* FEATURES */}
       <motion.section
