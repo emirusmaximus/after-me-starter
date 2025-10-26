@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useMemo } from "react";
 
-export default function DashboardPage() {
+export default function DashboardPage(): JSX.Element {
   const username = "emir";
   const stats = { letters: 3, waiting: 1, days: 22, progress: 40 };
 
@@ -16,7 +16,6 @@ export default function DashboardPage() {
         features: ["Encrypted vault", "Priority support", "Early access"],
         cta: "Upgrade 💎",
         variant: "premium" as const,
-        ribbon: "Most Chosen",
       },
       {
         key: "free",
@@ -30,9 +29,14 @@ export default function DashboardPage() {
         key: "lifetime",
         title: "Lifetime",
         price: "$15",
-        features: ["Unlimited messages", "Lifetime storage", "VIP legacy badge"],
+        features: [
+          "Unlimited messages",
+          "Lifetime storage",
+          "VIP legacy badge",
+        ],
         cta: "Unlock ✨",
         variant: "lifetime" as const,
+        ribbon: "Most Chosen", // Kurdele Lifetime'a taşındı
       },
     ],
     []
@@ -58,175 +62,292 @@ export default function DashboardPage() {
       <section className="hero">
         <div className="container center">
           <p className="muted small">
-            Your vault has {stats.letters} letters — {stats.waiting} waiting for delivery.
+            Your vault has {stats.letters} letters — {stats.waiting} waiting for
+            delivery.
           </p>
+        </div>
+        <div className="container center">
           <h1>Welcome back, @{username}</h1>
           <p className="muted">You haven’t written in {stats.days} days.</p>
-          <div className="progress"><span style={{ width: `${stats.progress}%` }} /></div>
+          <div className="progress">
+            <span style={{ width: `${stats.progress}%` }} />
+          </div>
           <small className="muted">Vault Progress: {stats.progress}%</small>
         </div>
       </section>
 
-      {/* OUTER FRAME (BEYAZ KENARLI, İÇİ SİYAH) + İÇ DİKEY AYIRICI ÇİZGİLER */}
+      {/* PLANS */}
       <section className="plans">
         <div className="container center">
           <h2 className="ph-title">Plans</h2>
           <p className="ph-sub">Choose your legacy.</p>
         </div>
 
-        <div className="container">
-          <div className="frame">
-            {/* Ayırıcı çizgiler (üstten alta düz beyaz çizgi) */}
-            <span className="divider d1" aria-hidden />
-            <span className="divider d2" aria-hidden />
-
-            {/* İçeride: üç küçük beyaz çerçeveli siyah kutu */}
-            <div className="inner-row">
-              {plans.map((p) => (
-                <PlanCard
-                  key={p.key}
-                  title={p.title}
-                  price={p.price}
-                  features={p.features}
-                  button={p.cta}
-                  variant={p.variant}
-                  ribbon={p.ribbon}
-                />
-              ))}
-            </div>
-          </div>
+        <div className="container plans-row">
+          {plans.map((p) => (
+            <PlanCard
+              key={p.key}
+              title={p.title}
+              price={p.price}
+              features={p.features}
+              button={p.cta}
+              variant={p.variant}
+              ribbon={p.ribbon}
+            />
+          ))}
         </div>
       </section>
 
+      {/* STİL BLOĞU (Lütfen burayı tam kopyala) */}
       <style jsx>{`
-        :root{
-          --bg:#000; --fg:#fff; --muted:#BBB;
+        :root {
+          --bg: #000;
+          --fg: #fff;
+          --muted: #888;
+          --card-bg: #1c1c1c;
+          --card-border: #333;
+          --btn-dark-bg: #2f2f2f;
+          --btn-dark-hover: #444;
+          --ribbon-bg: #6c63ff; /* Kurdele için bir renk */
+        }
+        * {
+          box-sizing: border-box;
+        }
+        body,
+        .dashboard {
+          background: var(--bg);
+          color: var(--fg);
+          font-family: system-ui, -apple-system, Segoe UI, Roboto, Manrope,
+            sans-serif;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
         }
 
-        *{ box-sizing:border-box }
-        body, .dashboard { background:var(--bg); color:var(--fg); font-family: system-ui, -apple-system, Segoe UI, Roboto, Manrope, sans-serif; }
-
-        .container{ max-width:1100px; margin:0 auto; padding:0 20px; }
-
-        .top{ border-bottom:1px solid #111; padding:14px 0; background:rgba(0,0,0,.6); backdrop-filter:blur(6px); }
-        .topin{ display:flex; align-items:center; justify-content:space-between; }
-        .brand{ display:flex; align-items:center; gap:8px; font-weight:800; }
-        .nav a{ color:#9aa; margin-left:16px; } .nav a:hover{ color:#fff; }
-
-        .hero{ text-align:center; padding:40px 0 20px; }
-        .muted{ color:var(--muted); }
-        .progress{ width:280px; margin:10px auto; height:6px; border:1px solid #222; background:#050505; }
-        .progress span{ display:block; height:100%; background:#fff; }
-
-        .plans{ text-align:center; padding:40px 0 60px; }
-        .ph-title{ font-size:28px; font-weight:800; margin-bottom:4px; }
-        .ph-sub{ color:var(--muted); margin-bottom:24px; font-weight:600; }
-
-        /* === DIŞ ÇERÇEVE — BEYAZ KENAR, SİYAH İÇ === */
-        .frame{
-          position:relative;
-          border:2px solid #FFFFFF;    /* Dış beyaz çizgi */
-          border-radius:22px;
-          background:#000;             /* içi siyah */
-          padding:28px;
-          box-shadow:0 0 0 1px rgba(255,255,255,.08) inset;
-          overflow:hidden;             /* ayırıcı çizgiler taşmasın */
+        .container {
+          max-width: 1100px;
+          margin: 0 auto;
+          padding: 0 20px;
+        }
+        .center {
+          text-align: center;
         }
 
-        /* Dikey ayırıcı çizgiler: üstten alta beyaz düz çizgi */
-        .divider{
-          position:absolute;
-          top:22px;
-          bottom:22px;
-          width:0;
-          border-left:2px solid #FFFFFF;
-          opacity:.95;
-          z-index:1; /* kartların arkasında kalsın ama görünür olsun */
+        /* HEADER */
+        .top {
+          border-bottom: 1px solid #1f1f1f;
+          padding: 14px 0;
+          background: rgba(0, 0, 0, 0.6);
+          backdrop-filter: blur(6px);
+          position: sticky;
+          top: 0;
+          z-index: 10;
         }
-        /* 3 sütunu ayırmak için 2 çizgi: %33.33 ve %66.66 */
-        .d1{ left: calc(33.333%); }
-        .d2{ left: calc(66.666%); }
+        .topin {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+        .brand {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-weight: 800;
+          text-decoration: none;
+          color: var(--fg);
+        }
+        .nav a {
+          color: #9aa;
+          margin-left: 16px;
+          text-decoration: none;
+          font-size: 15px;
+        }
+        .nav a:hover {
+          color: #fff;
+        }
 
-        /* İçte üç küçük BEYAZ ÇİZGİLİ siyah kutu (çizgilerle hizalı) */
-        .inner-row{
-          display:grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap:24px;
-          position:relative;
-          z-index:2; /* ayırıcı çizgilerin üzerinde içerik */
+        /* HERO */
+        .hero {
+          text-align: center;
+          padding: 40px 0 20px;
+        }
+        .muted {
+          color: var(--muted);
+        }
+        .progress {
+          width: 280px;
+          margin: 10px auto;
+          height: 6px;
+          border: 1px solid #222;
+          background: #050505;
+          border-radius: 6px;
+          overflow: hidden;
+        }
+        .progress span {
+          display: block;
+          height: 100%;
+          background: #fff;
+          border-radius: 6px;
         }
 
-        .plan{
-          background:#0b0b0b;          /* iç siyah */
-          border:2px solid #FFFFFF;    /* İç beyaz çizgi */
-          border-radius:18px;
-          padding:20px;
-          min-height:520px;
-          display:flex; flex-direction:column;
-          position:relative; overflow:visible;
-          transition:transform .18s ease, box-shadow .18s ease;
+        /* PLANS */
+        .plans {
+          text-align: center;
+          padding: 40px 0 60px;
         }
-        .plan:hover{
-          transform:translateY(-4px);
-          box-shadow:0 0 28px rgba(255,255,255,.10);
+        .ph-title {
+          font-size: 28px;
+          font-weight: 800;
+          margin-bottom: 4px;
+        }
+        .ph-sub {
+          color: var(--muted);
+          margin-bottom: 24px;
+          font-weight: 600;
+          font-size: 18px;
+        }
+        
+        .plans-row {
+          display: flex;
+          gap: 20px;
+          justify-content: center;
+          align-items: stretch;
+          flex-wrap: wrap; /* Mobilde alt alta gelmesi için */
+        }
+        @media (max-width: 900px) {
+          .plans-row {
+            gap: 18px;
+            justify-content: center;
+          }
+        }
+
+        /* PLAN KARTI: Resimdeki tasarıma uygun */
+        .plan {
+          flex: 1 1 320px; /* Esnek ve maksimum 320px */
+          max-width: 340px;
+          min-height: 380px; /* Yükseklik ayarlandı */
+          border: 1px solid var(--card-border);
+          border-radius: 16px;
+          background: var(--card-bg);
+          padding: 28px;
+          display: flex;
+          flex-direction: column;
+          position: relative; /* Kurdele için eklendi */
+          overflow: hidden; /* Kurdele için eklendi */
+          text-align: left;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .plan:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
 
         /* İç hiza */
-        .hdr{ min-height:96px; display:grid; align-content:start; }
-        .hdr h3{ font-size:13px; letter-spacing:.6px; text-transform:uppercase; font-weight:900; opacity:.95; margin:0 0 6px; }
-        .price{ font-size:34px; font-weight:900; line-height:1; }
-        .feat{ list-style:none; padding:0; margin:12px 0 22px; text-align:left; }
-        .feat li{ position:relative; padding-left:16px; margin-bottom:10px; font-size:15px; }
-        .feat li::before{ content:""; } /* nokta yok */
-
-        /* CTA */
-        .cta{ width:100%; height:48px; border-radius:14px; font-weight:900; font-size:16px; cursor:pointer; transition:.18s; user-select:none; }
-        .cta-premium{ color:#000; background:#fff; border:1px solid #fff; }
-        .cta-premium:hover{ background:#f2f2f2; }
-        .cta-free{ background:#111; color:#fff; border:1px solid #fff; }
-        .cta-free:hover{ background:#161616; }
-        .cta-life{ background:#111; color:#fff; border:1px solid #fff; }
-        .cta-life:hover{ background:#161616; }
-
-        .premium{ background:#0b0b0b; }
-        .free{ background:#0b0b0b; }
-        .lifetime{ background:#0b0b0b; }
-
-        /* === "Most Chosen" — Premium kartın ÜST tarafında, beyaz kenarın ÜZERİNDEN ÇAPRAZ === */
-        .ribbon{
-          position:absolute;
-          top: -18px;       /* üst kısa kenarın biraz dışı */
-          left: 50%;        /* üst kenar ortasını hedefle */
-          width: 230px;
-          transform: rotate(35deg) translateX(-50%);
-          transform-origin: center;
-          z-index: 6;       /* kart kenarının üstünde */
-          background:#000;  /* manşet bant siyah */
-          color:#fff;
-          text-transform:uppercase;
-          font-weight:1000;
-          letter-spacing:.8px;
-          font-size:12px;
-          text-align:center;
-          padding:10px 0;
-          border:2px solid #FFFFFF;     /* şerit kenarı: BEYAZ */
-          box-shadow:0 0 18px rgba(255,255,255,.25);
-          pointer-events:none;
+        .hdr {
+          min-height: 90px;
+          display: grid;
+          align-content: start;
+        }
+        .hdr h3 {
+          font-size: 14px;
+          letter-spacing: 0.5px;
+          text-transform: uppercase;
+          font-weight: 700;
+          color: var(--muted);
+          margin: 0 0 8px;
+        }
+        .price {
+          font-size: 34px;
+          font-weight: 800;
+          line-height: 1;
+          color: var(--fg);
+        }
+        .feat {
+          list-style: none;
+          padding: 0;
+          margin: 24px 0;
+          flex-grow: 1; /* Butonları en alta iter */
+        }
+        .feat li {
+          position: relative;
+          padding-left: 24px;
+          margin-bottom: 12px;
+          font-size: 15px;
+          color: var(--fg);
+        }
+        .feat li::before {
+          content: "✓";
+          position: absolute;
+          left: 0;
+          top: 1px;
+          opacity: 0.9;
+          color: var(--muted);
         }
 
-        @media (max-width: 1000px){
-          .inner-row{ grid-template-columns: 1fr; gap:18px; }
-          .divider{ display:none; } /* mobilde ayırıcı çizgileri gizle */
-          .ribbon{ left: 55%; width: 220px; transform: rotate(35deg) translateX(-50%); }
+        /* CTA’lar (Butonlar) */
+        .cta {
+          width: 100%;
+          height: 48px;
+          border-radius: 12px;
+          font-weight: 700;
+          font-size: 16px;
+          cursor: pointer;
+          transition: 0.18s;
+          user-select: none;
+          border: none;
+        }
+        /* Premium ve Lifetime (Koyu Buton) */
+        .cta-premium,
+        .cta-life {
+          color: var(--fg);
+          background: var(--btn-dark-bg);
+          border: 1px solid var(--card-border);
+        }
+        .cta-premium:hover,
+        .cta-life:hover {
+          background: var(--btn-dark-hover);
+        }
+
+        /* Free (Beyaz Buton) */
+        .cta-free {
+          background: #fff;
+          color: #111;
+          border: 1px solid #E9E9E9;
+        }
+        .cta-free:hover {
+          background: #f2f2f2;
+        }
+
+        /* “Most Chosen” Kurdele Stili */
+        .ribbon {
+          position: absolute;
+          top: 18px;
+          right: -50px;
+          z-index: 2;
+          transform: rotate(45deg);
+          background: var(--ribbon-bg); /* Mor renk */
+          color: #fff;
+          font-weight: 700;
+          font-size: 12px;
+          letter-spacing: 0.5px;
+          padding: 6px 0;
+          width: 200px;
+          text-align: center;
+          text-transform: uppercase;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
       `}</style>
     </main>
   );
 }
 
-/* === PLAN KARTI === */
+/* === PLAN CARD === */
 function PlanCard({
-  title, price, features, button, variant, ribbon,
+  title,
+  price,
+  features,
+  button,
+  variant,
+  ribbon,
 }: {
   title: string;
   price: string;
@@ -237,8 +358,10 @@ function PlanCard({
 }) {
   return (
     <div className={`plan ${variant}`} data-variant={variant}>
-      {/* Premium: üstten beyaz kenarın ÜSTÜNDEN çapraz şerit */}
-      {variant === "premium" && ribbon ? <div className="ribbon">{ribbon}</div> : null}
+      {/* Kurdele 'lifetime' için gösteriliyor */}
+      {variant === "lifetime" && ribbon ? (
+        <div className="ribbon">{ribbon}</div>
+      ) : null}
 
       <div className="hdr">
         <h3>{title}</h3>
@@ -246,14 +369,18 @@ function PlanCard({
       </div>
 
       <ul className="feat">
-        {features.map((f, i) => <li key={i}>{f}</li>)}
+        {features.map((f, i) => (
+          <li key={i}>{f}</li>
+        ))}
       </ul>
 
       <button
         className={
-          variant === "premium" ? "cta cta-premium" :
-          variant === "lifetime" ? "cta cta-life" :
-          "cta cta-free"
+          variant === "premium"
+            ? "cta cta-premium"
+            : variant === "lifetime"
+            ? "cta cta-life"
+            : "cta cta-free"
         }
       >
         {button}
