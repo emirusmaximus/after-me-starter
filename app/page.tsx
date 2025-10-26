@@ -84,7 +84,44 @@ export default function HomePage(): JSX.Element {
         </div>
       </section>
 
-      {/* WHY (Framed Slab) */}
+      {/* WHAT IS AFTER.ME */}
+<motion.section
+  className="section intro"
+  initial={{ opacity: 0, y: 22 }}
+  whileInView={{ opacity: 1, y: 0 }}
+  viewport={{ once: true }}
+  transition={{ duration: 0.6 }}
+>
+  <div className="container center">
+    <div className="intro-icon" aria-hidden>
+      {/* Minimal clock / continuity icon */}
+      <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
+        <circle cx="26" cy="26" r="24" stroke="rgba(255,255,255,0.12)" strokeWidth="1.6"/>
+        <path d="M26 12v14l8 5" stroke="#fff" strokeWidth="1.6" strokeLinecap="round"/>
+      </svg>
+    </div>
+
+    <h2 className="h2">What is After.Me?</h2>
+
+    <p className="muted narrow">
+      After.Me is a digital vault where your words outlive you.  
+      You can write messages, memories, and letters — all encrypted before they leave your device —  
+      and have them delivered to your chosen people at the right time.
+    </p>
+
+    <p className="muted narrow">
+      It’s not about data. It’s about <em>legacy</em> — creating a bridge between who you are now  
+      and those who’ll read your words in the future.
+    </p>
+
+    <div className="cta" style={{ marginTop: '20px' }}>
+      <Link href="/signup" className="btn solid lg">Start Writing</Link>
+      <Link href="/login" className="btn ghost lg">Learn More</Link>
+    </div>
+  </div>
+</motion.section>
+
+{/* WHY (Minimal Slab) */}
 <motion.section
   className="section"
   initial={{ opacity: 0, y: 22 }}
@@ -93,14 +130,12 @@ export default function HomePage(): JSX.Element {
   transition={{ duration: 0.6 }}
 >
   <div className="container">
-    <div className="slab">
+    <div className="slab slab-minimal">
       <div className="slab-icon" aria-hidden>
-        {/* Minimal “spark/quill” style icon */}
-        <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
-          <circle cx="28" cy="28" r="26" stroke="rgba(255,255,255,.14)" />
-          <path d="M18 33 C24 26, 32 21, 40 19" stroke="#ffffff" strokeOpacity=".9" strokeWidth="1.8" fill="none"/>
-          <path d="M24 38 L32 30" stroke="#ffffff" strokeOpacity=".9" strokeWidth="1.8" />
-          <circle cx="41" cy="17" r="2" fill="#ffffff" />
+        {/* Minimal envelope icon (letters/legacy) */}
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" role="img" aria-label="Envelope">
+          <rect x="8" y="12" width="32" height="24" rx="6" stroke="white" strokeOpacity=".9" />
+          <path d="M10 16 L24 26 L38 16" stroke="white" strokeOpacity=".9" />
         </svg>
       </div>
       <div className="slab-body">
@@ -115,7 +150,7 @@ export default function HomePage(): JSX.Element {
 </motion.section>
 
 
-{/* SECURITY (Framed Slab with Lock) */}
+{/* SECURITY (Minimal Slab with centered lock) */}
 <motion.section
   className="section"
   initial={{ opacity: 0, y: 22 }}
@@ -124,14 +159,16 @@ export default function HomePage(): JSX.Element {
   transition={{ duration: 0.6 }}
 >
   <div className="container">
-    <div className="slab">
+    <div className="slab slab-minimal">
       <div className="slab-icon" aria-hidden>
-        {/* Large lock icon */}
-        <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
-          <circle cx="28" cy="28" r="26" stroke="rgba(255,255,255,.14)" />
-          <rect x="16" y="28" width="24" height="16" rx="6" fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.22)" />
-          <path d="M20 28 v-3 c0-5.5 4.5-10 10-10s10 4.5 10 10v3" stroke="#ffffff" strokeOpacity=".9" strokeWidth="2" fill="none"/>
-          <circle cx="28" cy="36" r="2.6" fill="#ffffff" />
+        {/* Clean lock icon (aligned shackle) */}
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" role="img" aria-label="Lock">
+          <!-- body -->
+          <rect x="12" y="22" width="24" height="16" rx="6" stroke="white" strokeOpacity=".9" />
+          <!-- centered shackle -->
+          <path d="M16 22 v-3 c0-5.8 4.7-10.5 10.5-10.5S37 13.2 37 19v3" stroke="white" strokeOpacity=".9" />
+          <!-- keyhole (optional, minimal) -->
+          <circle cx="24" cy="30" r="2" fill="white" />
         </svg>
       </div>
       <div className="slab-body">
