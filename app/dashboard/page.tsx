@@ -4,7 +4,6 @@ import { useState } from "react";
 
 export default function InverseDashboard() {
   const [open, setOpen] = useState(false);
-  const [menu, setMenu] = useState(false);
 
   // demo form state
   const [title, setTitle] = useState("");
@@ -18,47 +17,11 @@ export default function InverseDashboard() {
         {/* === BACKGROUND FX (Animated Mesh + Grain) === */}
         <div className="bgfx" aria-hidden="true" />
 
-        {/* Topbar */}
+        {/* Topbar (hamburger tamamen kaldırıldı) */}
         <div className="topbar">
           <Link href="/" className="brand" aria-label="After.Me — Home">
             <img src="/logo.svg" width={36} height={36} alt="After.Me" />
           </Link>
-
-          <div className="menu-wrap">
-            <button
-              className="hamburger"
-              aria-label="Menu"
-              aria-expanded={menu}
-              onClick={() => setMenu((v) => !v)}
-            >
-              <span /><span /><span />
-            </button>
-
-            {menu && (
-              <nav className="menu" role="menu" aria-label="Quick actions">
-                <button
-                  className="menu-item"
-                  onClick={() => { setOpen(true); setMenu(false); }}
-                >
-                  Write Letter
-                </button>
-                <Link
-                  className="menu-item"
-                  href="/dashboard/plan"
-                  onClick={() => setMenu(false)}
-                >
-                  Manage Plan
-                </Link>
-                <Link
-                  className="menu-item"
-                  href="/dashboard/contacts"
-                  onClick={() => setMenu(false)}
-                >
-                  Trusted Contacts
-                </Link>
-              </nav>
-            )}
-          </div>
         </div>
 
         <h1 className="title">Choose Your Plan</h1>
@@ -253,21 +216,16 @@ export default function InverseDashboard() {
           max-width:1180px; width:100%;
           padding:56px 28px 44px; text-align:center;
           box-shadow:0 0 32px rgba(255,255,255,0.06);
-          overflow:hidden;  /* arka efekt taşmasın */
-          isolation:isolate; /* overlay katmanlarını düzgün ayır */
+          overflow:hidden;
+          isolation:isolate;
         }
 
-        /* === BACKGROUND FX ===
-           1) .bgfx: iki pseudo-elem. kullanıyor
-              - ::before => Animated Mesh Gradient
-              - ::after  => Subtle Grain (çok düşük opaklık) */
+        /* === BACKGROUND FX === */
         .bgfx{
           position:absolute; inset:-10%; z-index:0; pointer-events:none;
         }
         .bgfx::before{
           content:""; position:absolute; inset:0;
-          /* 6 noktalı mesh gradient (mor-mavi + altın + koyu gri),
-             büyük bir alanda yavaşça nefes alır ve kayar */
           background:
             radial-gradient(35% 45% at 8% 12%, rgba(108,99,255,.18), transparent 60%),
             radial-gradient(40% 45% at 92% 10%, rgba(242,201,76,.15), transparent 60%),
@@ -281,7 +239,6 @@ export default function InverseDashboard() {
         }
         .bgfx::after{
           content:""; position:absolute; inset:-50%;
-          /* Grain: conic+linear kombinasyonu, çok düşük opaklık */
           background:
             conic-gradient(from 0deg at 50% 50%,
               rgba(255,255,255,.02) 0 10%,
@@ -324,28 +281,6 @@ export default function InverseDashboard() {
         .topbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; position:relative; z-index:1; }
         .brand{ display:inline-flex; align-items:center; gap:10px; text-decoration:none; }
 
-        .menu-wrap{ position:relative }
-        .hamburger{
-          background:#0f0f0f; border:1px solid rgba(255,255,255,.18);
-          border-radius:10px; padding:8px 9px; display:grid; gap:3px; min-width:40px;
-        }
-        .hamburger span{ width:20px; height:2px; background:#fff; border-radius:2px }
-
-        .menu{
-          position:absolute; top:44px; right:0; z-index:20;
-          background:#0b0b0b; border:1px solid rgba(255,255,255,.18); border-radius:12px;
-          width:260px; padding:8px;
-          display:flex; flex-direction:column; align-items:stretch; gap:8px;
-          box-shadow:0 10px 26px rgba(255,255,255,.08);
-        }
-        .menu-item{
-          all: unset;
-          display:block; width:100%; height:44px; line-height:44px; text-align:center;
-          padding:0 14px; border-radius:10px; cursor:pointer;
-          color:#fff; font-weight:900; font-size:15px; letter-spacing:.2px;
-        }
-        .menu-item:hover{ background:#101010 }
-
         .title{ font-size:30px; margin:10px 0 28px; font-weight:900; letter-spacing:.2px; position:relative; z-index:1; }
 
         .plans{
@@ -362,7 +297,7 @@ export default function InverseDashboard() {
           min-height: 380px;
           --accent:#ffffff;
           --accentGlow: rgba(255,255,255,.35);
-          z-index:1; /* arka FX altında kalmasın */
+          z-index:1;
           backdrop-filter: saturate(120%) contrast(105%);
         }
         .card:hover{ transform:translateY(-6px); box-shadow:0 10px 26px rgba(255,255,255,.12); border-color:#eaeaea; filter:saturate(1.04) }
@@ -481,7 +416,6 @@ export default function InverseDashboard() {
         .pill.ok{ background:rgba(154,255,192,.12); border-color:rgba(154,255,192,.25) }
         .pill.wait{ background:rgba(255,224,138,.12); border-color:rgba(255,255,224,.25) }
         .pill.draft{ background:rgba(184,184,184,.12); border-color:rgba(184,184,184,.25) }
-        .muted{ opacity:.8 }
 
         /* Responsive */
         @media (max-width:900px){
