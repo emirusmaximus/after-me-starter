@@ -15,13 +15,8 @@ export default function InverseDashboard() {
   return (
     <main className="wrap">
       <div className="outer">
-        {/* === BACKGROUND FX (4 köşe glow) === */}
-        <div className="bgfx" aria-hidden="true">
-          <span className="glow tl" />
-          <span className="glow tr" />
-          <span className="glow bl" />
-          <span className="glow br" />
-        </div>
+        {/* === BACKGROUND FX (Animated Mesh + Grain) === */}
+        <div className="bgfx" aria-hidden="true" />
 
         {/* Topbar */}
         <div className="topbar">
@@ -87,7 +82,6 @@ export default function InverseDashboard() {
               <li><b>Inactivity + heartbeat</b> triggers</li>
             </ul>
 
-            {/* CTA: önceki kompakt stil + aynı hiza için sarıcı */}
             <div className="cta-wrap">
               <Link href="#" className="btn btn-compact">Upgrade Now</Link>
             </div>
@@ -259,30 +253,72 @@ export default function InverseDashboard() {
           max-width:1180px; width:100%;
           padding:56px 28px 44px; text-align:center;
           box-shadow:0 0 32px rgba(255,255,255,0.06);
-          overflow:hidden;   /* glow taşmalarını gizle */
+          overflow:hidden;  /* arka efekt taşmasın */
+          isolation:isolate; /* overlay katmanlarını düzgün ayır */
         }
 
-        /* === 4 KÖŞE GLOW ANİMASYONU === */
-        .bgfx{ position:absolute; inset:-10%; z-index:0; pointer-events:none; filter:blur(42px); opacity:.60; }
-        .glow{
-          position:absolute; width:46%; height:46%;
-          background: radial-gradient(closest-side, rgba(108,99,255,.55), transparent 70%),
-                      radial-gradient(closest-side, rgba(242,201,76,.35), transparent 70%);
-          mix-blend-mode:screen; border-radius:50%;
-          animation: drift 18s ease-in-out infinite, breathe 6s ease-in-out infinite;
+        /* === BACKGROUND FX ===
+           1) .bgfx: iki pseudo-elem. kullanıyor
+              - ::before => Animated Mesh Gradient
+              - ::after  => Subtle Grain (çok düşük opaklık) */
+        .bgfx{
+          position:absolute; inset:-10%; z-index:0; pointer-events:none;
         }
-        .glow.tl{ top:-8%; left:-6%; transform-origin: 100% 100%; }
-        .glow.tr{ top:-8%; right:-6%; transform-origin: 0% 100%; animation-delay:.6s; }
-        .glow.bl{ bottom:-8%; left:-6%; transform-origin: 100% 0%; animation-delay:1.2s; }
-        .glow.br{ bottom:-8%; right:-6%; transform-origin: 0% 0%; animation-delay:1.8s; }
+        .bgfx::before{
+          content:""; position:absolute; inset:0;
+          /* 6 noktalı mesh gradient (mor-mavi + altın + koyu gri),
+             büyük bir alanda yavaşça nefes alır ve kayar */
+          background:
+            radial-gradient(35% 45% at 8% 12%, rgba(108,99,255,.18), transparent 60%),
+            radial-gradient(40% 45% at 92% 10%, rgba(242,201,76,.15), transparent 60%),
+            radial-gradient(35% 50% at 12% 88%, rgba(242,201,76,.12), transparent 60%),
+            radial-gradient(45% 55% at 88% 86%, rgba(108,99,255,.16), transparent 60%),
+            radial-gradient(25% 30% at 50% 20%, rgba(140,130,255,.10), transparent 65%),
+            radial-gradient(30% 35% at 50% 80%, rgba(210,180,80,.08), transparent 65%);
+          filter: blur(24px) saturate(120%);
+          animation: meshShift 22s ease-in-out infinite alternate,
+                     meshDrift 38s ease-in-out infinite;
+        }
+        .bgfx::after{
+          content:""; position:absolute; inset:-50%;
+          /* Grain: conic+linear kombinasyonu, çok düşük opaklık */
+          background:
+            conic-gradient(from 0deg at 50% 50%,
+              rgba(255,255,255,.02) 0 10%,
+              rgba(0,0,0,0) 10% 20%,
+              rgba(255,255,255,.02) 20% 30%,
+              rgba(0,0,0,0) 30% 40%,
+              rgba(255,255,255,.02) 40% 50%,
+              rgba(0,0,0,0) 50% 60%,
+              rgba(255,255,255,.02) 60% 70%,
+              rgba(0,0,0,0) 70% 80%,
+              rgba(255,255,255,.02) 80% 90%,
+              rgba(0,0,0,0) 90% 100%),
+            linear-gradient(0deg, rgba(255,255,255,.015), rgba(255,255,255,.015));
+          mix-blend-mode: screen;
+          opacity:.35;
+          transform:rotate(0deg) scale(1.1);
+          animation: grainSpin 120s linear infinite;
+        }
 
-        @keyframes drift{
-          0%,100%{ transform: translate(0,0) scale(1); }
-          50%{ transform: translate(2.5%, -1.5%) scale(1.06); }
+        @keyframes meshShift{
+          0%   { filter: blur(22px) saturate(115%); }
+          50%  { filter: blur(26px) saturate(130%); }
+          100% { filter: blur(24px) saturate(120%); }
         }
-        @keyframes breathe{
-          0%,100%{ opacity:.42; }
-          50%{ opacity:.72; }
+        @keyframes meshDrift{
+          0% {
+            background-position:
+              8% 12%, 92% 10%, 12% 88%, 88% 86%, 50% 20%, 50% 80%;
+          }
+          100% {
+            background-position:
+              14% 16%, 86% 12%, 16% 82%, 84% 84%, 48% 24%, 52% 76%;
+          }
+        }
+        @keyframes grainSpin{
+          0% { transform: rotate(0deg) scale(1.1); }
+          100% { transform: rotate(360deg) scale(1.1); }
         }
 
         .topbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; position:relative; z-index:1; }
@@ -326,7 +362,7 @@ export default function InverseDashboard() {
           min-height: 380px;
           --accent:#ffffff;
           --accentGlow: rgba(255,255,255,.35);
-          z-index:1; /* glow altında kalmasın */
+          z-index:1; /* arka FX altında kalmasın */
           backdrop-filter: saturate(120%) contrast(105%);
         }
         .card:hover{ transform:translateY(-6px); box-shadow:0 10px 26px rgba(255,255,255,.12); border-color:#eaeaea; filter:saturate(1.04) }
@@ -365,7 +401,7 @@ export default function InverseDashboard() {
           box-shadow: 0 0 0 6px var(--accentGlow), 0 0 28px var(--accent), inset 0 0 7px rgba(0,0,0,.45);
         }
 
-        /* CTA — önceki kompakt stil */
+        /* CTA — kompakt ve tabanda aynı hiza */
         .cta-wrap{ margin-top:auto; width:100%; display:flex; justify-content:center; }
         .btn{
           background:#fff; color:#000; text-decoration:none;
@@ -455,7 +491,7 @@ export default function InverseDashboard() {
           .kpis{ grid-template-columns:1fr }
           .tri{ grid-template-columns:1fr }
           .corner-ribbon{ left:-38px; top:8px; }
-          .bgfx{ opacity:.55; filter:blur(36px); }
+          .bgfx::after{ opacity:.3; }
         }
       `}</style>
     </main>
