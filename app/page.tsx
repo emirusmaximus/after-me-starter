@@ -30,7 +30,7 @@ export default function HomePage(): JSX.Element {
       {/* NAVBAR */}
       <nav className="nav">
         <div className="container nav-in">
-          <Link href="/" className="brand">
+          <Link href="/" className="brand" title="Go to Home">
             <span className="badge">
               <img src="/logo.svg" alt="After.Me logo" width={26} height={26} />
             </span>
@@ -172,7 +172,7 @@ export default function HomePage(): JSX.Element {
         </div>
       </motion.section>
 
-      {/* FEATURES (orijinal) */}
+      {/* FEATURES */}
       <motion.section
         className="section"
         initial={{ opacity: 0, y: 22 }}
@@ -196,7 +196,7 @@ export default function HomePage(): JSX.Element {
         </div>
       </motion.section>
 
-      {/* HUMAN STORIES (orijinal) */}
+      {/* HUMAN STORIES */}
       <motion.section
         className="section"
         initial={{ opacity: 0, y: 22 }}
@@ -224,7 +224,7 @@ export default function HomePage(): JSX.Element {
         </div>
       </motion.section>
 
-      {/* WAITLIST (orijinal) */}
+      {/* WAITLIST */}
       <motion.section
         className="section"
         initial={{ opacity: 0, y: 22 }}
@@ -242,7 +242,7 @@ export default function HomePage(): JSX.Element {
         </div>
       </motion.section>
 
-      {/* MEMORY SPARKS (orijinal) */}
+      {/* MEMORY SPARKS */}
       <motion.section
         className="section"
         initial={{ opacity: 0, y: 22 }}
@@ -257,7 +257,7 @@ export default function HomePage(): JSX.Element {
         </div>
       </motion.section>
 
-      {/* PROCESS (orijinal) */}
+      {/* PROCESS */}
       <section className="section">
         <div className="container center">
           <h3 className="h3 muted">🕰️ How your words travel through time.</h3>
@@ -271,7 +271,7 @@ export default function HomePage(): JSX.Element {
         </div>
       </section>
 
-      {/* FOOTER (orijinal) */}
+      {/* FOOTER */}
       <section className="container footer">
         <div className="links">
           <span>Contact</span>
@@ -314,73 +314,4 @@ export default function HomePage(): JSX.Element {
         .kpi b{display:block;font-size:28px}
         .kpi span{color:var(--muted)}
         .center{text-align:center}
-        .h2{font-size:26px;margin-bottom:10px}
-        .h3{font-size:22px;margin-bottom:8px}
-        .muted{color:var(--muted)}
-        .narrow{max-width:700px;margin:0 auto}
-        .two{display:flex;gap:40px;align-items:center;flex-wrap:wrap}
-        .illu{flex:1 1 260px;display:flex;justify-content:center}
-        .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
-        .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;transition:.2s}
-        .card:hover{transform:translateY(-3px);box-shadow:0 0 24px rgba(255,255,255,.05)}
-        .quote-sm{font-style:italic;color:#eaeaea}
-        .waitlist{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px}
-        .waitlist input{width:260px;border:1px solid var(--border);background:#0a0a0a;color:#fff;border-radius:10px;padding:12px 14px}
-        .sparks{background:radial-gradient(80% 80% at 50% 50%, #111 0%, #050505 100%);border:1px solid var(--border);border-radius:20px;text-align:center;padding:60px 20px}
-        .sparks-title{font-size:28px;margin-bottom:10px;background:linear-gradient(90deg,#fff,#bfbfbf);-webkit-background-clip:text;color:transparent}
-        .spark{display:block;width:6px;height:6px;border-radius:50%;background:#fff;margin:16px auto 0;box-shadow:0 0 20px 4px #fff;animation:pulse 2s ease-in-out infinite alternate}
-        @keyframes pulse{from{opacity:.15;transform:translateY(0)}to{opacity:.35;transform:translateY(-2px)}}
-        .hr{height:1px;background:var(--border);margin:28px 0}
-        .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
-        .step{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px}
-        .footer{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:24px 0;border-top:1px solid var(--border);flex-wrap:wrap}
-        .footer .links{display:flex;gap:16px;align-items:center}
-        .footer .links span{opacity:.8}
-        .footer a{color:#fff;opacity:.85}
-        .legal{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
-        .legal-links{display:flex;gap:16px}
-
-        /* === Intro: WHAT IS AFTER.ME === */
-        .intro{
-          padding:64px 0 40px;
-          background:radial-gradient(100% 90% at 50% 30%, rgba(255,255,255,0.03), transparent);
-          border-top:1px solid var(--border);
-          border-bottom:1px solid var(--border);
-        }
-        .intro-icon{
-          display:grid;place-items:center;
-          width:68px;height:68px;border-radius:16px;
-          background:rgba(255,255,255,0.04);
-          border:1px solid rgba(255,255,255,0.1);
-          margin:0 auto 18px;
-        }
-        .intro .h2{font-size:28px;margin-bottom:12px}
-        .intro p{font-size:16px;line-height:1.6;margin-bottom:10px}
-
-        /* === Minimal Slab (WHY / SECURITY) === */
-        .slab{
-          display:flex;gap:18px;align-items:center;
-          border:1px solid var(--border);
-          background:var(--card);
-          border-radius:16px;padding:22px 20px;
-          box-shadow:0 0 16px rgba(255,255,255,0.04);
-        }
-        .slab-icon{
-          width:72px;height:72px;min-width:72px;min-height:72px;
-          border:1px solid var(--border);border-radius:14px;
-          display:grid;place-items:center;background:#0c0c0c;
-        }
-        .slab-body{display:grid;gap:8px}
-        .slab-title{margin:0;font-size:24px;line-height:1.2}
-        .slab-muted{margin:0;color:var(--muted);max-width:760px}
-
-        @media (max-width:640px){.title{font-size:34px}}
-        @media (max-width:720px){
-          .slab{flex-direction:column;text-align:center}
-          .slab-icon{width:64px;height:64px;min-width:64px;min-height:64px}
-          .slab-title{font-size:22px}
-        }
-      `}</style>
-    </>
-  );
-}
+        .h2{font-size:26px;margin-bottom:10
