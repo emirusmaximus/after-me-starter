@@ -35,7 +35,7 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      {/* OUTER FRAME */}
+      {/* OUTER FRAME (kısaltılmış) */}
       <section className="plans">
         <div className="container center">
           <h2 className="ph-title">Plans</h2>
@@ -43,9 +43,9 @@ export default function DashboardPage() {
         </div>
 
         <div className="frame">
-          {/* AYIRICI ÇİZGİLER */}
-          <span className="divider d1" />
-          <span className="divider d2" />
+          {/* Dikey ayırıcı düz beyaz çizgiler */}
+          <span className="divider d1" aria-hidden />
+          <span className="divider d2" aria-hidden />
 
           <div className="grid">
             <Compartment
@@ -54,7 +54,6 @@ export default function DashboardPage() {
               features={["Encrypted vault", "Priority support", "Early access"]}
               cta="Upgrade 💎"
               type="premium"
-              ribbon="Most Chosen"
             />
             <Compartment
               title="Free"
@@ -95,11 +94,11 @@ export default function DashboardPage() {
         .ph-title{ font-size:28px; font-weight:800; margin-bottom:4px }
         .ph-sub{ color:var(--muted); margin-bottom:18px; font-weight:600 }
 
-        /* KÜÇÜLTÜLMÜŞ DIŞ ÇERÇEVE */
+        /* KÜÇÜK ve ORTALI DIŞ ÇERÇEVE (kısaltılmış) */
         .frame{
           position:relative;
           width:100%;
-          max-width:760px;      /* daha kısa */
+          max-width:760px;
           margin:0 auto;
           border:2px solid #fff;
           border-radius:20px;
@@ -109,15 +108,17 @@ export default function DashboardPage() {
           overflow:hidden;
         }
 
+        /* DİKEY BEYAZ AYIRICI ÇİZGİLER */
         .divider{
           position:absolute;
           top:20px; bottom:20px;
           width:0; border-left:2px solid #fff;
           z-index:20;
         }
-        .d1{ left:calc(33.333%) }
-        .d2{ left:calc(66.666%) }
+        .d1{ left:calc(33.333%); }
+        .d2{ left:calc(66.666%); }
 
+        /* 3 bölme */
         .grid{
           display:grid;
           grid-template-columns:repeat(3,1fr);
@@ -127,6 +128,7 @@ export default function DashboardPage() {
           z-index:10;
         }
 
+        /* İÇ YAZILAR +6px BÜYÜTÜLDÜ */
         .compartment{
           background:#000;
           padding:16px 18px 22px;
@@ -135,33 +137,38 @@ export default function DashboardPage() {
           justify-content:flex-start;
           position:relative;
         }
-        .hdr h3{ font-size:12px; text-transform:uppercase; font-weight:900; margin:0 0 6px }
-        .price{ font-size:26px; font-weight:900; margin-bottom:6px }
-        .feat{ list-style:none; padding:0; margin:8px 0 18px; text-align:left }
-        .feat li{ margin:5px 0; font-size:14px; color:#ddd }
-        .cta{ width:100%; height:42px; border-radius:12px; font-weight:900; font-size:15px; cursor:pointer;
-              border:1px solid #fff; background:#111; color:#fff; margin-top:auto }
+        .hdr h3{ font-size:18px; text-transform:uppercase; font-weight:900; margin:0 0 8px }   /* 12→18 */
+        .price{ font-size:32px; font-weight:900; margin-bottom:10px }                          /* 26→32 */
+        .feat{ list-style:none; padding:0; margin:12px 0 22px; text-align:left }
+        .feat li{ margin:7px 0; font-size:20px; color:#ddd }                                   /* 14→20 */
+        .cta{
+          width:100%; height:48px; border-radius:12px;
+          font-weight:900; font-size:21px;                                                     /* 15→21 */
+          cursor:pointer; transition:.18s;
+          border:1px solid #fff; background:#111; color:#fff; margin-top:auto
+        }
         .cta:hover{ background:#161616 }
 
-        /* BEYAZ FONLU MOST CHOSEN DİKDÖRTGENİ */
-        .ribbon{
+        /* PREMIUM üzerindeki küçük beyaz dikdörtgen etiket (most choosen) */
+        .badge{
           position:absolute;
-          top:-16px;
-          left:50%;
+          top:-14px;                 /* üst kenarın HEMEN üstünden başlasın */
+          left:-14px;                /* sol kenarı keserek girsin */
           width:180px;
-          transform:rotate(-25deg) translateX(-50%);
-          transform-origin:center;
+          transform:rotate(-35deg);  /* sol-üstten sağ-alt yönüne çapraz */
+          transform-origin:left top;
           z-index:30;
-          background:#fff;
-          color:#000;
+          background:#fff;           /* içi beyaz */
+          color:#000;                /* yazı siyah */
+          border:2px solid #fff;     /* dış çevresi beyaz */
+          border-radius:6px;
+          text-transform:uppercase;
           font-weight:900;
           font-size:14px;
-          letter-spacing:.5px;
-          text-transform:uppercase;
+          letter-spacing:.6px;
           text-align:center;
           padding:10px 0;
-          border-radius:6px;
-          box-shadow:0 4px 18px rgba(255,255,255,.35);
+          box-shadow:0 6px 22px rgba(0,0,0,.45);
           pointer-events:none;
         }
 
@@ -169,21 +176,25 @@ export default function DashboardPage() {
           .frame{ max-width:90vw; min-height:auto; padding:16px }
           .divider{ display:none }
           .grid{ grid-template-columns:1fr }
-          .ribbon{ width:160px; font-size:13px; top:-12px; transform:rotate(-25deg) translateX(-50%) }
+          .badge{ width:160px; font-size:13px; top:-12px; left:-12px; transform:rotate(-33deg) }
         }
       `}</style>
     </main>
   );
 }
 
-/* === KUTU === */
-function Compartment({ title, price, features, cta, type, ribbon }:{
+/* === BÖLME === */
+function Compartment({
+  title, price, features, cta, type
+}:{
   title:string; price:string; features:string[]; cta:string;
-  type:"premium"|"free"|"lifetime"; ribbon?:string;
+  type:"premium"|"free"|"lifetime";
 }){
   return(
     <div className={`compartment ${type}`}>
-      {type==="premium"&&ribbon?<div className="ribbon">{ribbon}</div>:null}
+      {/* Premium’un üst & sol kenarını çapraz kesecek beyaz etiket */}
+      {type==="premium" ? <div className="badge">most choosen</div> : null}
+
       <div className="hdr">
         <h3>{title}</h3>
         <div className="price">{price}</div>
