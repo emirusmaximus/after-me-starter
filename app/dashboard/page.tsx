@@ -1,12 +1,31 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { supabase } from "@/lib/supabaseClient";
 
 export default function DashboardPage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [composeOpen, setComposeOpen] = useState(false);
+
+  // Auth guard: kullanıcı yoksa login'e gönder
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    let cancel = false;
+    (async () => {
+      const { data } = await supabase.auth.getUser();
+      if (!cancel) {
+        if (!data.user) {
+          // login'de geri dönüş parametresiyle aç
+          window.location.replace("/login?redirectTo=/dashboard");
+        } else {
+          setReady(true);
+        }
+      }
+    })();
+    return () => { cancel = true; };
+  }, []);
 
   // Demo data (placeholder)
   const username = "emir";
@@ -15,7 +34,16 @@ export default function DashboardPage() {
     { id: 1, title: "Letter to Mom", status: "Delivered", date: "Aug 12, 2025" },
     { id: 2, title: "18th Birthday Letter", status: "Scheduled", date: "Jan 03, 2033" },
   ];
-  const trustProgress = { contacts: 1, required: 2 }; // e.g., 2-of-N
+  const trustProgress = { contacts: 1, required: 2 }; // 2-of-N örneği
+
+  if (!ready) {
+    // Basit skeleton (istersen null bırakabilirsin)
+    return (
+      <main style={{padding:"24px"}}>
+        <div style={{opacity:.7}}>Loading your vault…</div>
+      </main>
+    );
+  }
 
   return (
     <>
@@ -74,7 +102,7 @@ export default function DashboardPage() {
       >
         <div className="container">
           <div className="eyebrow"><span className="dot" /> Your private legacy workspace</div>
-          <h1 className="title">Welcome back, @{username}</h1>
+          <h1 className="title">Welcome back, @emir</h1>
           <p className="subtitle">
             Your vault is where warm, encrypted messages become future moments. Write now. Decide when they unlock.
           </p>
@@ -84,7 +112,6 @@ export default function DashboardPage() {
             <Link className="btn ghost lg" href="/dashboard/vault">Open Vault</Link>
           </div>
 
-          {/* Soft narrative ribbon */}
           <p className="note">
             “A letter takes five minutes, but it may live for decades.”
           </p>
@@ -159,7 +186,7 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      {/* Gentle Upsell (not pushy) */}
+      {/* Gentle Upsell */}
       <section className="section">
         <div className="container plans">
           <div className="plans-hd">
@@ -205,19 +232,19 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      {/* Stories Strip (emotional nudge) */}
+      {/* Stories Strip */}
       <section className="section">
         <div className="container stories">
-          <StoryCard quote="“He left us his voice. We still hear it every year on his birthday.”" by="A Daughter" />
-          <StoryCard quote="“To my son: May you never fear the unknown.”" by="A Father" />
-          <StoryCard quote="“I wrote this when I was 25. If you’re reading this, I found the courage.”" by="A Stranger" />
+          <StoryCard quote="He left us his voice. We still hear it every year on his birthday." by="A Daughter" />
+          <StoryCard quote="To my son: May you never fear the unknown." by="A Father" />
+          <StoryCard quote="I wrote this when I was 25. If you're reading this, I found the courage." by="A Stranger" />
         </div>
       </section>
 
       {/* Composer Modal */}
       <ComposeModal open={composeOpen} onClose={() => setComposeOpen(false)} />
 
-      {/* Styles */}
+      {/* Styles (senin stil bloğun korunuyor) */}
       <style jsx>{`
         :root{
           --bg:#050505; --fg:#f5f5f5; --muted:#c7c7c7; --card:#0b0b0b; --border:#1a1a1a;
@@ -381,8 +408,7 @@ function ComposeModal({ open, onClose }: { open: boolean; onClose: () => void })
               <textarea rows={6} value={content} onChange={e=>setContent(e.target.value)} placeholder="Write your words here..." />
 
               <button className="btn solid full" onClick={()=>{
-                // NOTE: Here we will plug client-side AES + Supabase insert in the next step.
-                // For now, just close with a fake success.
+                // NOTE: Buraya client-side AES + Supabase insert bağlanacak.
                 onClose();
                 alert("Draft saved locally (demo). Next step: client-side AES + Supabase.");
               }}>Encrypt & Save (Demo)</button>
