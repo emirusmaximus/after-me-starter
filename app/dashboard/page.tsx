@@ -74,7 +74,7 @@ export default function DashboardPage() {
           <p className="ph-sub">Choose your legacy.</p>
         </div>
 
-        {/* === ÜÇ AYRI BEYAZ KENARLI DİKDÖRTGEN — YAN YANA === */}
+        {/* ÜÇ AYRI NEON YEŞİL KENARLI DİKDÖRTGEN — YAN YANA */}
         <div className="container plans-row">
           {plans.map((p) => (
             <PlanCard
@@ -95,8 +95,10 @@ export default function DashboardPage() {
 
         :root{
           --bg:#000; --fg:#fff; --muted:#BBB;
-          --prem-a:#6C63FF; --prem-b:#8A7CFF;      /* Premium gradient */
-          --life-a:#F2C94C; --life-b:#F9E79F;      /* Lifetime gradient */
+          --prem-a:#6C63FF; --prem-b:#8A7CFF;      /* Premium bg gradient */
+          --life-a:#F2C94C; --life-b:#F9E79F;      /* Lifetime bg gradient */
+          --neon:#39FF14;                          /* NEON GREEN */
+          --neonGlow: rgba(57,255,20,.45);
         }
         *{ box-sizing:border-box }
         body, .dashboard { background:var(--bg); color:var(--fg); font-family: Manrope, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
@@ -116,101 +118,115 @@ export default function DashboardPage() {
         .ph-title{ font-size:28px; font-weight:800; margin-bottom:4px; }
         .ph-sub{ color:var(--muted); margin-bottom:24px; font-weight:600; }
 
-        /* === ÜÇ AYRI DİKDÖRTGEN — ORTALANMIŞ, BEYAZ KENARLI === */
+        /* === ÜÇ AYRI DİKDÖRTGEN — ORTALANMIŞ, NEON AYRIK === */
         .plans-row{
           display:flex;
-          gap:24px;
+          gap:28px;                     /* kartlar birbirinden AYRI dursun */
           justify-content:center;
           align-items:stretch;
           flex-wrap:nowrap;
-          overflow-x:auto;             /* mobilde yana kaydır */
+          overflow-x:auto;               /* mobilde yana kaydır */
           -webkit-overflow-scrolling:touch;
-          padding:4px;
+          padding:6px 4px 10px;
           scrollbar-width:thin;
         }
-        @media (max-width:900px){
-          .plans-row{ gap:16px; justify-content:flex-start; }
-        }
+        @media (max-width:900px){ .plans-row{ gap:18px; justify-content:flex-start; } }
 
-        /* === KART: BEYAZ KENARLI, DİKEY DİKDÖRTGEN === */
+        /* === KART: NEON YEŞİL KENARLI, DİKEY DİKDÖRTGEN === */
         .plan{
-          flex:0 0 320px;               /* sabit genişlik -> dikey görünüm */
-          height:560px;                 /* dikey dikdörtgen (kare değil) */
-          border:1px solid #FFFFFF;     /* *** BEYAZ KENAR *** */
+          flex:0 0 320px;                /* dikey görünüm */
+          height:560px;
+          border:2px solid var(--neon);  /* *** NEON YEŞİL ÇİZGİ *** */
           border-radius:18px;
-          background:#0b0b0b;           /* koyu zemin, kenarı belirgin kılar */
+          background:#0b0b0b;            /* siyah zeminde neon belirgin */
           padding:22px;
           display:flex;
           flex-direction:column;
           position:relative;
-          overflow:visible;             /* ribbon dışarı taşsın */
-          transition:transform .2s, box-shadow .2s, outline-color .2s;
-          outline:0 solid transparent;
+          overflow:visible;              /* ribbon dışarı taşsın */
+          transition:transform .18s ease, box-shadow .18s ease, filter .18s ease;
+          box-shadow:
+            0 0 0 1px rgba(57,255,20,.12) inset,
+            0 0 22px var(--neonGlow);    /* sabit glow */
+          isolation:isolate;
         }
-
-        /* Hover glow (varyanta göre renk) */
-        .plan:hover{ transform:translateY(-4px); }
-        .plan.premium:hover{ box-shadow:0 0 36px rgba(124,118,255,.35); }
-        .plan.free:hover{    box-shadow:0 0 32px rgba(255,255,255,.10); }
-        .plan.lifetime:hover{box-shadow:0 0 40px rgba(242,201,76,.45); }
+        /* Ek dış parlama için pseudo halkası */
+        .plan::after{
+          content:"";
+          position:absolute; inset:-6px;
+          border-radius:22px;
+          pointer-events:none;
+          box-shadow: 0 0 28px var(--neonGlow), 0 0 56px rgba(57,255,20,.15);
+          z-index:-1;
+        }
+        .plan:hover{
+          transform:translateY(-4px);
+          box-shadow:
+            0 0 0 1px rgba(57,255,20,.18) inset,
+            0 0 34px var(--neonGlow),
+            0 0 64px rgba(57,255,20,.25);
+          filter: drop-shadow(0 0 14px rgba(57,255,20,.18));
+        }
 
         /* İç hiza */
         .hdr{ min-height:96px; display:grid; align-content:start; }
-        .hdr h3{ font-size:13px; letter-spacing:.6px; text-transform:uppercase; font-weight:700; opacity:.9; margin:0 0 6px; }
-        .price{ font-size:34px; font-weight:800; line-height:1; }
+        .hdr h3{ font-size:13px; letter-spacing:.6px; text-transform:uppercase; font-weight:800; opacity:.95; margin:0 0 6px; }
+        .price{ font-size:34px; font-weight:900; line-height:1; }
         .feat{ list-style:none; padding:0; margin:12px 0 22px; }
         .feat li{ position:relative; padding-left:20px; margin-bottom:10px; font-size:15px; }
-        .feat li::before{ content:"✓"; position:absolute; left:0; top:0; opacity:.9; }
+        .feat li::before{ content:"✓"; position:absolute; left:0; top:0; opacity:.9; color:var(--neon); text-shadow:0 0 6px var(--neonGlow); }
 
         /* === CTA: ÜÇ VARYANT === */
-        .cta{ width:100%; height:48px; border-radius:16px; font-weight:800; font-size:16px; cursor:pointer; transition:.2s; user-select:none; }
+        .cta{ width:100%; height:48px; border-radius:16px; font-weight:900; font-size:16px; cursor:pointer; transition:.18s; user-select:none; }
 
-        /* Premium: glass + gradient border */
         .cta-premium{
           color:#fff;
           background:rgba(255,255,255,.06);
-          border:1px solid transparent;
-          background-clip: padding-box, border-box;
-          border-image: linear-gradient(90deg, var(--prem-a), var(--prem-b)) 1;
+          border:1px solid rgba(255,255,255,.12);
         }
-        .cta-premium:hover{ background:rgba(255,255,255,.10); }
-        .cta-premium:focus-visible{ box-shadow:0 0 0 3px rgba(124,118,255,.35); outline:0; }
+        .cta-premium:hover{ background:rgba(255,255,255,.10); box-shadow:0 0 12px var(--neonGlow); }
 
-        /* Free: inverted beyaz */
         .cta-free{ background:#fff; color:#111; border:1px solid #E9E9E9; }
-        .cta-free:hover{ background:#f2f2f2; }
-        .cta-free:focus-visible{ box-shadow:0 0 0 3px rgba(255,255,255,.35); outline:0; }
+        .cta-free:hover{ background:#f2f2f2; box-shadow:0 0 10px var(--neonGlow); }
 
-        /* Lifetime: altın kontür */
         .cta-life{ color:#241A00; background: rgba(255,214,102,.18); border:1px solid rgba(242,201,76,.65); }
-        .cta-life:hover{ background: rgba(255,214,102,.28); }
-        .cta-life:focus-visible{ box-shadow:0 0 0 3px rgba(242,201,76,.55); outline:0; }
+        .cta-life:hover{ background: rgba(255,214,102,.28); box-shadow:0 0 12px var(--neonGlow); }
 
-        /* === VARYANT ARKAPLANLARI (kenar BEYAZ kalır) === */
-        .premium{ background: linear-gradient(160deg, rgba(108,99,255,.16), rgba(138,124,255,.06)) #0b0b0b; }
-        .free{ background: linear-gradient(160deg, #1A1A1A, #2A2A2A); }
+        /* === VARYANT ARKAPLANLARI (kenar neon kalır) === */
+        .premium{ background: linear-gradient(160deg, rgba(108,99,255,.14), rgba(138,124,255,.05)) #0b0b0b; }
+        .free{ background: linear-gradient(160deg, #0e0e0e, #1c1c1c); }
         .lifetime{
           background: linear-gradient(160deg, var(--life-a), var(--life-b));
           color:#241A00;
         }
 
-        /* === “Most Chosen” RIBBON — DIŞTAN, BEYAZ KENARI KAPATIR === */
+        /* === “Most Chosen” RIBBON — gazete manşeti gibi, NEON çizginin ÜSTÜNDEN === */
         .ribbon{
           position:absolute;
-          top:-16px;                  /* DIŞARIDA başlasın */
-          right:-58px;                /* DIŞARIDA dursun */
-          z-index:3;                  /* kenarın ÜZERİNDE */
+          top:-18px;                 /* kutunun dışından başlasın */
+          right:-66px;               /* dışarı taşsın */
+          z-index:5;                 /* kenarın ÜZERİNDE */
           transform:rotate(42deg);
-          background: linear-gradient(90deg, var(--prem-a), var(--prem-b));
+          background:#0b0b0b;        /* manşet bant siyah */
           color:#fff;
-          font-weight:900;
+          font-weight:1000;
           font-size:12px;
-          letter-spacing:.6px;
-          padding:7px 0;
-          width: 200px;               /* şerit genişliği */
+          letter-spacing:.7px;
+          padding:9px 0;
+          width: 220px;
           text-align:center;
-          pointer-events:none;        /* tıklama engellemesin */
-          box-shadow:0 6px 14px rgba(0,0,0,.35);
+          text-transform:uppercase;
+          border:2px solid var(--neon);             /* NEON kenar */
+          box-shadow: 0 0 18px var(--neonGlow), 0 0 36px rgba(57,255,20,.25);
+        }
+        /* manşet bandın üzerinde hafif neon çizgi vurgusu */
+        .ribbon::after{
+          content:"";
+          position:absolute;
+          inset:-2px;
+          border-radius:2px;
+          box-shadow: inset 0 0 18px var(--neonGlow);
+          pointer-events:none;
         }
 
         /* === Lifetime shimmer (light sweep) === */
@@ -234,54 +250,3 @@ export default function DashboardPage() {
             rgba(255,255,255,.35) 45%,
             rgba(255,255,255,0) 100%);
           filter:blur(8px);
-          animation: sweep 3.2s linear infinite;
-        }
-        @keyframes sweep{
-          0%{ transform:translateX(-120%) rotate(20deg); }
-          100%{ transform:translateX(220%) rotate(20deg); }
-        }
-      `}</style>
-    </main>
-  );
-}
-
-/* === PLAN CARD === */
-function PlanCard({
-  title, price, features, button, variant, ribbon,
-}: {
-  title: string;
-  price: string;
-  features: string[];
-  button: string;
-  variant: "premium" | "free" | "lifetime";
-  ribbon?: string;
-}) {
-  return (
-    <div className={`plan ${variant}`} data-variant={variant}>
-      {/* Sadece Premium'a dıştan çapraz şerit (beyaz kenarı kapatır) */}
-      {variant === "premium" && ribbon ? <div className="ribbon">{ribbon}</div> : null}
-
-      {/* Lifetime için shimmer overlay */}
-      {variant === "lifetime" ? <div className="shimmer" aria-hidden /> : null}
-
-      <div className="hdr">
-        <h3>{title}</h3>
-        <div className="price">{price}</div>
-      </div>
-
-      <ul className="feat">
-        {features.map((f, i) => <li key={i}>{f}</li>)}
-      </ul>
-
-      <button
-        className={
-          variant === "premium" ? "cta cta-premium" :
-          variant === "lifetime" ? "cta cta-life" :
-          "cta cta-free"
-        }
-      >
-        {button}
-      </button>
-    </div>
-  );
-}
