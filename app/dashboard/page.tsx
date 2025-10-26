@@ -18,7 +18,6 @@ export default function InverseDashboard() {
         {/* Topbar */}
         <div className="topbar">
           <Link href="/" className="brand" aria-label="After.Me — Home">
-            {/* Logo daha büyük */}
             <img src="/logo.svg" width={36} height={36} alt="After.Me" />
           </Link>
 
@@ -74,11 +73,14 @@ export default function InverseDashboard() {
               <span aria-hidden="true">💜 </span>Premium Plan
             </h2>
             <p className="price">$2 / month</p>
-            <ul>
-              <li>Unlimited encrypted letters</li>
-              <li>Trusted contacts (2-of-N quorum)</li>
-              <li>Inactivity &amp; heartbeat triggers</li>
+
+            {/* Çarpıcı simgeli özellik listesi */}
+            <ul className="features">
+              <li><b>Unlimited</b> encrypted letters</li>
+              <li><b>Trusted contacts</b> (2-of-N quorum)</li>
+              <li><b>Inactivity + heartbeat</b> triggers</li>
             </ul>
+
             <Link href="#" className="btn">Upgrade Now</Link>
           </div>
 
@@ -88,11 +90,13 @@ export default function InverseDashboard() {
               <span aria-hidden="true">🩶 </span>Free Plan
             </h2>
             <p className="price">$0</p>
-            <ul>
-              <li>3 encrypted letters</li>
-              <li>Date-based delivery</li>
-              <li>Client-side AES-256 encryption</li>
+
+            <ul className="features">
+              <li><b>3 letters</b> with encryption</li>
+              <li><b>Date-based</b> delivery</li>
+              <li><b>Client-side AES-256</b> encryption</li>
             </ul>
+
             <Link href="#" className="btn">Continue Free</Link>
           </div>
 
@@ -102,11 +106,13 @@ export default function InverseDashboard() {
               <span aria-hidden="true">✨ </span>Lifetime Plan
             </h2>
             <p className="price">$15 (one-time)</p>
-            <ul>
-              <li>All Premium features</li>
-              <li>One-time lifetime access</li>
-              <li>Priority legacy support</li>
+
+            <ul className="features">
+              <li><b>All Premium</b> features</li>
+              <li><b>One-time</b> lifetime access</li>
+              <li><b>Priority</b> legacy support</li>
             </ul>
+
             <Link href="#" className="btn">Buy Lifetime</Link>
           </div>
         </div>
@@ -232,10 +238,9 @@ export default function InverseDashboard() {
         .wrap{
           min-height:100vh; background:#000; color:#fff;
           display:flex; justify-content:center; align-items:flex-start;
-          padding:48px 24px; /* sayfaya yayıldı */
+          padding:48px 24px;
         }
 
-        /* DIŞ BEYAZ ÇİZGİ KALDIRILDI + ALAN GENİŞLETİLDİ */
         .outer{
           position:relative; background:#000; border:none; border-radius:22px;
           max-width:1180px; width:100%;
@@ -246,7 +251,6 @@ export default function InverseDashboard() {
         .topbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
         .brand{ display:inline-flex; align-items:center; gap:10px; text-decoration:none; }
 
-        /* Hamburger + Menu */
         .menu-wrap{ position:relative }
         .hamburger{
           background:#0f0f0f; border:1px solid rgba(255,255,255,.18);
@@ -254,7 +258,6 @@ export default function InverseDashboard() {
         }
         .hamburger span{ width:20px; height:2px; background:#fff; border-radius:2px }
 
-        /* Menü tipografisi — tüm öğeler birebir aynı */
         .menu{
           position:absolute; top:44px; right:0; z-index:20;
           background:#0b0b0b; border:1px solid rgba(255,255,255,.18); border-radius:12px;
@@ -263,7 +266,7 @@ export default function InverseDashboard() {
           box-shadow:0 10px 26px rgba(255,255,255,.08);
         }
         .menu-item{
-          all: unset; /* reset */
+          all: unset;
           display:block; width:100%; height:44px; line-height:44px; text-align:center;
           padding:0 14px; border-radius:10px; cursor:pointer;
           color:#fff; font-weight:900; font-size:15px; letter-spacing:.2px;
@@ -272,14 +275,17 @@ export default function InverseDashboard() {
 
         .title{ font-size:30px; margin:10px 0 28px; font-weight:900; letter-spacing:.2px }
 
-        .plans{ display:grid; grid-template-columns:repeat(3,1fr); gap:24px } /* biraz ferahlık */
+        .plans{ display:grid; grid-template-columns:repeat(3,1fr); gap:24px }
 
         .card{
           position:relative; border:2px solid #fff; border-radius:18px;
           padding:24px 20px 28px;
           display:flex; flex-direction:column; align-items:center; text-align:center;
           transition:transform .2s ease, box-shadow .2s ease, border-color .2s, filter .2s;
-          overflow:visible; /* kurdela taşması için */
+          overflow:visible;
+          /* accent değişkeni */
+          --accent:#ffffff;
+          --accentGlow: rgba(255,255,255,.35);
         }
         .card:hover{ transform:translateY(-6px); box-shadow:0 10px 26px rgba(255,255,255,.12); border-color:#eaeaea; filter:saturate(1.04) }
 
@@ -287,7 +293,6 @@ export default function InverseDashboard() {
         .serif{ font-family: "DM Serif Display", serif; font-weight:400; }
         .sans{ font-family: Inter, system-ui, sans-serif; font-weight:900; }
 
-        /* PLAN BAŞLIĞI KUTUSU */
         .plan-title{
           display:inline-block;
           margin:0 0 10px;
@@ -301,8 +306,31 @@ export default function InverseDashboard() {
 
         .card h2{ font-size:24px }
         .price{ font-size:21px; margin:0 0 12px }
-        ul{ list-style:none; margin:0 0 18px; padding:0; display:grid; gap:6px }
-        li{ font-size:18px; opacity:.95 }
+
+        /* === Çarpıcı Özellik Listesi === */
+        ul.features{ list-style:none; margin:0 0 18px; padding:0; display:grid; gap:10px }
+        ul.features li{
+          position:relative; padding-left:38px; font-size:18px; opacity:.98;
+          text-align:left; /* kart ortalı ama maddeler soldan */
+        }
+        /* büyük, parlayan nokta */
+        ul.features li::before{
+          content:""; position:absolute; left:8px; top:6px;
+          width:16px; height:16px; border-radius:50%;
+          background: var(--accent);
+          box-shadow:
+            0 0 0 5px var(--accentGlow),
+            0 0 24px var(--accent),
+            inset 0 0 6px rgba(0,0,0,.4);
+          transition: transform .15s ease, box-shadow .2s ease;
+        }
+        .card:hover ul.features li::before{
+          transform:scale(1.08);
+          box-shadow:
+            0 0 0 6px var(--accentGlow),
+            0 0 28px var(--accent),
+            inset 0 0 7px rgba(0,0,0,.45);
+        }
 
         .btn{
           background:#fff; color:#000; text-decoration:none;
@@ -310,10 +338,22 @@ export default function InverseDashboard() {
         }
         .btn:hover{ filter:brightness(.92); transform:translateY(-1px) }
 
-        /* Zeminler */
-        .premium{ background: linear-gradient(160deg, #2b205a 0%, #4a3fb3 100%); }
-        .free{ background: linear-gradient(160deg, #0f1014 0%, #1b1c22 100%); }
-        .lifetime{ background: linear-gradient(160deg, #6e5a09 0%, #a67a00 100%); }
+        /* Zeminler + accent renkleri */
+        .premium{
+          background: linear-gradient(160deg, #2b205a 0%, #4a3fb3 100%);
+          --accent:#9b8dff;              /* parlak mor-mavi nokta */
+          --accentGlow: rgba(108, 99, 255, .28);
+        }
+        .free{
+          background: linear-gradient(160deg, #0f1014 0%, #1b1c22 100%);
+          --accent:#e8e8e8;              /* nötr beyaz nokta */
+          --accentGlow: rgba(255,255,255,.20);
+        }
+        .lifetime{
+          background: linear-gradient(160deg, #6e5a09 0%, #a67a00 100%);
+          --accent:#f2c94c;              /* altın nokta */
+          --accentGlow: rgba(242,201,76,.30);
+        }
         .lifetime:before{
           content:""; position:absolute; inset:0;
           background:linear-gradient(110deg, transparent 0%, rgba(255,255,255,.15) 20%, transparent 43%);
@@ -321,28 +361,18 @@ export default function InverseDashboard() {
         }
         @keyframes shimmer{ 0%{transform:translateX(-120%)} 60%{transform:translateX(120%)} 100%{transform:translateX(120%)} }
 
-        /* KURDELE (ribbon) — köşe ve hafif taşma */
+        /* KURDELE */
         .corner-ribbon{
-          position:absolute;
-          top:10px;
-          left:-34px;
-          z-index:3;
-          transform:rotate(-45deg);
-          pointer-events:none;
+          position:absolute; top:10px; left:-34px; z-index:3; transform:rotate(-45deg); pointer-events:none;
         }
         .corner-ribbon > span{
-          display:inline-block;
-          background:#ffffff; color:#000;
-          font-weight:900; text-transform:uppercase; letter-spacing:.35px;
-          font-size:12px;
-          padding:5px 18px;
-          box-shadow:0 4px 12px rgba(255,255,255,.18);
-          position:relative;
+          display:inline-block; background:#ffffff; color:#000;
+          font-weight:900; text-transform:uppercase; letter-spacing:.35px; font-size:12px;
+          padding:5px 18px; box-shadow:0 4px 12px rgba(255,255,255,.18); position:relative;
         }
         .corner-ribbon > span::before,
         .corner-ribbon > span::after{
-          content:"";
-          position:absolute; top:0; bottom:0; width:0; height:0;
+          content:""; position:absolute; top:0; bottom:0; width:0; height:0;
           border-top:11px solid transparent; border-bottom:11px solid transparent;
         }
         .corner-ribbon > span::before{ left:-11px; border-right:11px solid #ffffff; }
@@ -391,6 +421,7 @@ export default function InverseDashboard() {
           .wrap{ padding:28px 16px; }
           .outer{ padding:36px 16px 28px; max-width:100%; }
           .plans{ grid-template-columns:1fr; gap:16px }
+          ul.features li{ padding-left:34px }
           .kpis{ grid-template-columns:1fr }
           .tri{ grid-template-columns:1fr }
           .corner-ribbon{ left:-38px; top:8px; }
