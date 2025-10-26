@@ -265,3 +265,8 @@ export default function InverseDashboard() {
     </main>
   );
 }
+.menu-item:first-child {
+  font-weight: 900; /* diğerleriyle aynı */
+  font-size: 15px;  /* aynı boy */
+  letter-spacing: .2px;
+}
