@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { createClient } from "@supabase/supabase-js";
 
-// İstersen lib/supabaseClient.ts kullan; burada bağımsız tutuyorum.
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -29,34 +28,25 @@ export default function DashboardPage() {
     })();
   }, [router]);
 
-  const goHome = () => router.push("/"); // GERÇEK anasayfa
+  const goHome = () => router.push("/");            // ← GERÇEK anasayfa
   const onLogout = async () => { await supabase.auth.signOut(); router.push("/"); };
 
-  // Geçici: Composer gelene kadar
+  // Geçici: Composer modal gelene kadar
   const onCompose = () => alert("Composer burada açılacak (AES-GCM istemci tarafı şifreleme ile).");
 
   return (
     <div className="wrap">
-      {/* Top Bar */}
-      <header className="topbar" aria-label="Üst çubuk">
-        <button className="logoBtn" onClick={goHome} aria-label="After.Me ana sayfaya dön">
+      {/* TOPBAR */}
+      <header className="topbar">
+        <button className="logoBtn" onClick={goHome} aria-label="Ana sayfaya dön">
           <div className="logoWrap">
-            {/* Logo yoksa kare placeholder render’lar */}
-            <Image
-              src="/logo.svg"
-              alt="After.Me"
-              width={28}
-              height={28}
-              onError={(e) => {
-                // SSR yok, client’te basit fallback rengi bırakıyoruz
-              }}
-            />
+            <Image src="/logo.svg" alt="After.Me" width={28} height={28} priority />
           </div>
           <span className="brand">After.Me</span>
         </button>
 
         <div className="topRight">
-          <div className="userPill">@{username}</div>
+          {!loading && <div className="userPill">@{username}</div>}
           <button
             className="hamburger"
             aria-label={menuOpen ? "Menüyü kapat" : "Menüyü aç"}
@@ -68,27 +58,30 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      {/* Hero — sıcak & güven */}
+      {/* HERO */}
       <section className="hero">
-        <h1>Hoş geldin, {username}.</h1>
+        <h1>Hoş geldin, {loading ? "…" : username}.</h1>
         <p className="sub">
           İnsanlar yok olur. Sözler kalır. Burada sözlerin cihazından çıkmadan şifrelenir.
           Biz okuyamayız — maksat da bu.
         </p>
         <div className="ctaRow">
           <button className="primary" onClick={onCompose}>+ Yeni mesaj yaz</button>
-          <button className="ghost" onClick={() => document.getElementById("vault")?.scrollIntoView({behavior:"smooth"})}>
+          <button
+            className="ghost"
+            onClick={() => document.getElementById("vault")?.scrollIntoView({ behavior: "smooth" })}
+          >
             Kasayı aç
           </button>
         </div>
         <ul className="trust">
           <li>İstemci tarafı AES-256</li>
           <li>Sıfır Bilgi (Zero-knowledge)</li>
-          <li>Zamanında / koşullu teslim</li>
+          <li>Zamanlı/koşullu teslim</li>
         </ul>
       </section>
 
-      {/* Hızlı Kartlar — sade ama dolu */}
+      {/* HIZLI KARTLAR */}
       <section className="quick">
         <button className="qcard" onClick={onCompose}>
           <div className="ic" aria-hidden />
@@ -97,7 +90,7 @@ export default function DashboardPage() {
             <p>Önemli olanı söyle — kendi sesinle.</p>
           </div>
         </button>
-        <button className="qcard" onClick={() => document.getElementById("vault")?.scrollIntoView({behavior:"smooth"})}>
+        <button className="qcard" onClick={() => document.getElementById("vault")?.scrollIntoView({ behavior: "smooth" })}>
           <div className="ic" aria-hidden />
           <div>
             <h3>Kasana bak</h3>
@@ -113,7 +106,7 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      {/* Memory Sparks */}
+      {/* SPARKS */}
       <section className="sparks">
         <p className="eyebrow">Memory Sparks</p>
         <div className="chips">
@@ -124,12 +117,14 @@ export default function DashboardPage() {
             "Gelecekteki bana: lütfen hatırla…",
             "Kimseye anlatmadığım hikâye…",
           ].map((t) => (
-            <button key={t} className="chip" onClick={() => alert(`Composer’a öneri olarak eklenecek: ${t}`)}>{t}</button>
+            <button key={t} className="chip" onClick={() => alert(`Composer’a öneri olarak eklenecek: ${t}`)}>
+              {t}
+            </button>
           ))}
         </div>
       </section>
 
-      {/* Vault */}
+      {/* VAULT */}
       <section id="vault" className="vault">
         <div className="vaultHead">
           <h2>Kasan</h2>
@@ -141,7 +136,7 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      {/* Planlar — biraz daha görünür ama nazik */}
+      {/* PLANLAR (nazik ama görünür) */}
       <section className="plans">
         <h2 className="plansTitle">Sessizce daha fazlasını koru</h2>
         <div className="planGrid">
@@ -183,7 +178,7 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      {/* Drawer (Hamburger Menüsü) */}
+      {/* DRAWER (Hamburger menü) */}
       <aside className={`drawer ${menuOpen ? "open" : ""}`} aria-hidden={!menuOpen}>
         <div className="drawerHead">
           <button className="logoBtn mini" onClick={goHome} aria-label="Ana sayfa">
@@ -196,17 +191,17 @@ export default function DashboardPage() {
         </div>
         <nav className="menu">
           <button onClick={onCompose}>+ Yeni Mesaj</button>
-          <button onClick={() => document.getElementById("vault")?.scrollIntoView({behavior:"smooth"})}>Kasa</button>
+          <button onClick={() => document.getElementById("vault")?.scrollIntoView({ behavior: "smooth" })}>Kasa</button>
           <button onClick={() => alert("Güvenilen Kişiler yakında")}>Güvenilen Kişiler</button>
           <button onClick={() => alert("Zaman Çizgisi yakında")}>Zaman Çizgisi</button>
-          <button onClick={() => document.querySelector(".plans")?.scrollIntoView({behavior:"smooth"})}>Planlar</button>
+          <button onClick={() => document.querySelector(".plans")?.scrollIntoView({ behavior: "smooth" })}>Planlar</button>
           <button onClick={() => alert("Ayarlar yakında")}>Ayarlar</button>
           <hr />
           <button className="danger" onClick={onLogout}>Çıkış Yap</button>
         </nav>
       </aside>
 
-      {/* Arkaplan maske */}
+      {/* BACKDROP */}
       {menuOpen && <button className="backdrop" aria-label="Menüyü kapat" onClick={() => setMenuOpen(false)} />}
 
       <style jsx>{styles}</style>
@@ -214,7 +209,7 @@ export default function DashboardPage() {
   );
 }
 
-/* ======= STYLES (Design tokenlara sadık) ======= */
+/* ======= STYLED-JSX (Design tokenlara sadık) ======= */
 const styles = /* css */`
 .wrap{
   --bg:#050505; --fg:#f5f5f5; --card:#0b0b0b; --border:#1a1a1a; --muted:#c7c7c7;
@@ -224,21 +219,26 @@ const styles = /* css */`
 
 /* Topbar */
 .topbar{ width:100%; max-width:1120px; display:flex; align-items:center; justify-content:space-between; }
-.logoBtn{
-  display:flex; align-items:center; gap:10px; background:transparent; border:0; cursor:pointer;
-}
+.logoBtn{ display:flex; align-items:center; gap:10px; background:transparent; border:0; cursor:pointer; }
 .logoWrap{
   width:32px; height:32px; border-radius:10px; border:1px solid var(--border); background:#0f0f0f;
   display:grid; place-items:center; box-shadow: inset 0 0 24px rgba(255,255,255,.06);
   animation: logoGlow 3s ease-in-out infinite;
 }
 .logoWrap:hover{ animation-play-state: paused; }
-@keyframes logoGlow{ 0%{box-shadow: inset 0 0 18px rgba(255,255,255,.05)} 50%{box-shadow: inset 0 0 28px rgba(255,255,255,.09)} 100%{box-shadow: inset 0 0 18px rgba(255,255,255,.05)} }
+@keyframes logoGlow{
+  0%{box-shadow: inset 0 0 18px rgba(255,255,255,.05)}
+  50%{box-shadow: inset 0 0 28px rgba(255,255,255,.09)}
+  100%{box-shadow: inset 0 0 18px rgba(255,255,255,.05)}
+}
+.logoWrap.mini{ animation:none; }
 .brand{ font-weight:600; letter-spacing:.2px; }
 .topRight{ display:flex; align-items:center; gap:10px; }
 .userPill{ color:var(--muted); font-size:14px; }
-.hamburger{ width:38px; height:32px; border:1px solid var(--border); background:#0f0f0f; border-radius:10px; cursor:pointer;
-  display:grid; place-items:center; padding:0 6px; }
+.hamburger{
+  width:38px; height:32px; border:1px solid var(--border); background:#0f0f0f; border-radius:10px; cursor:pointer;
+  display:grid; place-items:center; padding:0 6px;
+}
 .hamburger span{ display:block; width:100%; height:2px; background:#dcdcdc; margin:3px 0; border-radius:2px; }
 
 /* Hero */
@@ -331,7 +331,6 @@ const styles = /* css */`
 .drawer.open{ right:0; }
 .drawerHead{ display:flex; align-items:center; justify-content:space-between; }
 .logoBtn.mini .logoWrap{ width:26px; height:26px; border-radius:8px; }
-.logoWrap.mini{ animation:none; }
 .close{
   background:#111; color:#eee; border:1px solid var(--border); border-radius:10px; padding:6px 10px; cursor:pointer;
 }
@@ -344,9 +343,7 @@ const styles = /* css */`
 .menu hr{ border:0; height:1px; background:#1a1a1a; margin:8px 0; }
 
 /* Backdrop */
-.backdrop{
-  position:fixed; inset:0; background:rgba(0,0,0,.35); z-index:30; border:0;
-}
+.backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.35); z-index:30; border:0; }
 
 /* Responsive */
 @media (max-width: 900px){
