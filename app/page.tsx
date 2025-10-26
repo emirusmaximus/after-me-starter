@@ -10,6 +10,7 @@ export default function HomePage(): JSX.Element {
   const [letters, setLetters] = useState(0);
 
   useEffect(() => {
+    // Basit sayıcı animasyonu (redirect YOK)
     const animate = (setter: (n: number) => void, target: number, ms = 1800) => {
       const t0 = performance.now();
       const step = (now: number) => {
@@ -27,11 +28,11 @@ export default function HomePage(): JSX.Element {
   return (
     <>
       {/* NAVBAR */}
-      <nav className="nav">
+      <nav className="nav" aria-label="Primary">
         <div className="container nav-in">
-          <Link href="/" className="brand" title="Go to Home">
-            <span className="badge">
-              <img src="/logo.svg" alt="After.Me logo" width={26} height={26} />
+          <Link href="/" className="brand" title="Go to Home" aria-label="After.Me — Home">
+            <span className="badge" aria-hidden>
+              <img src="/logo.svg" alt="" width={26} height={26} />
             </span>
             <span>After.Me</span>
           </Link>
@@ -67,7 +68,7 @@ export default function HomePage(): JSX.Element {
       </motion.header>
 
       {/* STATS */}
-      <section className="section">
+      <section className="section" aria-label="Stats">
         <div className="container stats">
           <div className="kpi"><b>{messages.toLocaleString()}</b><span>Messages stored</span></div>
           <div className="kpi"><b>{capsules.toLocaleString()}</b><span>Time capsules waiting</span></div>
@@ -85,7 +86,7 @@ export default function HomePage(): JSX.Element {
       >
         <div className="container center">
           <div className="intro-icon" aria-hidden>
-            <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
+            <svg width="52" height="52" viewBox="0 0 52 52" fill="none" role="img" aria-label="Clock">
               <circle cx="26" cy="26" r="24" stroke="rgba(255,255,255,0.12)" strokeWidth="1.6"/>
               <path d="M26 12v14l8 5" stroke="#fff" strokeWidth="1.6" strokeLinecap="round"/>
             </svg>
@@ -168,7 +169,7 @@ export default function HomePage(): JSX.Element {
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
       >
-        <div className="container grid">
+        <div className="container grid" aria-label="Features">
           <div className="card">
             <h4>Trusted Contacts</h4>
             <p className="muted">Nominate people who can access your vault after verified events.</p>
@@ -223,9 +224,10 @@ export default function HomePage(): JSX.Element {
         <div className="container center">
           <h2 className="h2">Join the Waitlist</h2>
           <p className="muted">Be among the first to experience After.Me Premium.</p>
-          <form className="waitlist" onSubmit={(e) => e.preventDefault()}>
-            <input type="email" placeholder="Your email address" />
-            <button className="btn solid">Notify Me</button>
+          <form className="waitlist" onSubmit={(e) => e.preventDefault()} aria-label="Waitlist form">
+            <label className="sr-only" htmlFor="waitlist-email">Email</label>
+            <input id="waitlist-email" type="email" placeholder="Your email address" />
+            <button className="btn solid" type="submit">Notify Me</button>
           </form>
         </div>
       </motion.section>
@@ -238,7 +240,7 @@ export default function HomePage(): JSX.Element {
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
       >
-        <div className="container sparks">
+        <div className="container sparks" aria-live="polite">
           <h3 className="sparks-title">“A million words waiting for their moment.”</h3>
           <p className="muted">Every 14 seconds, someone writes their final message.</p>
           <span className="spark" aria-hidden />
@@ -260,10 +262,12 @@ export default function HomePage(): JSX.Element {
       </section>
 
       {/* FOOTER */}
-      <section className="container footer">
+      <section className="container footer" aria-label="Footer">
         <div className="links">
           <span>Contact</span>
-          <a href="#">Email</a><a href="#">Twitter</a><a href="#">Instagram</a>
+          <a href="#" aria-label="Email">Email</a>
+          <a href="#" aria-label="Twitter">Twitter</a>
+          <a href="#" aria-label="Instagram">Instagram</a>
         </div>
         <div className="legal">
           <div>© 2025 After.Me — A product of <b>CobsVault Labs</b></div>
@@ -335,6 +339,12 @@ export default function HomePage(): JSX.Element {
         .slab-title{margin:0;font-size:24px;line-height:1.2}
         .slab-muted{margin:0;color:var(--muted);max-width:760px}
 
+        /* Prefers-reduced-motion: animasyonları sakinleştir */
+        @media (prefers-reduced-motion: reduce) {
+          .btn:hover{transform:none}
+          .spark{animation:none}
+        }
+
         /* Responsive (landing) */
         @media (max-width: 1024px){
           .container{padding:0 16px}
@@ -368,6 +378,8 @@ export default function HomePage(): JSX.Element {
           .nav{padding-left:max(0px,env(safe-area-inset-left));padding-right:max(0px,env(safe-area-inset-right))}
           .footer{padding-left:max(0px,env(safe-area-inset-left));padding-right:max(0px,env(safe-area-inset-right))}
         }
+        /* Ekran okuyucu için yardımcı sınıf */
+        .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
       `}</style>
     </>
   );
