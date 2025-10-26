@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState, useEffect } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import Link from "next/link";
@@ -29,27 +29,17 @@ function LoginInner() {
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Tercihi yerelden çek (opsiyonel)
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const v = localStorage.getItem("afterme_remember");
-      if (v === "0") setRememberMe(false);
-    }
-  }, []);
-
   async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setErr("");
     setLoading(true);
 
-    // Kullanıcı tercihini kaydet (UI/analitik amaçlı).
+    // kullanıcı tercihini kaydediyoruz (UI amaçlı)
     if (typeof window !== "undefined") {
       localStorage.setItem("afterme_remember", rememberMe ? "1" : "0");
     }
 
-    // Supabase tarafında persistSession lib/supabaseClient.ts'de zaten açık.
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-
     setLoading(false);
     if (error) return setErr(error.message);
 
@@ -93,15 +83,19 @@ function LoginInner() {
             required
           />
 
-          {/* ✅ Remember me */}
-          <label style={{display:"flex",alignItems:"center",gap:8, marginTop:2}}>
+          {/* ✅ Remember me ekle (minimal, arayüzü bozmadan) */}
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "4px" }}>
             <input
               type="checkbox"
+              id="rememberMe"
               checked={rememberMe}
-              onChange={(e)=>setRememberMe(e.target.checked)}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              style={{ accentColor: "#8A7CFF" }}
             />
-            Remember me
-          </label>
+            <label htmlFor="rememberMe" style={{ fontSize: "13px", color: "#ccc" }}>
+              Remember me
+            </label>
+          </div>
 
           <button className="btn solid" type="submit" disabled={loading}>
             {loading ? "Logging in…" : "Log In"}
