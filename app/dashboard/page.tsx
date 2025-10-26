@@ -231,16 +231,19 @@ export default function InverseDashboard() {
       <style jsx>{`
         .wrap{
           min-height:100vh; background:#000; color:#fff;
-          display:flex; justify-content:center; align-items:center; padding:32px 16px;
+          display:flex; justify-content:center; align-items:flex-start;
+          padding:48px 24px; /* sayfaya yayıldı */
         }
 
+        /* DIŞ BEYAZ ÇİZGİ KALDIRILDI + ALAN GENİŞLETİLDİ */
         .outer{
-          position:relative; background:#000; border:3px solid #fff; border-radius:22px;
-          max-width:980px; width:100%; padding:40px 24px 30px; text-align:center;
+          position:relative; background:#000; border:none; border-radius:22px;
+          max-width:1180px; width:100%;
+          padding:56px 28px 44px; text-align:center;
           box-shadow:0 0 32px rgba(255,255,255,0.06);
         }
 
-        .topbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+        .topbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
         .brand{ display:inline-flex; align-items:center; gap:10px; text-decoration:none; }
 
         /* Hamburger + Menu */
@@ -267,13 +270,13 @@ export default function InverseDashboard() {
         }
         .menu-item:hover{ background:#101010 }
 
-        .title{ font-size:30px; margin:6px 0 22px; font-weight:900; letter-spacing:.2px }
+        .title{ font-size:30px; margin:10px 0 28px; font-weight:900; letter-spacing:.2px }
 
-        .plans{ display:grid; grid-template-columns:repeat(3,1fr); gap:20px }
+        .plans{ display:grid; grid-template-columns:repeat(3,1fr); gap:24px } /* biraz ferahlık */
 
         .card{
           position:relative; border:2px solid #fff; border-radius:18px;
-          padding:22px 18px 26px;
+          padding:24px 20px 28px;
           display:flex; flex-direction:column; align-items:center; text-align:center;
           transition:transform .2s ease, box-shadow .2s ease, border-color .2s, filter .2s;
           overflow:visible; /* kurdela taşması için */
@@ -284,14 +287,14 @@ export default function InverseDashboard() {
         .serif{ font-family: "DM Serif Display", serif; font-weight:400; }
         .sans{ font-family: Inter, system-ui, sans-serif; font-weight:900; }
 
-        /* === PLAN BAŞLIĞI KUTUSU === */
+        /* PLAN BAŞLIĞI KUTUSU */
         .plan-title{
           display:inline-block;
           margin:0 0 10px;
           padding:6px 14px;
           border:2px solid rgba(255,255,255,.92);
           border-radius:12px;
-          background:rgba(255,255,255,.08); /* hafif kutu dolgusu */
+          background:rgba(255,255,255,.08);
           box-shadow:0 2px 10px rgba(255,255,255,.10), inset 0 0 0 1px rgba(255,255,255,.06);
           letter-spacing:.2px;
         }
@@ -345,18 +348,18 @@ export default function InverseDashboard() {
         .corner-ribbon > span::before{ left:-11px; border-right:11px solid #ffffff; }
         .corner-ribbon > span::after{ right:-11px; border-left:11px solid #ffffff; }
 
-        .hr{ height:1px; background:rgba(255,255,255,.15); margin:24px 0; border-radius:999px }
+        .hr{ height:1px; background:rgba(255,255,255,.15); margin:28px 0; border-radius:999px }
 
         /* KPIs */
-        .kpis{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; text-align:center; margin-bottom:6px; }
-        .kpi{ background:#0c0c0c; border:1px solid rgba(255,255,255,.14); border-radius:14px; padding:14px; transition:.2s; }
+        .kpis{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; text-align:center; margin-bottom:8px; }
+        .kpi{ background:#0c0c0c; border:1px solid rgba(255,255,255,.14); border-radius:14px; padding:16px; transition:.2s; }
         .kpi:hover{ transform:translateY(-3px); box-shadow:0 0 22px rgba(255,255,255,.08) }
         .kpi b{ display:block; font-size:22px }
         .kpi span{ opacity:.9 }
 
         /* Tri cards */
-        .tri{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:12px; }
-        .mini-card{ background:#0c0c0c; border:1px solid rgba(255,255,255,.14); border-radius:14px; padding:14px; text-align:left; display:grid; gap:8px; transition:.2s; }
+        .tri{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:16px; }
+        .mini-card{ background:#0c0c0c; border:1px solid rgba(255,255,255,.14); border-radius:14px; padding:16px; text-align:left; display:grid; gap:8px; transition:.2s; }
         .mini-card:hover{ transform:translateY(-3px); box-shadow:0 0 22px rgba(255,255,255,.08) }
         .mini-hd{ font-weight:900; letter-spacing:.2px }
         .mini-txt{ opacity:.96 }
@@ -367,7 +370,7 @@ export default function InverseDashboard() {
         .mini-btn.full{ width:100% }
 
         /* Timeline */
-        .timeline{ margin-top:16px; text-align:left }
+        .timeline{ margin-top:20px; text-align:left }
         .tl-hd{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px }
         .tl-hd h3{ margin:0; font-size:19px }
         .tiny-link{ font-size:14px; opacity:.9 }
@@ -385,8 +388,9 @@ export default function InverseDashboard() {
 
         /* Responsive */
         @media (max-width:900px){
-          .plans{ grid-template-columns:1fr }
-          .outer{ padding:28px 16px }
+          .wrap{ padding:28px 16px; }
+          .outer{ padding:36px 16px 28px; max-width:100%; }
+          .plans{ grid-template-columns:1fr; gap:16px }
           .kpis{ grid-template-columns:1fr }
           .tri{ grid-template-columns:1fr }
           .corner-ribbon{ left:-38px; top:8px; }
