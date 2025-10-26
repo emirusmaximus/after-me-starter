@@ -1,143 +1,70 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabaseClient";
-import { encryptText } from "@/lib/crypto";
+import Link from "next/link";
+import { useState } from "react";
 
-function parseEmails(raw: string): string[] {
-  return raw
-    .split(/[,\n; ]+/)
-    .map(e => e.trim().toLowerCase())
-    .filter(e => !!e && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e));
-}
-
-export default function WriteNowPage() {
-  const router = useRouter();
+export default function WritePage() {
   const [title, setTitle] = useState("");
-  const [body, setBody] = useState("");
-  const [emails, setEmails] = useState(""); // virgül veya alt alta
-  const [mode, setMode] = useState<"date"|"heartbeat">("date");
-  const [deliverAt, setDeliverAt] = useState("");        // YYYY-MM-DDTHH:mm
-  const [days, setDays] = useState(30);                  // inactivity gün sayısı
-  const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState<string|null>(null);
-
-  const recipients = useMemo(() => parseEmails(emails), [emails]);
-
-  const onSave = async (e: React.FormEvent) => {
-    e.preventDefault(); setErr(null);
-
-    if (!title || !body) { setErr("Title and message are required."); return; }
-    if (recipients.length === 0) { setErr("Add at least one recipient email."); return; }
-    if (mode === "date" && !deliverAt) { setErr("Pick a delivery date & time."); return; }
-
-    setBusy(true);
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Please sign in again.");
-
-      const { ciphertext, iv } = await encryptText(body);
-
-      const payload: any = {
-        user_id: user.id,
-        title,
-        ciphertext,
-        iv,
-        recipients,
-        delivery_mode: mode,
-        status: "draft",
-      };
-
-      if (mode === "date") {
-        payload.deliver_at = new Date(deliverAt).toISOString();
-        payload.inactivity_days = null;
-      } else {
-        payload.deliver_at = null;
-        payload.inactivity_days = days;
-      }
-
-      const { error } = await supabase.from("letters").insert(payload);
-      if (error) throw error;
-
-      router.replace("/dashboard?saved=1");
-    } catch (e: any) {
-      setErr(e.message || "Save failed.");
-      setBusy(false);
-    }
-  };
+  const [to, setTo] = useState("");
+  const [date, setDate] = useState("");
+  const [content, setContent] = useState("");
 
   return (
-    <main className="px-6 py-8 max-w-2xl mx-auto">
-      <h1 className="text-2xl mb-4">Write a message</h1>
+    <main style={{minHeight:"100vh", background:"#000", color:"#fff"}}>
+      <nav style={{display:"flex", alignItems:"center", gap:12, padding:"16px 20px", borderBottom:"1px solid #1a1a1a"}}>
+        <Link href="/dashboard" aria-label="Back to Dashboard">
+          <img src="/logo.svg" width={28} height={28} alt="After.Me" />
+        </Link>
+        <span style={{opacity:.9,fontWeight:800}}>New Letter</span>
+      </nav>
 
-      <form onSubmit={onSave} className="space-y-4">
-        <input
-          className="w-full rounded-lg border border-gray-700 bg-transparent px-3 py-2"
-          placeholder="Title"
-          value={title}
-          onChange={e=>setTitle(e.target.value)}
-        />
-
-        <textarea
-          className="w-full min-h-[220px] rounded-lg border border-gray-700 bg-transparent px-3 py-2"
-          placeholder="Your message (encrypted on your device)"
-          value={body}
-          onChange={e=>setBody(e.target.value)}
-        />
-
-        <div>
-          <label className="block mb-1 opacity-80">Recipients (emails)</label>
-          <textarea
-            className="w-full min-h-[90px] rounded-lg border border-gray-700 bg-transparent px-3 py-2"
-            placeholder="e.g. alice@mail.com, bob@mail.com"
-            value={emails}
-            onChange={e=>setEmails(e.target.value)}
-          />
-          <div className="text-sm opacity-70 mt-1">Parsed: {recipients.length} email</div>
-        </div>
-
-        <div className="rounded-xl border border-gray-700 p-3">
-          <div className="flex gap-4 mb-3">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input type="radio" name="mode" checked={mode==="date"} onChange={()=>setMode("date")} />
-              <span>Deliver on a date</span>
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input type="radio" name="mode" checked={mode==="heartbeat"} onChange={()=>setMode("heartbeat")} />
-              <span>Deliver after inactivity</span>
-            </label>
+      <div style={{maxWidth:840, margin:"20px auto", padding:"0 20px"}}>
+        <div style={{
+          background:"#0b0b0b", border:"1px solid #1a1a1a", borderRadius:16, padding:20,
+          boxShadow:"0 0 24px rgba(255,255,255,.05)"
+        }}>
+          <div style={{display:"grid", gap:10}}>
+            <label>Title</label>
+            <input
+              value={title} onChange={e=>setTitle(e.target.value)} placeholder="E.g., Letter to Mom"
+              style={inp}
+            />
+            <label>Recipient Email</label>
+            <input
+              value={to} onChange={e=>setTo(e.target.value)} placeholder="name@example.com"
+              style={inp}
+            />
+            <label>Unlock Date</label>
+            <input
+              type="date" value={date} onChange={e=>setDate(e.target.value)}
+              style={inp}
+            />
+            <label>Message</label>
+            <textarea
+              rows={10} value={content} onChange={e=>setContent(e.target.value)} placeholder="Write your words…"
+              style={{...inp, resize:"vertical"}}
+            />
+            <div style={{display:"flex", gap:10, marginTop:6}}>
+              <button
+                onClick={()=>{ alert("Draft saved locally (demo). V1: client-side AES + Supabase."); }}
+                style={btnSolid}
+              >Encrypt & Save (Demo)</button>
+              <Link href="/dashboard" style={btnGhost}>Cancel</Link>
+            </div>
+            <small style={{opacity:.7}}>Client-side AES-256 şifreleme V1’de eklenecek.</small>
           </div>
-
-          {mode === "date" ? (
-            <div className="flex items-center gap-3">
-              <label className="opacity-80 min-w-40">Delivery date & time</label>
-              <input
-                type="datetime-local"
-                className="rounded-lg border border-gray-700 bg-transparent px-3 py-2"
-                value={deliverAt}
-                onChange={e=>setDeliverAt(e.target.value)}
-              />
-            </div>
-          ) : (
-            <div className="flex items-center gap-3">
-              <label className="opacity-80 min-w-40">Days after last heartbeat</label>
-              <input
-                type="number" min={1}
-                className="w-28 rounded-lg border border-gray-700 bg-transparent px-3 py-2"
-                value={days}
-                onChange={e=>setDays(parseInt(e.target.value||"0",10))}
-              />
-              <span className="opacity-70 text-sm">e.g. 30</span>
-            </div>
-          )}
         </div>
-
-        {err && <div className="text-red-400 text-sm">{err}</div>}
-        <button disabled={busy} className="rounded-xl border border-purple-500 px-4 py-2">
-          {busy ? "Saving…" : "Save (encrypted)"}
-        </button>
-      </form>
+      </div>
     </main>
   );
 }
+
+const inp: React.CSSProperties = {
+  background:"#0a0a0a", border:"1px solid #1a1a1a", borderRadius:10, color:"#fff", padding:"12px 12px", outline:"none"
+};
+const btnSolid: React.CSSProperties = {
+  appearance:"none", border:"0", borderRadius:12, padding:"12px 16px", fontWeight:900, background:"#fff", color:"#000", cursor:"pointer"
+};
+const btnGhost: React.CSSProperties = {
+  border:"1px solid #3a3a3a", borderRadius:12, padding:"12px 16px", fontWeight:900, color:"#fff", textDecoration:"none", background:"#0c0c0c"
+};
