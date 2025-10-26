@@ -35,13 +35,14 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      {/* OUTER FRAME (kısaltılmış) */}
+      {/* PLANS */}
       <section className="plans">
         <div className="container center">
           <h2 className="ph-title">Plans</h2>
           <p className="ph-sub">Choose your legacy.</p>
         </div>
 
+        {/* KÜÇÜK ve ORTALI DIŞ ÇERÇEVE */}
         <div className="frame">
           {/* Dikey ayırıcı düz beyaz çizgiler */}
           <span className="divider d1" aria-hidden />
@@ -71,6 +72,9 @@ export default function DashboardPage() {
             />
           </div>
         </div>
+
+        {/* POST CHOOSEN: Ayrı küçük dikdörtgen (beyaz çerçeve + beyaz iç, siyah yazı) */}
+        <div className="postCard" aria-label="post choosen">post choosen</div>
       </section>
 
       <style jsx>{`
@@ -94,7 +98,7 @@ export default function DashboardPage() {
         .ph-title{ font-size:28px; font-weight:800; margin-bottom:4px }
         .ph-sub{ color:var(--muted); margin-bottom:18px; font-weight:600 }
 
-        /* KÜÇÜK ve ORTALI DIŞ ÇERÇEVE (kısaltılmış) */
+        /* DIŞ ÇERÇEVE (kısaltılmış ve ortalı) */
         .frame{
           position:relative;
           width:100%;
@@ -128,55 +132,72 @@ export default function DashboardPage() {
           z-index:10;
         }
 
-        /* İÇ YAZILAR +6px BÜYÜTÜLDÜ */
+        /* ——— YAZILARI BÜYÜTTÜM (yaklaşık 16pt ve üstü) ——— */
         .compartment{
           background:#000;
-          padding:16px 18px 22px;
+          padding:22px 22px 24px;            /* içeriyi daha dolu göstersin */
           display:flex;
           flex-direction:column;
           justify-content:flex-start;
           position:relative;
         }
-        .hdr h3{ font-size:18px; text-transform:uppercase; font-weight:900; margin:0 0 8px }   /* 12→18 */
-        .price{ font-size:32px; font-weight:900; margin-bottom:10px }                          /* 26→32 */
-        .feat{ list-style:none; padding:0; margin:12px 0 22px; text-align:left }
-        .feat li{ margin:7px 0; font-size:20px; color:#ddd }                                   /* 14→20 */
+        .hdr h3{
+          font-size:22px;                    /* ~16pt+ (12→22px) */
+          text-transform:uppercase;
+          font-weight:900;
+          margin:0 0 10px;
+          line-height:1.15;
+        }
+        .price{
+          font-size:38px;                    /* başlıca vurgu */
+          font-weight:900;
+          margin-bottom:14px;
+          line-height:1.05;
+        }
+        .feat{
+          list-style:none; padding:0; margin:14px 0 26px; text-align:left
+        }
+        .feat li{
+          margin:8px 0;
+          font-size:22px;                    /* 14→22px */
+          color:#eee;
+          line-height:1.3;
+        }
         .cta{
-          width:100%; height:48px; border-radius:12px;
-          font-weight:900; font-size:21px;                                                     /* 15→21 */
+          width:100%; height:54px; border-radius:14px;
+          font-weight:900; font-size:24px;   /* 15→24px */
           cursor:pointer; transition:.18s;
           border:1px solid #fff; background:#111; color:#fff; margin-top:auto
         }
         .cta:hover{ background:#161616 }
 
-        /* PREMIUM üzerindeki küçük beyaz dikdörtgen etiket (most choosen) */
-        .badge{
-          position:absolute;
-          top:-14px;                 /* üst kenarın HEMEN üstünden başlasın */
-          left:-14px;                /* sol kenarı keserek girsin */
-          width:180px;
-          transform:rotate(-35deg);  /* sol-üstten sağ-alt yönüne çapraz */
-          transform-origin:left top;
-          z-index:30;
-          background:#fff;           /* içi beyaz */
-          color:#000;                /* yazı siyah */
-          border:2px solid #fff;     /* dış çevresi beyaz */
-          border-radius:6px;
-          text-transform:uppercase;
+        /* POST CHOOSEN — AYRI KÜÇÜK DİKDÖRTGEN (beyaz çerçeve + beyaz iç, siyah yazı) */
+        .postCard{
+          margin:18px auto 0;
+          width: 220px;
+          border:2px solid #fff;    /* dış çevresi beyaz */
+          border-radius:8px;
+          background:#fff;          /* içi beyaz */
+          color:#000;               /* yazı siyah */
           font-weight:900;
-          font-size:14px;
+          text-transform:uppercase;
           letter-spacing:.6px;
+          font-size:16px;
+          line-height:1;
+          padding:12px 14px;
           text-align:center;
-          padding:10px 0;
-          box-shadow:0 6px 22px rgba(0,0,0,.45);
-          pointer-events:none;
+          box-shadow:0 4px 18px rgba(255,255,255,.25), 0 6px 22px rgba(0,0,0,.35);
         }
 
         @media(max-width:1000px){
           .frame{ max-width:90vw; min-height:auto; padding:16px }
           .divider{ display:none }
           .grid{ grid-template-columns:1fr }
-          .badge{ width:160px; font-size:13px; top:-12px; left:-12px; transform:rotate(-33deg) }
+          .hdr h3{ font-size:20px }
+          .price{ font-size:34px }
+          .feat li{ font-size:20px }
+          .cta{ font-size:22px; height:52px }
+          .postCard{ width:200px; font-size:15px; padding:10px 12px }
         }
       `}</style>
     </main>
@@ -192,9 +213,7 @@ function Compartment({
 }){
   return(
     <div className={`compartment ${type}`}>
-      {/* Premium’un üst & sol kenarını çapraz kesecek beyaz etiket */}
-      {type==="premium" ? <div className="badge">most choosen</div> : null}
-
+      {/* DİKKAT: "most choosen" burada YOK (tamamen kaldırıldı) */}
       <div className="hdr">
         <h3>{title}</h3>
         <div className="price">{price}</div>
