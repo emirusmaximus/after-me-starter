@@ -64,7 +64,6 @@ export default function InverseDashboard() {
         <div className="plans">
           {/* PREMIUM */}
           <div className="card premium">
-            {/* Kurdela */}
             <div className="corner-ribbon" aria-hidden="true">
               <span>Most Chosen</span>
             </div>
@@ -74,13 +73,13 @@ export default function InverseDashboard() {
             </h2>
             <p className="price">$2 / month</p>
 
-            {/* Çarpıcı simgeli özellik listesi */}
             <ul className="features">
               <li><b>Unlimited</b> encrypted letters</li>
               <li><b>Trusted contacts</b> (2-of-N quorum)</li>
               <li><b>Inactivity + heartbeat</b> triggers</li>
             </ul>
 
+            {/* CTA her kartta aynı hizada */}
             <Link href="#" className="btn">Upgrade Now</Link>
           </div>
 
@@ -247,8 +246,17 @@ export default function InverseDashboard() {
           padding:56px 28px 44px; text-align:center;
           box-shadow:0 0 32px rgba(255,255,255,0.06);
         }
+        /* ODAK SPOTLIGHT — statik, animasyonsuz */
+        .outer::before{
+          content:"";
+          position:absolute; inset:0;
+          background:
+            radial-gradient(1200px 420px at 50% 260px, rgba(255,255,255,.10), transparent 60%),
+            radial-gradient(600px 260px at 50% 260px, rgba(108,99,255,.10), transparent 70%);
+          pointer-events:none; z-index:0;
+        }
 
-        .topbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+        .topbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; position:relative; z-index:1;}
         .brand{ display:inline-flex; align-items:center; gap:10px; text-decoration:none; }
 
         .menu-wrap{ position:relative }
@@ -273,9 +281,12 @@ export default function InverseDashboard() {
         }
         .menu-item:hover{ background:#101010 }
 
-        .title{ font-size:30px; margin:10px 0 28px; font-weight:900; letter-spacing:.2px }
+        .title{ font-size:30px; margin:10px 0 28px; font-weight:900; letter-spacing:.2px; position:relative; z-index:1; }
 
-        .plans{ display:grid; grid-template-columns:repeat(3,1fr); gap:24px }
+        .plans{
+          display:grid; grid-template-columns:repeat(3,1fr); gap:24px;
+          align-items:stretch; position:relative; z-index:1;
+        }
 
         .card{
           position:relative; border:2px solid #fff; border-radius:18px;
@@ -283,13 +294,12 @@ export default function InverseDashboard() {
           display:flex; flex-direction:column; align-items:center; text-align:center;
           transition:transform .2s ease, box-shadow .2s ease, border-color .2s, filter .2s;
           overflow:visible;
-          /* accent değişkeni */
+          min-height: 380px;          /* eşit yükseklik için */
           --accent:#ffffff;
           --accentGlow: rgba(255,255,255,.35);
         }
         .card:hover{ transform:translateY(-6px); box-shadow:0 10px 26px rgba(255,255,255,.12); border-color:#eaeaea; filter:saturate(1.04) }
 
-        /* Başlık fontları */
         .serif{ font-family: "DM Serif Display", serif; font-weight:400; }
         .sans{ font-family: Inter, system-ui, sans-serif; font-weight:900; }
 
@@ -307,61 +317,52 @@ export default function InverseDashboard() {
         .card h2{ font-size:24px }
         .price{ font-size:21px; margin:0 0 12px }
 
-        /* === Çarpıcı Özellik Listesi === */
-        ul.features{ list-style:none; margin:0 0 18px; padding:0; display:grid; gap:10px }
+        /* ÖZELLİKLER (çarpıcı nokta simgesi) */
+        ul.features{ list-style:none; margin:0; padding:0; display:grid; gap:10px; width:100%; }
         ul.features li{
-          position:relative; padding-left:38px; font-size:18px; opacity:.98;
-          text-align:left; /* kart ortalı ama maddeler soldan */
+          position:relative; padding-left:38px; font-size:18px; opacity:.98; text-align:left;
         }
-        /* büyük, parlayan nokta */
         ul.features li::before{
           content:""; position:absolute; left:8px; top:6px;
           width:16px; height:16px; border-radius:50%;
           background: var(--accent);
-          box-shadow:
-            0 0 0 5px var(--accentGlow),
-            0 0 24px var(--accent),
-            inset 0 0 6px rgba(0,0,0,.4);
+          box-shadow: 0 0 0 5px var(--accentGlow), 0 0 24px var(--accent), inset 0 0 6px rgba(0,0,0,.4);
           transition: transform .15s ease, box-shadow .2s ease;
         }
         .card:hover ul.features li::before{
           transform:scale(1.08);
-          box-shadow:
-            0 0 0 6px var(--accentGlow),
-            0 0 28px var(--accent),
-            inset 0 0 7px rgba(0,0,0,.45);
+          box-shadow: 0 0 0 6px var(--accentGlow), 0 0 28px var(--accent), inset 0 0 7px rgba(0,0,0,.45);
         }
 
+        /* CTA — hepsi aynı hizada ve aynı genişlikte */
         .btn{
           background:#fff; color:#000; text-decoration:none;
-          padding:11px 16px; border-radius:12px; font-weight:900; transition:filter .15s, transform .15s;
+          padding:11px 16px; border-radius:12px; font-weight:900;
+          transition:filter .15s, transform .15s;
+          width:100%;
+          margin-top:auto;          /* tabanı sabitle */
         }
         .btn:hover{ filter:brightness(.92); transform:translateY(-1px) }
 
-        /* Zeminler + accent renkleri */
+        /* Zemin + accent */
         .premium{
           background: linear-gradient(160deg, #2b205a 0%, #4a3fb3 100%);
-          --accent:#9b8dff;              /* parlak mor-mavi nokta */
+          --accent:#9b8dff;
           --accentGlow: rgba(108, 99, 255, .28);
         }
         .free{
           background: linear-gradient(160deg, #0f1014 0%, #1b1c22 100%);
-          --accent:#e8e8e8;              /* nötr beyaz nokta */
+          --accent:#e8e8e8;
           --accentGlow: rgba(255,255,255,.20);
         }
         .lifetime{
           background: linear-gradient(160deg, #6e5a09 0%, #a67a00 100%);
-          --accent:#f2c94c;              /* altın nokta */
+          --accent:#f2c94c;
           --accentGlow: rgba(242,201,76,.30);
         }
-        .lifetime:before{
-          content:""; position:absolute; inset:0;
-          background:linear-gradient(110deg, transparent 0%, rgba(255,255,255,.15) 20%, transparent 43%);
-          transform:translateX(-120%); animation:shimmer 3.2s ease-in-out infinite;
-        }
-        @keyframes shimmer{ 0%{transform:translateX(-120%)} 60%{transform:translateX(120%)} 100%{transform:translateX(120%)} }
+        /* ANİMASYON KALDIRILDI: shimmer yok */
 
-        /* KURDELE */
+        /* Kurdela */
         .corner-ribbon{
           position:absolute; top:10px; left:-34px; z-index:3; transform:rotate(-45deg); pointer-events:none;
         }
@@ -381,14 +382,14 @@ export default function InverseDashboard() {
         .hr{ height:1px; background:rgba(255,255,255,.15); margin:28px 0; border-radius:999px }
 
         /* KPIs */
-        .kpis{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; text-align:center; margin-bottom:8px; }
+        .kpis{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; text-align:center; margin-bottom:8px; position:relative; z-index:1; }
         .kpi{ background:#0c0c0c; border:1px solid rgba(255,255,255,.14); border-radius:14px; padding:16px; transition:.2s; }
         .kpi:hover{ transform:translateY(-3px); box-shadow:0 0 22px rgba(255,255,255,.08) }
         .kpi b{ display:block; font-size:22px }
         .kpi span{ opacity:.9 }
 
         /* Tri cards */
-        .tri{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:16px; }
+        .tri{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:16px; position:relative; z-index:1; }
         .mini-card{ background:#0c0c0c; border:1px solid rgba(255,255,255,.14); border-radius:14px; padding:16px; text-align:left; display:grid; gap:8px; transition:.2s; }
         .mini-card:hover{ transform:translateY(-3px); box-shadow:0 0 22px rgba(255,255,255,.08) }
         .mini-hd{ font-weight:900; letter-spacing:.2px }
@@ -400,7 +401,7 @@ export default function InverseDashboard() {
         .mini-btn.full{ width:100% }
 
         /* Timeline */
-        .timeline{ margin-top:20px; text-align:left }
+        .timeline{ margin-top:20px; text-align:left; position:relative; z-index:1; }
         .tl-hd{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px }
         .tl-hd h3{ margin:0; font-size:19px }
         .tiny-link{ font-size:14px; opacity:.9 }
@@ -421,7 +422,6 @@ export default function InverseDashboard() {
           .wrap{ padding:28px 16px; }
           .outer{ padding:36px 16px 28px; max-width:100%; }
           .plans{ grid-template-columns:1fr; gap:16px }
-          ul.features li{ padding-left:34px }
           .kpis{ grid-template-columns:1fr }
           .tri{ grid-template-columns:1fr }
           .corner-ribbon{ left:-38px; top:8px; }
