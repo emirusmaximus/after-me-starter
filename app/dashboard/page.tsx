@@ -67,7 +67,7 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      {/* OUTER FRAME (BEYAZ KENARLI, İÇİ SİYAH) */}
+      {/* OUTER FRAME (BEYAZ KENARLI, İÇİ SİYAH) + İÇ DİKEY AYIRICI ÇİZGİLER */}
       <section className="plans">
         <div className="container center">
           <h2 className="ph-title">Plans</h2>
@@ -76,6 +76,10 @@ export default function DashboardPage() {
 
         <div className="container">
           <div className="frame">
+            {/* Ayırıcı çizgiler (üstten alta düz beyaz çizgi) */}
+            <span className="divider d1" aria-hidden />
+            <span className="divider d2" aria-hidden />
+
             {/* İçeride: üç küçük beyaz çerçeveli siyah kutu */}
             <div className="inner-row">
               {plans.map((p) => (
@@ -126,13 +130,30 @@ export default function DashboardPage() {
           background:#000;             /* içi siyah */
           padding:28px;
           box-shadow:0 0 0 1px rgba(255,255,255,.08) inset;
+          overflow:hidden;             /* ayırıcı çizgiler taşmasın */
         }
 
-        /* İçte üç küçük kutu: hepsi BEYAZ ÇİZGİLİ, içi siyah */
+        /* Dikey ayırıcı çizgiler: üstten alta beyaz düz çizgi */
+        .divider{
+          position:absolute;
+          top:22px;
+          bottom:22px;
+          width:0;
+          border-left:2px solid #FFFFFF;
+          opacity:.95;
+          z-index:1; /* kartların arkasında kalsın ama görünür olsun */
+        }
+        /* 3 sütunu ayırmak için 2 çizgi: %33.33 ve %66.66 */
+        .d1{ left: calc(33.333%); }
+        .d2{ left: calc(66.666%); }
+
+        /* İçte üç küçük BEYAZ ÇİZGİLİ siyah kutu (çizgilerle hizalı) */
         .inner-row{
           display:grid;
           grid-template-columns: repeat(3, 1fr);
-          gap:24px;                    /* birbirinden ayrı dursun */
+          gap:24px;
+          position:relative;
+          z-index:2; /* ayırıcı çizgilerin üzerinde içerik */
         }
 
         .plan{
@@ -156,9 +177,9 @@ export default function DashboardPage() {
         .price{ font-size:34px; font-weight:900; line-height:1; }
         .feat{ list-style:none; padding:0; margin:12px 0 22px; text-align:left; }
         .feat li{ position:relative; padding-left:16px; margin-bottom:10px; font-size:15px; }
-        .feat li::before{ content:"•"; position:absolute; left:0; top:0; opacity:.8; }
+        .feat li::before{ content:""; } /* nokta yok */
 
-        /* CTA (nötr, beyaz kenarlara uygun) */
+        /* CTA */
         .cta{ width:100%; height:48px; border-radius:14px; font-weight:900; font-size:16px; cursor:pointer; transition:.18s; user-select:none; }
         .cta-premium{ color:#000; background:#fff; border:1px solid #fff; }
         .cta-premium:hover{ background:#f2f2f2; }
@@ -167,7 +188,6 @@ export default function DashboardPage() {
         .cta-life{ background:#111; color:#fff; border:1px solid #fff; }
         .cta-life:hover{ background:#161616; }
 
-        /* Varyant içerikleri siyah kalır (kenarlar zaten beyaz) */
         .premium{ background:#0b0b0b; }
         .free{ background:#0b0b0b; }
         .lifetime{ background:#0b0b0b; }
@@ -175,14 +195,13 @@ export default function DashboardPage() {
         /* === "Most Chosen" — Premium kartın ÜST tarafında, beyaz kenarın ÜZERİNDEN ÇAPRAZ === */
         .ribbon{
           position:absolute;
-          /* Üst kısa kenar ortasını yakalayacak şekilde */
-          top: -18px;
-          left: 50%;
+          top: -18px;       /* üst kısa kenarın biraz dışı */
+          left: 50%;        /* üst kenar ortasını hedefle */
           width: 230px;
           transform: rotate(35deg) translateX(-50%);
           transform-origin: center;
-          z-index: 6;                   /* beyaz kenarın ÜSTÜNDE */
-          background:#000;              /* manşet bant siyah */
+          z-index: 6;       /* kart kenarının üstünde */
+          background:#000;  /* manşet bant siyah */
           color:#fff;
           text-transform:uppercase;
           font-weight:1000;
@@ -190,13 +209,14 @@ export default function DashboardPage() {
           font-size:12px;
           text-align:center;
           padding:10px 0;
-          border:2px solid #FFFFFF;     /* şeridin de kenarı BEYAZ */
+          border:2px solid #FFFFFF;     /* şerit kenarı: BEYAZ */
           box-shadow:0 0 18px rgba(255,255,255,.25);
           pointer-events:none;
         }
 
         @media (max-width: 1000px){
           .inner-row{ grid-template-columns: 1fr; gap:18px; }
+          .divider{ display:none; } /* mobilde ayırıcı çizgileri gizle */
           .ribbon{ left: 55%; width: 220px; transform: rotate(35deg) translateX(-50%); }
         }
       `}</style>
