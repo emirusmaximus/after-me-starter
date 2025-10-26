@@ -1,10 +1,18 @@
-export const metadata = {
+import "./globals.css";
+import type { Metadata, Viewport } from "next";
+
+export const metadata: Metadata = {
   title: "After.Me",
   description: "Write now, store encrypted, deliver later.",
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
 };
 
-import "./globals.css";
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  viewportFit: "cover", // iPhone çentik desteği
+  themeColor: "#050505",
+};
 
 export default function RootLayout({
   children,
