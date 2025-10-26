@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useMemo } from "react";
 
-export default function DashboardPage(): JSX.Element {
+export default function DashboardPage() {
   const username = "emir";
   const stats = { letters: 3, waiting: 1, days: 22, progress: 40 };
 
@@ -60,8 +60,6 @@ export default function DashboardPage(): JSX.Element {
           <p className="muted small">
             Your vault has {stats.letters} letters — {stats.waiting} waiting for delivery.
           </p>
-        </div>
-        <div className="container center">
           <h1>Welcome back, @{username}</h1>
           <p className="muted">You haven’t written in {stats.days} days.</p>
           <div className="progress"><span style={{ width: `${stats.progress}%` }} /></div>
@@ -69,26 +67,30 @@ export default function DashboardPage(): JSX.Element {
         </div>
       </section>
 
-      {/* PLANS */}
+      {/* OUTER FRAME (BEYAZ KENARLI, İÇİ SİYAH) */}
       <section className="plans">
         <div className="container center">
           <h2 className="ph-title">Plans</h2>
           <p className="ph-sub">Choose your legacy.</p>
         </div>
 
-        {/* ÜÇ AYRI NEON YEŞİL ÇERÇEVELİ DİKDÖRTGEN — YAN YANA */}
-        <div className="container plans-row">
-          {plans.map((p) => (
-            <PlanCard
-              key={p.key}
-              title={p.title}
-              price={p.price}
-              features={p.features}
-              button={p.cta}
-              variant={p.variant}
-              ribbon={p.ribbon}
-            />
-          ))}
+        <div className="container">
+          <div className="frame">
+            {/* İÇERİDE: 3 ADET NEON YEŞİL KENARLI, SİYAH DİKDÖRTGEN */}
+            <div className="inner-row">
+              {plans.map((p) => (
+                <PlanCard
+                  key={p.key}
+                  title={p.title}
+                  price={p.price}
+                  features={p.features}
+                  button={p.cta}
+                  variant={p.variant}
+                  ribbon={p.ribbon}
+                />
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
@@ -97,13 +99,15 @@ export default function DashboardPage(): JSX.Element {
           --bg:#000; --fg:#fff; --muted:#BBB;
           --prem-a:#6C63FF; --prem-b:#8A7CFF;
           --life-a:#F2C94C; --life-b:#F9E79F;
-          --neon:#39FF14;                       /* NEON GREEN */
+          --neon:#39FF14;                   /* NEON YEŞİL */
           --neonGlow: rgba(57,255,20,.45);
         }
+
         *{ box-sizing:border-box }
         body, .dashboard { background:var(--bg); color:var(--fg); font-family: system-ui, -apple-system, Segoe UI, Roboto, Manrope, sans-serif; }
 
         .container{ max-width:1100px; margin:0 auto; padding:0 20px; }
+
         .top{ border-bottom:1px solid #111; padding:14px 0; background:rgba(0,0,0,.6); backdrop-filter:blur(6px); }
         .topin{ display:flex; align-items:center; justify-content:space-between; }
         .brand{ display:flex; align-items:center; gap:8px; font-weight:800; }
@@ -118,27 +122,45 @@ export default function DashboardPage(): JSX.Element {
         .ph-title{ font-size:28px; font-weight:800; margin-bottom:4px; }
         .ph-sub{ color:var(--muted); margin-bottom:24px; font-weight:600; }
 
-        /* === ÜÇ AYRI DİKDÖRTGEN — NEON AYRIK === */
-        .plans-row{
-          display:flex; gap:28px; justify-content:center; align-items:stretch;
-          flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch;
-          padding:6px 4px 10px; scrollbar-width:thin;
+        /* === DIŞ ÇERÇEVE — BEYAZ KENAR, SİYAH İÇ === */
+        .frame{
+          position:relative;
+          border:2px solid #FFFFFF;    /* beyaz kenar */
+          border-radius:22px;
+          background:#000;             /* içi siyah */
+          padding:28px;                /* içteki neon kutular için boşluk */
+          box-shadow:0 0 0 1px rgba(255,255,255,.08) inset;
         }
-        @media (max-width:900px){ .plans-row{ gap:18px; justify-content:flex-start; } }
 
-        /* === KART: NEON YEŞİL KENARLI, DİKEY DİKDÖRTGEN === */
-        .plan{
-          flex:0 0 320px; height:560px;
-          border:2px solid var(--neon);            /* NEON ÇİZGİ */
-          border-radius:18px; background:#0b0b0b;
-          padding:22px; display:flex; flex-direction:column; position:relative;
-          overflow:visible; transition:transform .18s ease, box-shadow .18s ease, filter .18s ease;
-          box-shadow: 0 0 0 1px rgba(57,255,20,.12) inset, 0 0 22px var(--neonGlow);
-          isolation:isolate;
+        /* İçte 3 küçük neon dikdörtgen — birbirinden AYRI */
+        .inner-row{
+          display:flex;
+          gap:26px;
+          justify-content:center;
+          align-items:stretch;
+          flex-wrap:nowrap;
+          overflow-x:auto;
+          -webkit-overflow-scrolling:touch;
+          padding:2px;
         }
-        .plan::after{
-          content:""; position:absolute; inset:-6px; border-radius:22px; pointer-events:none;
-          box-shadow: 0 0 28px var(--neonGlow), 0 0 56px rgba(57,255,20,.15); z-index:-1;
+
+        /* === KÜÇÜK KUTU: NEON YEŞİL KENARLI, SİYAH İÇ === */
+        .plan{
+          flex:0 0 300px;         /* sabit dikey görünüm */
+          height:520px;
+          background:#0b0b0b;     /* iç siyah */
+          border:2px solid var(--neon);   /* NEON kenar */
+          border-radius:18px;
+          padding:20px;
+          display:flex;
+          flex-direction:column;
+          position:relative;
+          overflow:visible;
+          box-shadow:
+            0 0 0 1px rgba(57,255,20,.10) inset,
+            0 0 22px var(--neonGlow);
+          transition:transform .18s ease, box-shadow .18s ease;
+          isolation:isolate;
         }
         .plan:hover{
           transform:translateY(-4px);
@@ -146,18 +168,17 @@ export default function DashboardPage(): JSX.Element {
             0 0 0 1px rgba(57,255,20,.18) inset,
             0 0 34px var(--neonGlow),
             0 0 64px rgba(57,255,20,.25);
-          filter: drop-shadow(0 0 14px rgba(57,255,20,.18));
         }
 
         /* İç hiza */
         .hdr{ min-height:96px; display:grid; align-content:start; }
-        .hdr h3{ font-size:13px; letter-spacing:.6px; text-transform:uppercase; font-weight:800; opacity:.95; margin:0 0 6px; }
+        .hdr h3{ font-size:13px; letter-spacing:.6px; text-transform:uppercase; font-weight:900; opacity:.95; margin:0 0 6px; }
         .price{ font-size:34px; font-weight:900; line-height:1; }
-        .feat{ list-style:none; padding:0; margin:12px 0 22px; }
+        .feat{ list-style:none; padding:0; margin:12px 0 22px; text-align:left; }
         .feat li{ position:relative; padding-left:20px; margin-bottom:10px; font-size:15px; }
-        .feat li::before{ content:"✓"; position:absolute; left:0; top:0; opacity:.9; color:var(--neon); text-shadow:0 0 6px var(--neonGlow); }
+        .feat li::before{ content:"✓"; position:absolute; left:0; top:0; color:var(--neon); text-shadow:0 0 6px var(--neonGlow); }
 
-        /* CTA’lar */
+        /* CTA */
         .cta{ width:100%; height:48px; border-radius:16px; font-weight:900; font-size:16px; cursor:pointer; transition:.18s; user-select:none; }
         .cta-premium{ color:#fff; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); }
         .cta-premium:hover{ background:rgba(255,255,255,.10); box-shadow:0 0 12px var(--neonGlow); }
@@ -166,38 +187,49 @@ export default function DashboardPage(): JSX.Element {
         .cta-life{ color:#241A00; background: rgba(255,214,102,.18); border:1px solid rgba(242,201,76,.65); }
         .cta-life:hover{ background: rgba(255,214,102,.28); box-shadow:0 0 12px var(--neonGlow); }
 
-        /* Varyant BG (kenar neon kalır) */
-        .premium{ background: linear-gradient(160deg, rgba(108,99,255,.14), rgba(138,124,255,.05)) #0b0b0b; }
-        .free{ background: linear-gradient(160deg, #0e0e0e, #1c1c1c); }
-        .lifetime{ background: linear-gradient(160deg, var(--life-a), var(--life-b)); color:#241A00; }
+        /* Premium/Free/Lifetime arka planları (kenar neon, iç siyah kalır) */
+        .premium{ background: linear-gradient(160deg, rgba(108,99,255,.12), rgba(138,124,255,.04)) #0b0b0b; }
+        .free{ background: linear-gradient(160deg, #0e0e0e, #1a1a1a); }
+        .lifetime{ background: linear-gradient(160deg, var(--life-a) 0%, var(--life-b) 0%) #0b0b0b; color:#d1a800; }
 
-        /* “Most Chosen” — neon kenarın ÜSTÜNDEN, gazete manşeti gibi */
+        /* === "Most Chosen" manşeti — Premium ÜST taraf, NEON kenarın ÜZERİNDEN === */
         .ribbon{
-          position:absolute; top:-18px; right:-66px; z-index:5; transform:rotate(42deg);
-          background:#0b0b0b; color:#fff; font-weight:1000; font-size:12px; letter-spacing:.7px;
-          padding:9px 0; width:220px; text-align:center; text-transform:uppercase;
-          border:2px solid var(--neon);
+          position:absolute;
+          /* Üst kenar ortasını hedef al, sağ kenar ortasına doğru diyagonal */
+          top: -20px;           /* üstten biraz dışarı */
+          left: 55%;            /* ortalanıp sağa doğru kaydır */
+          width: 240px;
+          transform: rotate(35deg) translateX(-50%);
+          transform-origin: center;
+          z-index: 6;           /* neon kenarın ÜSTÜNDE */
+          background: #000;     /* manşet bant siyah */
+          color: #fff;
+          text-transform: uppercase;
+          font-weight: 1000;
+          letter-spacing: .8px;
+          font-size: 12px;
+          text-align: center;
+          padding: 10px 0;
+          border: 2px solid var(--neon);     /* neon kontür */
           box-shadow: 0 0 18px var(--neonGlow), 0 0 36px rgba(57,255,20,.25);
+          pointer-events: none;
         }
         .ribbon::after{
-          content:""; position:absolute; inset:-2px; border-radius:2px; pointer-events:none;
+          content:"";
+          position:absolute; inset:-2px; border-radius:2px; pointer-events:none;
           box-shadow: inset 0 0 18px var(--neonGlow);
         }
 
-        /* Lifetime shimmer (light sweep) */
-        .lifetime .shimmer{ position:absolute; inset:0; overflow:hidden; border-radius:18px; pointer-events:none; }
-        .lifetime .shimmer::before{
-          content:""; position:absolute; top:-60%; left:-40%; width:60%; height:220%; transform:rotate(20deg);
-          background:linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.35) 45%, rgba(255,255,255,0) 100%);
-          filter:blur(8px); animation: sweep 3.2s linear infinite;
+        @media (max-width: 980px){
+          .plan{ flex-basis: 260px; height: 500px; }
+          .ribbon{ left: 60%; width: 220px; transform: rotate(35deg) translateX(-50%); }
         }
-        @keyframes sweep{ 0%{ transform:translateX(-120%) rotate(20deg); } 100%{ transform:translateX(220%) rotate(20deg); } }
       `}</style>
     </main>
   );
 }
 
-/* === PLAN CARD === */
+/* === PLAN KARTI === */
 function PlanCard({
   title, price, features, button, variant, ribbon,
 }: {
@@ -210,8 +242,8 @@ function PlanCard({
 }) {
   return (
     <div className={`plan ${variant}`} data-variant={variant}>
+      {/* Premium: manşet şerit üstte, NEON kenarın ÜZERİNDEN çapraz */}
       {variant === "premium" && ribbon ? <div className="ribbon">{ribbon}</div> : null}
-      {variant === "lifetime" ? <div className="shimmer" aria-hidden /> : null}
 
       <div className="hdr">
         <h3>{title}</h3>
