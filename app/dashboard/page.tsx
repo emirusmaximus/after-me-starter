@@ -65,40 +65,47 @@ export default function InverseDashboard() {
         <div className="plans">
           {/* PREMIUM */}
           <div className="card premium">
-            {/* Kurdela: daha küçük, köşeye yakın ve altı biraz dışarı taşıyor */}
+            {/* Kurdela */}
             <div className="corner-ribbon" aria-hidden="true">
               <span>Most Chosen</span>
             </div>
-            <h2>Premium</h2>
+
+            <h2 className="serif">
+              <span aria-hidden="true">💜 </span>Premium Plan
+            </h2>
             <p className="price">$2 / month</p>
             <ul>
-              <li>Unlimited letters</li>
-              <li>Trusted contacts (quorum)</li>
-              <li>Inactivity trigger (heartbeat)</li>
+              <li>Unlimited encrypted letters</li>
+              <li>Trusted contacts (2-of-N quorum)</li>
+              <li>Inactivity &amp; heartbeat triggers</li>
             </ul>
             <Link href="#" className="btn">Upgrade Now</Link>
           </div>
 
           {/* FREE */}
           <div className="card free">
-            <h2>Free</h2>
+            <h2 className="sans">
+              <span aria-hidden="true">🩶 </span>Free Plan
+            </h2>
             <p className="price">$0</p>
             <ul>
-              <li>3 letters</li>
-              <li>Client-side encryption</li>
+              <li>3 encrypted letters</li>
               <li>Date-based delivery</li>
+              <li>Client-side AES-256 encryption</li>
             </ul>
             <Link href="#" className="btn">Continue Free</Link>
           </div>
 
           {/* LIFETIME */}
           <div className="card lifetime">
-            <h2>Lifetime</h2>
+            <h2 className="serif">
+              <span aria-hidden="true">✨ </span>Lifetime Plan
+            </h2>
             <p className="price">$15 (one-time)</p>
             <ul>
               <li>All Premium features</li>
+              <li>One-time lifetime access</li>
               <li>Priority legacy support</li>
-              <li>One-time payment</li>
             </ul>
             <Link href="#" className="btn">Buy Lifetime</Link>
           </div>
@@ -215,6 +222,12 @@ export default function InverseDashboard() {
         </div>
       )}
 
+      {/* Fonts (global) */}
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;700;800;900&display=swap');
+        html, body, * { font-family: Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol", sans-serif; }
+      `}</style>
+
       <style jsx>{`
         .wrap{
           min-height:100vh; background:#000; color:#fff;
@@ -246,7 +259,6 @@ export default function InverseDashboard() {
           display:flex; flex-direction:column; align-items:stretch; gap:8px;
           box-shadow:0 10px 26px rgba(255,255,255,.08);
         }
-        /* Link ve button için eşitleme */
         .menu-item{
           all: unset; /* reset */
           display:block; width:100%; height:44px; line-height:44px; text-align:center;
@@ -268,7 +280,11 @@ export default function InverseDashboard() {
         }
         .card:hover{ transform:translateY(-6px); box-shadow:0 10px 26px rgba(255,255,255,.12); border-color:#eaeaea; filter:saturate(1.04) }
 
-        .card h2{ font-size:24px; font-weight:900; margin:0 0 8px }
+        /* Başlık fontları */
+        .serif{ font-family: "DM Serif Display", serif; font-weight:400; }
+        .sans{ font-family: Inter, system-ui, sans-serif; font-weight:900; }
+
+        .card h2{ font-size:24px; margin:0 0 8px }
         .price{ font-size:21px; margin:0 0 12px }
         ul{ list-style:none; margin:0 0 18px; padding:0; display:grid; gap:6px }
         li{ font-size:18px; opacity:.95 }
@@ -290,11 +306,11 @@ export default function InverseDashboard() {
         }
         @keyframes shimmer{ 0%{transform:translateX(-120%)} 60%{transform:translateX(120%)} 100%{transform:translateX(120%)} }
 
-        /* KURDELE (ribbon) — küçültüldü, köşeye alındı, altı biraz dışarı taşıyor */
+        /* KURDELE (ribbon) — köşe ve hafif taşma */
         .corner-ribbon{
           position:absolute;
-          top:10px;            /* köşeye yaklaştırıldı */
-          left:-34px;          /* daha dışarı taşsın */
+          top:10px;
+          left:-34px;
           z-index:3;
           transform:rotate(-45deg);
           pointer-events:none;
@@ -303,12 +319,11 @@ export default function InverseDashboard() {
           display:inline-block;
           background:#ffffff; color:#000;
           font-weight:900; text-transform:uppercase; letter-spacing:.35px;
-          font-size:12px;               /* daha küçük */
-          padding:5px 18px;             /* bant uzun, alt taraf dışarı taşar */
+          font-size:12px;
+          padding:5px 18px;
           box-shadow:0 4px 12px rgba(255,255,255,.18);
           position:relative;
         }
-        /* Üçgen uçlar */
         .corner-ribbon > span::before,
         .corner-ribbon > span::after{
           content:"";
@@ -362,7 +377,7 @@ export default function InverseDashboard() {
           .outer{ padding:28px 16px }
           .kpis{ grid-template-columns:1fr }
           .tri{ grid-template-columns:1fr }
-          .corner-ribbon{ left:-38px; top:8px; } /* mobilde de köşeye yakın ve dışarı taşsın */
+          .corner-ribbon{ left:-38px; top:8px; }
         }
       `}</style>
     </main>
