@@ -1,6 +1,56 @@
 "use client";
 
 import Link from "next/link";
+import { useMemo } from "react";
+
+/** Basit grid etiketleyici: üstte A..Z, solda 1..N */
+function GridGuide({
+  cols = 26, // A..Z
+  rows = 18,
+  cell = 20, // kare boyutu (px)
+  inset = 20, // frame padding'i ile aynı
+}: {
+  cols?: number; rows?: number; cell?: number; inset?: number;
+}) {
+  const letters = useMemo(() => {
+    const arr: string[] = [];
+    for (let i = 0; i < cols; i++) {
+      arr.push(String.fromCharCode(65 + i)); // A..Z
+    }
+    return arr;
+  }, [cols]);
+
+  const numbers = useMemo(() => Array.from({ length: rows }, (_, i) => String(i + 1)), [rows]);
+
+  return (
+    <div className="grid-guide" aria-hidden>
+      {/* Üstte harfler */}
+      <div className="guide-top" style={{ left: inset, right: inset, top: inset }}>
+        {letters.map((ch, i) => (
+          <span
+            key={ch}
+            className="grid-label"
+            style={{ left: i * cell, transform: "translateX(-50%)" }}
+          >
+            {ch}
+          </span>
+        ))}
+      </div>
+      {/* Solda sayılar */}
+      <div className="guide-left" style={{ top: inset, bottom: inset, left: inset }}>
+        {numbers.map((n, i) => (
+          <span
+            key={n}
+            className="grid-label"
+            style={{ top: i * cell, transform: "translateY(-50%)" }}
+          >
+            {n}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function DashboardPage() {
   const username = "emir";
@@ -35,15 +85,18 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      {/* PLANS (kareli rehberli versiyon) */}
+      {/* PLANS — kareli rehber + büyük puntolar */}
       <section className="plans">
         <div className="container center">
           <h2 className="ph-title">Plans</h2>
           <p className="ph-sub">Choose your legacy.</p>
         </div>
 
-        {/* ORTALI ve KISA dış çerçeve + grid overlay */}
+        {/* Ortalı kısa dış çerçeve + grid overlay + alfanümerik kılavuz */}
         <div className="frame grid-bg">
+          {/* Alfanümerik kılavuz (A..Z üstte, 1..N solda) */}
+          <GridGuide cols={26} rows={18} cell={20} inset={20} />
+
           {/* Dikey beyaz ayırıcı çizgiler */}
           <span className="divider d1" aria-hidden />
           <span className="divider d2" aria-hidden />
@@ -55,7 +108,6 @@ export default function DashboardPage() {
               features={["Encrypted vault", "Priority support", "Early access"]}
               cta="Upgrade 💎"
               type="premium"
-              showBadge
             />
             <Compartment
               title="Free"
@@ -78,12 +130,7 @@ export default function DashboardPage() {
       <style jsx>{`
         :root{
           --bg:#000; --fg:#fff; --muted:#BBB;
-
-          /* === MOST CHOOSEN konum/ölçü ayarları (koordinat ver için) === */
-          --badge-top:-18px;       /* ÜST kenara göre px */
-          --badge-left:-22px;      /* SOL kenara göre px */
-          --badge-rotate:-32deg;   /* açı */
-          --badge-width: 210px;    /* genişlik */
+          /* İstersen kare aralığını/etiketleri değiştirmek için cell boyutunu GridGuide'a parametre ile verebilirsin */
         }
 
         *{ box-sizing:border-box }
@@ -132,6 +179,20 @@ export default function DashboardPage() {
           pointer-events:none;
         }
 
+        /* A..Z üst, 1..N sol etiket katmanı */
+        .grid-guide{
+          position:absolute; inset:0;
+          z-index:4; pointer-events:none;
+        }
+        .guide-top, .guide-left{
+          position:absolute; color:#fff; opacity:.7; font-weight:800; font-size:12px; line-height:1;
+        }
+        .guide-top{ height:0; }
+        .guide-left{ width:0; }
+        .grid-label{
+          position:absolute; white-space:nowrap; text-shadow:0 1px 1px rgba(0,0,0,.45);
+        }
+
         /* DİKEY BEYAZ AYIRICI ÇİZGİLER (üstten alta) */
         .divider{
           position:absolute;
@@ -152,9 +213,9 @@ export default function DashboardPage() {
           z-index:2;
         }
 
-        /* ——— DEV PUNTO İSTEDİĞİN GİBİ ———
+        /* ——— BÜYÜK PUNTO (iç siyah alan azalsın) ———
            Başlıklar: 45px
-           Diğer tüm metinler (fiyat, özellikler, CTA): 36px
+           Diğer tüm metinler: 36px
         */
         .compartment{
           background:transparent;
@@ -193,39 +254,12 @@ export default function DashboardPage() {
         }
         .cta:hover{ background:#161616 }
 
-        /* === "most choosen" küçük beyaz DİKDÖRTGEN — Premium üstüne ÇAPRAZ ===
-           Konum ve açı değişkenlerden: --badge-top / --badge-left / --badge-rotate / --badge-width
-        */
-        .badge{
-          position:absolute;
-          top: var(--badge-top);
-          left: var(--badge-left);
-          width: var(--badge-width);
-          transform: rotate(var(--badge-rotate));
-          transform-origin: left top;
-          z-index:5;
-          background:#fff;      /* içi beyaz */
-          color:#000;           /* yazı siyah */
-          border:2px solid #fff;
-          border-radius:8px;
-          font-weight:1000;
-          text-transform:uppercase;
-          letter-spacing:.6px;
-          font-size:18px;
-          line-height:1;
-          text-align:center;
-          padding:12px 14px;
-          box-shadow:0 6px 22px rgba(0,0,0,.45);
-          pointer-events:none;
-        }
-
         @media(max-width:1000px){
           .frame{ max-width:90vw; min-height:auto; padding:16px }
           .divider{ display:none }
           .grid{ grid-template-columns:1fr }
           .hdr h3{ font-size:38px }
           .price, .feat li, .cta{ font-size:30px }
-          .badge{ font-size:16px; }
         }
       `}</style>
     </main>
@@ -234,21 +268,17 @@ export default function DashboardPage() {
 
 /* === Bölme === */
 function Compartment({
-  title, price, features, cta, type, showBadge
+  title, price, features, cta, type
 }:{
   title:string; price:string; features:string[]; cta:string;
-  type:"premium"|"free"|"lifetime"; showBadge?:boolean;
+  type:"premium"|"free"|"lifetime";
 }){
   return(
     <div className={`compartment ${type}`}>
-      {/* Premium'un ÜZERİNE çapraz beyaz küçük dikdörtgen */}
-      {type==="premium" && showBadge ? <div className="badge">most choosen</div> : null}
-
       <div className="hdr">
         <h3>{title}</h3>
         <div className="price">{price}</div>
       </div>
-
       <ul className="feat">{features.map((f,i)=><li key={i}>{f}</li>)}</ul>
       <button className="cta">{cta}</button>
     </div>
