@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useMemo } from "react";
 
-export default function DashboardPage() {
+export default function DashboardPage(): JSX.Element {
   const username = "emir";
   const stats = { letters: 3, waiting: 1, days: 22, progress: 40 };
 
@@ -15,7 +15,7 @@ export default function DashboardPage() {
         price: "$2/mo",
         features: ["Encrypted vault", "Priority support", "Early access"],
         cta: "Upgrade 💎",
-        ribbon: "Most Chosen",
+        variant: "premium" as const,
       },
       {
         key: "free",
@@ -23,13 +23,20 @@ export default function DashboardPage() {
         price: "$0",
         features: ["Up to 3 letters", "Basic vault", "Standard support"],
         cta: "Current Plan",
+        variant: "free" as const,
       },
       {
         key: "lifetime",
         title: "Lifetime",
         price: "$15",
-        features: ["Unlimited messages", "Lifetime storage", "VIP legacy badge"],
+        features: [
+          "Unlimited messages",
+          "Lifetime storage",
+          "VIP legacy badge",
+        ],
         cta: "Unlock ✨",
+        variant: "lifetime" as const,
+        ribbon: "Most Chosen", // Kurdele Lifetime'da
       },
     ],
     []
@@ -55,165 +62,291 @@ export default function DashboardPage() {
       <section className="hero">
         <div className="container center">
           <p className="muted small">
-            Your vault has {stats.letters} letters — {stats.waiting} waiting for delivery.
+            Your vault has {stats.letters} letters — {stats.waiting} waiting for
+            delivery.
           </p>
+        </div>
+        <div className="container center">
           <h1>Welcome back, @{username}</h1>
           <p className="muted">You haven’t written in {stats.days} days.</p>
-          <div className="progress"><span style={{ width: `${stats.progress}%` }} /></div>
+          <div className="progress">
+            <span style={{ width: `${stats.progress}%` }} />
+          </div>
           <small className="muted">Vault Progress: {stats.progress}%</small>
         </div>
       </section>
 
-      {/* OUTER FRAME (BEYAZ KENARLI, İÇİ SİYAH) + İÇ BEYAZ DİKEY ÇİZGİLER */}
+      {/* PLANS */}
       <section className="plans">
         <div className="container center">
           <h2 className="ph-title">Plans</h2>
           <p className="ph-sub">Choose your legacy.</p>
         </div>
 
-        <div className="container">
-          <div className="frame">
-            {/* Dikey ayırıcı beyaz çizgiler (üstten alta) */}
-            <span className="divider d1" aria-hidden />
-            <span className="divider d2" aria-hidden />
-
-            {/* Üç bölme (ekstra kenarlık yok; sınırlar dış çerçeve + çizgiler) */}
-            <div className="grid">
-              <Compartment type="premium" ribbon="Most Chosen" {...plans[0]} />
-              <Compartment type="free" {...plans[1]} />
-              <Compartment type="lifetime" {...plans[2]} />
-            </div>
-          </div>
+        <div className="container plans-row">
+          {plans.map((p) => (
+            <PlanCard
+              key={p.key}
+              title={p.title}
+              price={p.price}
+              features={p.features}
+              button={p.button}
+              variant={p.variant}
+              ribbon={p.ribbon}
+            />
+          ))}
         </div>
       </section>
 
+      {/* STİL BLOĞU (Temizlenmiş Versiyon) */}
       <style jsx>{`
-        :root{
-          --bg:#000; --fg:#fff; --muted:#BBB;
+        /* Global stiller (body, *, .container) 'app/globals.css' dosyasından geliyor.
+          Burada sadece bu sayfaya özel stiller var.
+        */
+        .dashboard {
+          /* Bu değişkenler artık app/globals.css'teki :root içinden okunacak.
+          --bg, --fg, --muted, --card-bg, --card-border, --btn-dark-bg, etc.
+          */
+          font-family: system-ui, -apple-system, Segoe UI, Roboto, Manrope,
+            sans-serif;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
         }
 
-        *{ box-sizing:border-box }
-        body, .dashboard { background:var(--bg); color:var(--fg); font-family: system-ui, -apple-system, Segoe UI, Roboto, Manrope, sans-serif; }
-
-        .container{ max-width:1100px; margin:0 auto; padding:0 20px; }
-
-        .top{ border-bottom:1px solid #111; padding:14px 0; background:rgba(0,0,0,.6); backdrop-filter:blur(6px); }
-        .topin{ display:flex; align-items:center; justify-content:space-between; }
-        .brand{ display:flex; align-items:center; gap:8px; font-weight:800; }
-        .nav a{ color:#9aa; margin-left:16px; } .nav a:hover{ color:#fff; }
-
-        .hero{ text-align:center; padding:40px 0 20px; }
-        .muted{ color:var(--muted); }
-        .progress{ width:280px; margin:10px auto; height:6px; border:1px solid #222; background:#050505; }
-        .progress span{ display:block; height:100%; background:#fff; }
-
-        .plans{ text-align:center; padding:40px 0 60px; }
-        .ph-title{ font-size:28px; font-weight:800; margin-bottom:4px; }
-        .ph-sub{ color:var(--muted); margin-bottom:24px; font-weight:600; }
-
-        /* === DIŞ ÇERÇEVE — BEYAZ KENAR, İÇİ SİYAH === */
-        .frame{
-          position:relative;
-          border:2px solid #FFFFFF;    /* Dış beyaz çizgi */
-          border-radius:22px;
-          background:#000;             /* içi siyah */
-          padding:28px;
-          box-shadow:0 0 0 1px rgba(255,255,255,.08) inset;
-          overflow:hidden;             /* çizgiler taşmasın */
-          min-height:560px;
+        .center {
+          text-align: center;
         }
 
-        /* Dikey ayırıcı düz beyaz çizgiler (üstten alta) */
-        .divider{
-          position:absolute;
-          top:22px;
-          bottom:22px;
-          width:0;
-          border-left:2px solid #FFFFFF;
-          opacity:.95;
-          z-index:1;
+        /* HEADER */
+        .top {
+          border-bottom: 1px solid #1f1f1f;
+          padding: 14px 0;
+          background: rgba(0, 0, 0, 0.6);
+          backdrop-filter: blur(6px);
+          position: sticky;
+          top: 0;
+          z-index: 10;
         }
-        .d1{ left: calc(33.333%); }
-        .d2{ left: calc(66.666%); }
-
-        /* Üç bölme alanı */
-        .grid{
-          position:relative;
-          z-index:2;                /* çizgilerin üstünde içerik */
-          display:grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap:0;                    /* boşluk yok: sınırlar çizgilerle */
-          align-items:stretch;
-          min-height:504px;
+        .topin {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
         }
-
-        /* Bölme içerikleri — siyah panel, iç dolgu */
-        .compartment{
-          position:relative;
-          background:#000;          /* iç siyah */
-          padding:22px 22px 24px;
-          display:flex;
-          flex-direction:column;
-          justify-content:flex-start;
+        .brand {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-weight: 800;
+          text-decoration: none;
+          color: var(--fg);
         }
-
-        .hdr h3{ font-size:13px; letter-spacing:.6px; text-transform:uppercase; font-weight:900; opacity:.95; margin:0 0 6px; }
-        .price{ font-size:34px; font-weight:900; line-height:1; margin-bottom:6px; }
-        .feat{ list-style:none; padding:0; margin:12px 0 22px; text-align:left; }
-        .feat li{ margin:8px 0; font-size:15px; color:#ddd; }
-
-        .cta{ width:100%; height:48px; border-radius:14px; font-weight:900; font-size:16px; cursor:pointer; transition:.18s; user-select:none; border:1px solid #fff; background:#111; color:#fff; }
-        .cta:hover{ background:#161616; }
-
-        /* === "Most Chosen" — Premium bölmesinin üst kısa kenar ortasından başlayıp
-               sağ uzun kenar ortasına diyagonal; beyaz çizginin ÜSTÜNDEN geçer === */
-        .ribbon{
-          position:absolute;
-          top:-18px;            /* üst kısa kenarın biraz dışı */
-          left:50%;             /* üst kenar ORTASI */
-          width:240px;
-          transform: rotate(35deg) translateX(-50%);
-          transform-origin: center;
-          z-index: 5;           /* ayırıcı çizgi ve dış kenarın ÜZERİNDE */
-          background:#000;      /* manşet bant: siyah */
-          color:#fff;
-          text-transform:uppercase;
-          font-weight:1000;
-          letter-spacing:.8px;
-          font-size:12px;
-          text-align:center;
-          padding:10px 0;
-          border:2px solid #FFFFFF;      /* beyaz kontür */
-          box-shadow:0 0 18px rgba(255,255,255,.25);
-          pointer-events:none;
+        .nav a {
+          color: #9aa;
+          margin-left: 16px;
+          text-decoration: none;
+          font-size: 15px;
+        }
+        .nav a:hover {
+          color: #fff;
         }
 
-        @media (max-width: 1000px){
-          .frame{ padding:20px; }
-          .divider{ display:none; }      /* mobilde çizgiler kalksın, sıralı görünüm */
-          .grid{ grid-template-columns: 1fr; }
-          .ribbon{ left:55%; width:220px; transform: rotate(35deg) translateX(-50%); }
+        /* HERO */
+        .hero {
+          text-align: center;
+          padding: 40px 0 20px;
+        }
+        .muted {
+          color: var(--muted); /* Bu artık globals.css'ten gelecek */
+        }
+        .progress {
+          width: 280px;
+          margin: 10px auto;
+          height: 6px;
+          border: 1px solid #222;
+          background: #050505;
+          border-radius: 6px;
+          overflow: hidden;
+        }
+        .progress span {
+          display: block;
+          height: 100%;
+          background: #fff;
+          border-radius: 6px;
+        }
+
+        /* PLANS */
+        .plans {
+          text-align: center;
+          padding: 40px 0 60px;
+        }
+        .ph-title {
+          font-size: 28px;
+          font-weight: 800;
+          margin-bottom: 4px;
+        }
+        .ph-sub {
+          color: var(--muted);
+          margin-bottom: 24px;
+          font-weight: 600;
+          font-size: 18px;
+        }
+
+        .plans-row {
+          display: flex;
+          gap: 20px;
+          justify-content: center;
+          align-items: stretch;
+          flex-wrap: wrap;
+        }
+        @media (max-width: 900px) {
+          .plans-row {
+            gap: 18px;
+            justify-content: center;
+          }
+        }
+
+        /* PLAN KARTI: Resimdeki tasarıma uygun */
+        .plan {
+          flex: 1 1 320px;
+          max-width: 340px;
+          min-height: 380px;
+          border: 1px solid var(--card-border); /* Değişken globals.css'ten */
+          border-radius: 16px;
+          background: var(--card-bg); /* Değişken globals.css'ten */
+          padding: 28px;
+          display: flex;
+          flex-direction: column;
+          position: relative;
+          overflow: hidden;
+          text-align: left;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .plan:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* İç hiza */
+        .hdr {
+          min-height: 90px;
+          display: grid;
+          align-content: start;
+        }
+        .hdr h3 {
+          font-size: 14px;
+          letter-spacing: 0.5px;
+          text-transform: uppercase;
+          font-weight: 700;
+          color: var(--muted);
+          margin: 0 0 8px;
+        }
+        .price {
+          font-size: 34px;
+          font-weight: 800;
+          line-height: 1;
+          color: var(--fg);
+        }
+        .feat {
+          list-style: none;
+          padding: 0;
+          margin: 24px 0;
+          flex-grow: 1; /* Butonları en alta iter */
+        }
+        .feat li {
+          position: relative;
+          padding-left: 24px;
+          margin-bottom: 12px;
+          font-size: 15px;
+          color: var(--fg);
+        }
+        .feat li::before {
+          content: "✓";
+          position: absolute;
+          left: 0;
+          top: 1px;
+          opacity: 0.9;
+          color: var(--muted);
+        }
+
+        /* CTA’lar (Butonlar) */
+        .cta {
+          width: 100%;
+          height: 48px;
+          border-radius: 12px;
+          font-weight: 700;
+          font-size: 16px;
+          cursor: pointer;
+          transition: 0.18s;
+          user-select: none;
+          border: none;
+        }
+        /* Premium ve Lifetime (Koyu Buton) */
+        .cta-premium,
+        .cta-life {
+          color: var(--fg);
+          background: var(--btn-dark-bg); /* Değişken globals.css'ten */
+          border: 1px solid var(--card-border); /* Değişken globals.css'ten */
+        }
+        .cta-premium:hover,
+        .cta-life:hover {
+          background: var(--btn-dark-hover); /* Değişken globals.css'ten */
+        }
+
+        /* Free (Beyaz Buton) */
+        .cta-free {
+          background: #fff;
+          color: #111;
+          border: 1px solid #e9e9e9;
+        }
+        .cta-free:hover {
+          background: #f2f2f2;
+        }
+
+        /* “Most Chosen” Kurdele Stili */
+        .ribbon {
+          position: absolute;
+          top: 18px;
+          right: -50px;
+          z-index: 2;
+          transform: rotate(45deg);
+          background: var(--ribbon-bg); /* Değişken globals.css'ten */
+          color: #fff;
+          font-weight: 700;
+          font-size: 12px;
+          letter-spacing: 0.5px;
+          padding: 6px 0;
+          width: 200px;
+          text-align: center;
+          text-transform: uppercase;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
       `}</style>
     </main>
   );
 }
 
-/* === BÖLME BİLEŞENİ === */
-function Compartment({
-  title, price, features, cta, type, ribbon,
+/* === PLAN CARD === */
+function PlanCard({
+  title,
+  price,
+  features,
+  button,
+  variant,
+  ribbon,
 }: {
   title: string;
   price: string;
   features: string[];
-  cta: string;
-  type: "premium" | "free" | "lifetime";
+  button: string;
+  variant: "premium" | "free" | "lifetime";
   ribbon?: string;
 }) {
   return (
-    <div className={`compartment ${type}`}>
-      {/* Sadece Premium'da manşet şeridi */}
-      {type === "premium" && ribbon ? <div className="ribbon">{ribbon}</div> : null}
+    <div className={`plan ${variant}`} data-variant={variant}>
+      {/* Kurdele 'lifetime' için gösteriliyor */}
+      {variant === "lifetime" && ribbon ? (
+        <div className="ribbon">{ribbon}</div>
+      ) : null}
 
       <div className="hdr">
         <h3>{title}</h3>
@@ -221,10 +354,22 @@ function Compartment({
       </div>
 
       <ul className="feat">
-        {features.map((f, i) => <li key={i}>{f}</li>)}
+        {features.map((f, i) => (
+          <li key={i}>{f}</li>
+        ))}
       </ul>
 
-      <button className="cta">{cta}</button>
+      <button
+        className={
+          variant === "premium"
+            ? "cta cta-premium"
+            : variant === "lifetime"
+            ? "cta cta-life"
+            : "cta cta-free"
+        }
+      >
+        {button}
+      </button>
     </div>
   );
 }
