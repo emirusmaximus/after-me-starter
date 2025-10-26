@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
@@ -12,38 +13,49 @@ const supabase = createClient(
 
 type UserMeta = { username?: string };
 
-export default function DashboardPage() {
+export default function GhostVaultDashboardV3() {
   const router = useRouter();
-  const [username, setUsername] = useState<string>("");
+  const [username, setUsername] = useState<string>("…");
   const [loading, setLoading] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  // demo metrikler – backend bağlanınca bu kısım supabase sorgularına dönecek
+  const [stats, setStats] = useState({ letters: 0, scheduled: 0, delivered: 0 });
+  const [accounts, setAccounts] = useState([
+    { name: "Google", connected: true },
+    { name: "Instagram", connected: false },
+    { name: "X (Twitter)", connected: true },
+  ]);
+  const nextCheckIn = "12 Kasım 2025"; // örnek; edge function ile hesaplanacak
 
   useEffect(() => {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { router.push("/login"); return; }
       const meta = (user.user_metadata || {}) as UserMeta;
-      setUsername(meta.username || user.email?.split("@")[0] || "misafir");
+      const u = meta.username || user.email?.split("@")[0] || "misafir";
+      setUsername(u);
+      // TODO: supabase.from("messages") ile gerçek sayıları çek
+      setStats({ letters: 0, scheduled: 0, delivered: 0 });
       setLoading(false);
     })();
   }, [router]);
 
-  const goHome = () => router.push("/");            // ← GERÇEK anasayfa
   const onLogout = async () => { await supabase.auth.signOut(); router.push("/"); };
 
-  // Geçici: Composer modal gelene kadar
-  const onCompose = () => alert("Composer burada açılacak (AES-GCM istemci tarafı şifreleme ile).");
+  // geçici – composer gelene kadar
+  const onCompose = () => alert("Composer burada açılacak (AES-GCM istemci tarafı şifreleme).");
 
   return (
     <div className="wrap">
-      {/* TOPBAR */}
-      <header className="topbar">
-        <button className="logoBtn" onClick={goHome} aria-label="Ana sayfaya dön">
+      {/* TOPBAR — logo: kesinlikle anasayfa (`/`) */}
+      <header className="topbar" aria-label="Üst çubuk">
+        <Link className="logoBtn" href="/" aria-label="Ana sayfa">
           <div className="logoWrap">
             <Image src="/logo.svg" alt="After.Me" width={28} height={28} priority />
           </div>
           <span className="brand">After.Me</span>
-        </button>
+        </Link>
 
         <div className="topRight">
           {!loading && <div className="userPill">@{username}</div>}
@@ -51,19 +63,21 @@ export default function DashboardPage() {
             className="hamburger"
             aria-label={menuOpen ? "Menüyü kapat" : "Menüyü aç"}
             aria-expanded={menuOpen}
-            onClick={() => setMenuOpen((v) => !v)}
+            onClick={() => setMenuOpen(v => !v)}
           >
             <span /><span /><span />
           </button>
         </div>
       </header>
 
-      {/* HERO */}
+      {/* HERO — hikâye + sıcak güven */}
       <section className="hero">
+        <div className="halo" aria-hidden />
+        <p className="eyebrow">GhostVault — Your Digital Legacy</p>
         <h1>Hoş geldin, {loading ? "…" : username}.</h1>
         <p className="sub">
-          İnsanlar yok olur. Sözler kalır. Burada sözlerin cihazından çıkmadan şifrelenir.
-          Biz okuyamayız — maksat da bu.
+          “Bir gün gidersen, dijital kimliğini kim devralacak?” <br/>
+          Sözlerin cihazından çıkmadan şifrelenir. Biz okuyamayız — maksat da bu.
         </p>
         <div className="ctaRow">
           <button className="primary" onClick={onCompose}>+ Yeni mesaj yaz</button>
@@ -77,68 +91,62 @@ export default function DashboardPage() {
         <ul className="trust">
           <li>İstemci tarafı AES-256</li>
           <li>Sıfır Bilgi (Zero-knowledge)</li>
-          <li>Zamanlı/koşullu teslim</li>
+          <li>Zamanında / koşullu teslim</li>
         </ul>
       </section>
 
-      {/* HIZLI KARTLAR */}
-      <section className="quick">
-        <button className="qcard" onClick={onCompose}>
-          <div className="ic" aria-hidden />
-          <div>
-            <h3>Bir mektup başlat</h3>
-            <p>Önemli olanı söyle — kendi sesinle.</p>
-          </div>
-        </button>
-        <button className="qcard" onClick={() => document.getElementById("vault")?.scrollIntoView({ behavior: "smooth" })}>
-          <div className="ic" aria-hidden />
-          <div>
-            <h3>Kasana bak</h3>
-            <p>Taslakları ve planlı teslimleri gör.</p>
-          </div>
-        </button>
-        <div className="qcard static">
-          <div className="ic" aria-hidden />
-          <div>
-            <h3>Neden güvenli?</h3>
-            <p>Sözlerini görmeyiz. Yalnızca sana aittir.</p>
-          </div>
-        </div>
+      {/* STATS — premium, sade, okunaklı */}
+      <section className="stats">
+        <StatCard label="Yazılmış Mektup" value={stats.letters} />
+        <StatCard label="Planlı Teslim" value={stats.scheduled} />
+        <StatCard label="Teslim Edildi" value={stats.delivered} />
       </section>
 
-      {/* SPARKS */}
-      <section className="sparks">
-        <p className="eyebrow">Memory Sparks</p>
-        <div className="chips">
-          {[
-            "Keşke daha erken öğrenseydim…",
-            "18. yaşında okuyacağın mektup…",
-            "Eğer ben yokken, yıldönümümüzde oku…",
-            "Gelecekteki bana: lütfen hatırla…",
-            "Kimseye anlatmadığım hikâye…",
-          ].map((t) => (
-            <button key={t} className="chip" onClick={() => alert(`Composer’a öneri olarak eklenecek: ${t}`)}>
-              {t}
-            </button>
-          ))}
-        </div>
-      </section>
-
-      {/* VAULT */}
-      <section id="vault" className="vault">
-        <div className="vaultHead">
+      {/* İKİLİ GRID — Kasa önizleme + Bağlı hesaplar */}
+      <section className="dual">
+        <div className="panel vault" id="vault">
           <h2>Kasan</h2>
-          <p className="muted">Henüz mesaj yok. İlk mektubunu bugün bırak.</p>
+          <p className="muted">{stats.letters === 0 ? "Henüz mesaj yok. İlk mektubunu bugün bırak." : "Son mektupların buraya düşer."}</p>
+          <div className="empty">
+            <div className="placeholder" />
+            <button className="primary" onClick={onCompose}>Yazmaya başla</button>
+          </div>
+          <div className="timeline">
+            <div className="tTitle">Zaman Çizgisi</div>
+            <div className="tLine">
+              <span className="dot past" /> <span>“Anneme not” — Teslim edildi</span>
+            </div>
+            <div className="tLine">
+              <span className="dot future" /> <span>“18. yaş mektubu” — 2033’e planlandı</span>
+            </div>
+          </div>
         </div>
-        <div className="empty">
-          <div className="placeholder" />
-          <button className="primary" onClick={onCompose}>Yazmaya başla</button>
+
+        <div className="panel accounts">
+          <h2>Bağlı Hesaplar</h2>
+          <p className="muted">“Eğer 1 yıl giriş yapmazsam…” kuralı için tavsiye edilir.</p>
+          <ul className="accList">
+            {accounts.map(acc => (
+              <li key={acc.name}>
+                <span className={`badge ${acc.connected ? "ok" : "no"}`} aria-hidden />
+                <span>{acc.name}</span>
+                <button className={acc.connected ? "ghost small" : "primary small"}>
+                  {acc.connected ? "Bağlandı" : "Bağla"}
+                </button>
+              </li>
+            ))}
+          </ul>
+          <div className="checkin">
+            <div className="mini">Bir sonraki “yaşıyor musun?” e-postası</div>
+            <div className="date">{nextCheckIn}</div>
+            <p className="muted sm">E-postadaki linke tıklamazsan işaretlediğin kişilere vasiyetin teslim edilir.</p>
+          </div>
         </div>
       </section>
 
-      {/* PLANLAR (nazik ama görünür) */}
+      {/* PLANLAR — nazik, ama görünür */}
       <section className="plans">
-        <h2 className="plansTitle">Sessizce daha fazlasını koru</h2>
+        <h2 className="plansTitle">Digital continuity is peace of mind.</h2>
         <div className="planGrid">
           <div className="plan">
             <h3>Free</h3>
@@ -148,7 +156,7 @@ export default function DashboardPage() {
               <li>Temel zamanlama</li>
               <li>İstemci tarafı şifreleme</li>
             </ul>
-            <button className="ghost" disabled>Aktif</button>
+            <button className="ghost">Devam et</button>
           </div>
           <div className="plan featured">
             <div className="ring" aria-hidden />
@@ -178,15 +186,15 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      {/* DRAWER (Hamburger menü) */}
+      {/* HAMBURGER DRAWER */}
       <aside className={`drawer ${menuOpen ? "open" : ""}`} aria-hidden={!menuOpen}>
         <div className="drawerHead">
-          <button className="logoBtn mini" onClick={goHome} aria-label="Ana sayfa">
+          <Link className="logoBtn mini" href="/" aria-label="Ana sayfa">
             <div className="logoWrap mini">
               <Image src="/logo.svg" alt="After.Me" width={22} height={22} />
             </div>
             <span className="brand">After.Me</span>
-          </button>
+          </Link>
           <button className="close" aria-label="Menüyü kapat" onClick={() => setMenuOpen(false)}>✕</button>
         </div>
         <nav className="menu">
@@ -200,8 +208,6 @@ export default function DashboardPage() {
           <button className="danger" onClick={onLogout}>Çıkış Yap</button>
         </nav>
       </aside>
-
-      {/* BACKDROP */}
       {menuOpen && <button className="backdrop" aria-label="Menüyü kapat" onClick={() => setMenuOpen(false)} />}
 
       <style jsx>{styles}</style>
@@ -209,21 +215,47 @@ export default function DashboardPage() {
   );
 }
 
-/* ======= STYLED-JSX (Design tokenlara sadık) ======= */
+/** küçük stat kartı bileşeni (aynı dosyada tutuyoruz) */
+function StatCard({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="stat">
+      <div className="value">{value}</div>
+      <div className="label">{label}</div>
+      <style jsx>{`
+        .stat{
+          border:1px solid var(--border); background:var(--card); border-radius:16px; padding:16px;
+          display:grid; gap:6px; place-items:center; text-align:center;
+          animation: rise .6s ease var(--delay, 0ms) both;
+        }
+        .value{ font-size:28px; font-weight:700; letter-spacing:.3px; }
+        .label{ color:var(--muted); font-size:14px; }
+        @keyframes rise{
+          from{ transform: translateY(8px); opacity:0 }
+          to{ transform: translateY(0); opacity:1 }
+        }
+        @media (prefers-reduced-motion: reduce){
+          .stat{ animation: none }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+/* ===== styled-jsx (tokenlara sadık, nazik animasyonlar) ===== */
 const styles = /* css */`
 .wrap{
   --bg:#050505; --fg:#f5f5f5; --card:#0b0b0b; --border:#1a1a1a; --muted:#c7c7c7;
   color:var(--fg); background:var(--bg); min-height:100dvh;
-  padding:18px 16px 80px; display:grid; gap:24px; justify-items:center;
+  padding:18px 16px 84px; display:grid; gap:24px; justify-items:center;
 }
 
-/* Topbar */
+/* topbar */
 .topbar{ width:100%; max-width:1120px; display:flex; align-items:center; justify-content:space-between; }
-.logoBtn{ display:flex; align-items:center; gap:10px; background:transparent; border:0; cursor:pointer; }
+.logoBtn{ display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--fg); }
 .logoWrap{
   width:32px; height:32px; border-radius:10px; border:1px solid var(--border); background:#0f0f0f;
   display:grid; place-items:center; box-shadow: inset 0 0 24px rgba(255,255,255,.06);
-  animation: logoGlow 3s ease-in-out infinite;
+  animation: logoGlow 3800ms ease-in-out infinite;
 }
 .logoWrap:hover{ animation-play-state: paused; }
 @keyframes logoGlow{
@@ -231,7 +263,6 @@ const styles = /* css */`
   50%{box-shadow: inset 0 0 28px rgba(255,255,255,.09)}
   100%{box-shadow: inset 0 0 18px rgba(255,255,255,.05)}
 }
-.logoWrap.mini{ animation:none; }
 .brand{ font-weight:600; letter-spacing:.2px; }
 .topRight{ display:flex; align-items:center; gap:10px; }
 .userPill{ color:var(--muted); font-size:14px; }
@@ -241,89 +272,113 @@ const styles = /* css */`
 }
 .hamburger span{ display:block; width:100%; height:2px; background:#dcdcdc; margin:3px 0; border-radius:2px; }
 
-/* Hero */
-.hero{ width:100%; max-width:900px; text-align:center; display:grid; gap:10px; margin-top:4px; }
-.hero h1{ margin:0; font-size:34px; line-height:1.15; }
-.sub{ color:#d8d8d8; margin:0 auto; max-width:720px; }
-.ctaRow{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:8px; }
+/* hero */
+.hero{ width:100%; max-width:980px; text-align:center; display:grid; gap:10px; margin-top:4px; position:relative; }
+.eyebrow{ color:var(--muted); font-size:13px; letter-spacing:.3px; }
+.hero h1{ margin:0; font-size:34px; line-height:1.15; animation: fadeUp .6s ease both; }
+.sub{ color:#d8d8d8; margin:0 auto; max-width:740px; animation: fadeUp .7s ease 60ms both; }
+.ctaRow{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:8px; animation: fadeUp .7s ease 90ms both; }
 .primary{
   background:#fff; color:#000; border:0; border-radius:14px; padding:10px 14px; font-weight:700; cursor:pointer;
-  transition:transform 120ms ease, filter 120ms ease;
+  transition: transform 120ms ease, filter 120ms ease;
 }
-.primary:hover{ transform:scale(1.04); filter:brightness(.95); }
+.primary:hover{ transform: scale(1.04); filter: brightness(.95); }
 .ghost{
   background:transparent; color:var(--fg); border:1px solid var(--border);
-  padding:10px 14px; border-radius:14px; cursor:pointer; transition:transform 120ms ease, background 120ms ease;
+  padding:10px 14px; border-radius:14px; cursor:pointer; transition: transform 120ms ease, background 120ms ease;
 }
-.ghost:hover{ transform:scale(1.03); background:#0d0d0d; }
-.trust{ list-style:none; padding:0; margin:8px 0 0 0; display:flex; gap:12px; justify-content:center; flex-wrap:wrap; color:#bdbdbd; font-size:14px; }
+.ghost:hover{ transform: scale(1.03); background:#0d0d0d; }
+.trust{ list-style:none; padding:0; margin:8px 0 0 0; display:flex; gap:12px; justify-content:center; flex-wrap:wrap; color:#bdbdbd; font-size:14px; animation: fadeUp .7s ease 120ms both; }
 
-/* Quick cards */
-.quick{ width:100%; max-width:1120px; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
-.qcard{
-  display:flex; gap:12px; align-items:flex-start; text-align:left; width:100%;
-  border:1px solid var(--border); border-radius:16px; background:var(--card); padding:16px;
-  transition:transform 120ms ease, background 120ms ease; cursor:pointer;
+.halo{
+  position:absolute; inset:auto 0 -18px 0; height:2px; background:linear-gradient(90deg, transparent, rgba(255,255,255,.25), transparent);
+  animation: sweep 3.6s ease-in-out infinite;
 }
-.qcard:hover{ transform:scale(1.02); background:#0e0e0e; }
-.qcard.static{ cursor:default; }
-.qcard.static:hover{ transform:none; background:var(--card); }
-.qcard h3{ margin:0 0 4px 0; }
-.qcard p{ margin:0; color:#d0d0d0; }
-.ic{
-  width:36px; height:36px; border-radius:10px; border:1px solid var(--border); background:#111;
-  box-shadow: inset 0 0 24px rgba(255,255,255,.06);
+@keyframes sweep{
+  0%{transform: translateX(-40%); opacity:.0}
+  50%{transform: translateX(0%); opacity:1}
+  100%{transform: translateX(40%); opacity:.0}
+}
+@keyframes fadeUp{ from{ opacity:0; transform: translateY(6px)} to{ opacity:1; transform: translateY(0)} }
+@media (prefers-reduced-motion: reduce){
+  .halo{ animation:none }
+  .hero h1, .sub, .ctaRow, .trust{ animation:none }
+  .logoWrap{ animation:none }
 }
 
-/* Sparks */
-.sparks{ width:100%; max-width:1120px; display:grid; gap:10px; text-align:center; }
-.eyebrow{ color:var(--muted); font-size:13px; letter-spacing:.3px; }
-.chips{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; }
-.chip{
-  border:1px solid var(--border); background:#0c0c0c; color:#ededed; border-radius:999px; padding:8px 12px;
-  cursor:pointer; transition:transform 120ms ease, background 120ms ease;
-}
-.chip:hover{ transform:scale(1.03); background:#111; }
+/* stats */
+.stats{ width:100%; max-width:1120px; display:grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap:12px; }
 
-/* Vault */
-.vault{ width:100%; max-width:1120px; display:grid; gap:12px; }
-.vaultHead{ display:flex; align-items:baseline; gap:10px; }
-.vault h2{ margin:0; }
+/* double panel */
+.dual{ width:100%; max-width:1120px; display:grid; grid-template-columns: 1.4fr .9fr; gap:12px; align-items:start; }
+.panel{
+  border:1px solid var(--border); background:var(--card); border-radius:18px; padding:18px; position:relative;
+  animation: fadeUp .6s ease both;
+}
+.panel h2{ margin:0 0 4px 0; }
 .muted{ color:var(--muted); }
 .empty{
-  border:1px solid var(--border); background:var(--card); border-radius:18px; padding:24px;
-  display:grid; gap:12px; place-items:center; text-align:center;
+  border:1px dashed var(--border); border-radius:14px; padding:20px; display:grid; place-items:center; gap:10px; text-align:center;
+  margin:10px 0 14px 0;
 }
 .placeholder{
   width:56px; height:56px; border-radius:14px; background:linear-gradient(180deg,#111,#0a0a0a);
   border:1px solid var(--border); box-shadow: inset 0 0 24px rgba(255,255,255,.06);
 }
 
-/* Plans */
+/* timeline */
+.timeline{ display:grid; gap:8px; }
+.tTitle{ color:#eaeaea; font-weight:600; margin:6px 0 2px 0; }
+.tLine{ display:flex; align-items:center; gap:10px; color:#d0d0d0; }
+.dot{ width:10px; height:10px; border-radius:999px; display:inline-block; }
+.dot.past{ background:#2a2a2a; border:1px solid #333; }
+.dot.future{ background:#fafafa; border:1px solid #bbb; }
+
+/* accounts */
+.accList{ list-style:none; padding:0; margin:8px 0 0 0; display:grid; gap:8px; }
+.accList li{ display:flex; align-items:center; justify-content:space-between; gap:10px; border:1px solid var(--border); border-radius:12px; padding:10px 12px; }
+.badge{ width:10px; height:10px; border-radius:999px; display:inline-block; margin-right:4px; }
+.badge.ok{ background:#b8f5c2; border:1px solid #79c08b; }
+.badge.no{ background:#f5d0b8; border:1px solid #c08b79; }
+.small{ padding:8px 12px; border-radius:12px; font-size:14px; }
+.primary.small{ background:#fff; color:#000; border:0; }
+.primary.small:hover{ filter:brightness(.95) }
+.ghost.small{ background:transparent; color:var(--fg); border:1px solid var(--border); }
+.ghost.small:hover{ background:#111 }
+
+/* check-in */
+.checkin{
+  margin-top:12px; border:1px solid var(--border); border-radius:14px; padding:12px;
+  background: radial-gradient(140% 120% at 50% -10%, rgba(255,255,255,0.04), rgba(0,0,0,0)), var(--card);
+}
+.mini{ color:#cfcfcf; font-size:13px; }
+.date{ font-weight:700; margin:4px 0 4px 0; }
+
+/* plans */
 .plans{ width:100%; max-width:1120px; display:grid; gap:12px; text-align:center; }
 .plansTitle{ margin:6px 0 0 0; }
 .planGrid{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:12px; }
 .plan{
-  border:1px solid var(--border); background:var(--card); border-radius:18px; padding:18px; text-align:left;
-  position:relative; overflow:hidden;
+  border:1px solid var(--border); background:var(--card); border-radius:18px; padding:18px; text-align:left; position:relative; overflow:hidden;
+  transition: transform 120ms ease, background 120ms ease;
 }
+.plan:hover{ transform: translateY(-2px); background:#0d0d0d; }
 .plan h3{ margin:0 0 6px 0; }
 .plan ul{ margin:10px 0 0 18px; color:#d0d0d0; }
-.plan .ghost{ width:100%; margin-top:12px; }
-.plan .primaryLink, .plan .ghostLink{
+.primaryLink, .ghostLink{
   display:inline-block; margin-top:12px; text-decoration:none; padding:10px 14px; border-radius:14px; border:1px solid var(--border);
 }
-.plan .primaryLink{ background:#fff; color:#000; border:0; font-weight:700; }
-.plan .primaryLink:hover{ filter:brightness(.95); }
-.plan .ghostLink{ background:#0f0f0f; color:#f5f5f5; }
-.plan .ghostLink:hover{ background:#141414; }
+.primaryLink{ background:#fff; color:#000; border:0; font-weight:700; }
+.primaryLink:hover{ filter:brightness(.95); }
+.ghostLink{ background:#0f0f0f; color:#f5f5f5; }
+.ghostLink:hover{ background:#141414; }
 .plan.featured{ box-shadow: 0 0 24px rgba(255,255,255,.06); }
 .plan.featured .ring{
   position:absolute; inset:-40% -20% auto auto; width:260px; height:260px; border-radius:50%;
   border:1px solid rgba(255,255,255,.09); pointer-events:none;
 }
 
-/* Drawer */
+/* drawer */
 .drawer{
   position:fixed; top:0; right:-320px; width:300px; height:100dvh; background:#0b0b0b; border-left:1px solid var(--border);
   transition:right 180ms ease; z-index:40; display:flex; flex-direction:column; padding:14px;
@@ -342,13 +397,14 @@ const styles = /* css */`
 .menu .danger{ border-color:#3a1a1a; background:#140f0f; }
 .menu hr{ border:0; height:1px; background:#1a1a1a; margin:8px 0; }
 
-/* Backdrop */
+/* backdrop */
 .backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.35); z-index:30; border:0; }
 
-/* Responsive */
-@media (max-width: 900px){
-  .quick{ grid-template-columns:1fr; }
-  .planGrid{ grid-template-columns:1fr; }
-  .hero h1{ font-size:28px; }
+/* responsive */
+@media (max-width: 980px){
+  .stats{ grid-template-columns: 1fr; }
+  .dual{ grid-template-columns: 1fr; }
+  .planGrid{ grid-template-columns: 1fr; }
+  .hero h1{ font-size: 28px; }
 }
 `;
