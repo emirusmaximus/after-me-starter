@@ -18,7 +18,7 @@ export default function InverseDashboard() {
         {/* Topbar */}
         <div className="topbar">
           <Link href="/" className="brand" aria-label="After.Me — Home">
-            {/* LOGO DAHA BÜYÜK */}
+            {/* Logo daha büyük */}
             <img src="/logo.svg" width={36} height={36} alt="After.Me" />
           </Link>
 
@@ -34,7 +34,6 @@ export default function InverseDashboard() {
 
             {menu && (
               <nav className="menu" role="menu" aria-label="Quick actions">
-                {/* Tüm menü öğeleri aynı tipografi */}
                 <button
                   className="menu-item"
                   onClick={() => { setOpen(true); setMenu(false); }}
@@ -66,7 +65,7 @@ export default function InverseDashboard() {
         <div className="plans">
           {/* PREMIUM */}
           <div className="card premium">
-            {/* KURDELE ŞEKLİNDE RIBBON */}
+            {/* Kurdela: daha küçük, köşeye yakın ve altı biraz dışarı taşıyor */}
             <div className="corner-ribbon" aria-hidden="true">
               <span>Most Chosen</span>
             </div>
@@ -222,14 +221,12 @@ export default function InverseDashboard() {
           display:flex; justify-content:center; align-items:center; padding:32px 16px;
         }
 
-        /* Dış dikdörtgen KÜÇÜLTÜLDÜ */
         .outer{
           position:relative; background:#000; border:3px solid #fff; border-radius:22px;
           max-width:980px; width:100%; padding:40px 24px 30px; text-align:center;
           box-shadow:0 0 32px rgba(255,255,255,0.06);
         }
 
-        /* Topbar */
         .topbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
         .brand{ display:inline-flex; align-items:center; gap:10px; text-decoration:none; }
 
@@ -241,7 +238,7 @@ export default function InverseDashboard() {
         }
         .hamburger span{ width:20px; height:2px; background:#fff; border-radius:2px }
 
-        /* ORANTILI MENU — TÜM MADDELER AYNI TİPOGRAFİ */
+        /* Menü tipografisi — tüm öğeler birebir aynı */
         .menu{
           position:absolute; top:44px; right:0; z-index:20;
           background:#0b0b0b; border:1px solid rgba(255,255,255,.18); border-radius:12px;
@@ -249,12 +246,12 @@ export default function InverseDashboard() {
           display:flex; flex-direction:column; align-items:stretch; gap:8px;
           box-shadow:0 10px 26px rgba(255,255,255,.08);
         }
+        /* Link ve button için eşitleme */
         .menu-item{
-          display:block; width:100%; height:44px; line-height:44px;
-          padding:0 14px; border:0; border-radius:10px; background:transparent;
-          color:#fff; text-align:center; font-weight:800; font-size:15px; letter-spacing:.2px;
-          text-decoration:none; /* Link & button aynı görünsün */
-          cursor:pointer;
+          all: unset; /* reset */
+          display:block; width:100%; height:44px; line-height:44px; text-align:center;
+          padding:0 14px; border-radius:10px; cursor:pointer;
+          color:#fff; font-weight:900; font-size:15px; letter-spacing:.2px;
         }
         .menu-item:hover{ background:#101010 }
 
@@ -267,7 +264,7 @@ export default function InverseDashboard() {
           padding:22px 18px 26px;
           display:flex; flex-direction:column; align-items:center; text-align:center;
           transition:transform .2s ease, box-shadow .2s ease, border-color .2s, filter .2s;
-          overflow:visible;
+          overflow:visible; /* kurdela taşması için */
         }
         .card:hover{ transform:translateY(-6px); box-shadow:0 10px 26px rgba(255,255,255,.12); border-color:#eaeaea; filter:saturate(1.04) }
 
@@ -282,7 +279,7 @@ export default function InverseDashboard() {
         }
         .btn:hover{ filter:brightness(.92); transform:translateY(-1px) }
 
-        /* Premium / Free / Lifetime zeminleri */
+        /* Zeminler */
         .premium{ background: linear-gradient(160deg, #2b205a 0%, #4a3fb3 100%); }
         .free{ background: linear-gradient(160deg, #0f1014 0%, #1b1c22 100%); }
         .lifetime{ background: linear-gradient(160deg, #6e5a09 0%, #a67a00 100%); }
@@ -293,28 +290,33 @@ export default function InverseDashboard() {
         }
         @keyframes shimmer{ 0%{transform:translateX(-120%)} 60%{transform:translateX(120%)} 100%{transform:translateX(120%)} }
 
-        /* KURDELE (RIBBON) — köşe dışına taşan şerit ve üçgen kuyruklar */
+        /* KURDELE (ribbon) — küçültüldü, köşeye alındı, altı biraz dışarı taşıyor */
         .corner-ribbon{
-          position:absolute; top:16px; left:-10px; z-index:3;
+          position:absolute;
+          top:10px;            /* köşeye yaklaştırıldı */
+          left:-34px;          /* daha dışarı taşsın */
+          z-index:3;
           transform:rotate(-45deg);
-          pointer-events:none; /* tıklamayı engelleme */
+          pointer-events:none;
         }
         .corner-ribbon > span{
           display:inline-block;
-          background:#ffffff; color:#000; font-weight:900; letter-spacing:.35px; text-transform:uppercase;
-          font-size:13px; padding:6px 16px;
+          background:#ffffff; color:#000;
+          font-weight:900; text-transform:uppercase; letter-spacing:.35px;
+          font-size:12px;               /* daha küçük */
+          padding:5px 18px;             /* bant uzun, alt taraf dışarı taşar */
           box-shadow:0 4px 12px rgba(255,255,255,.18);
           position:relative;
         }
-        /* Üçgen uçlar (kurdela görünümü) */
+        /* Üçgen uçlar */
         .corner-ribbon > span::before,
         .corner-ribbon > span::after{
           content:"";
           position:absolute; top:0; bottom:0; width:0; height:0;
-          border-top:12px solid transparent; border-bottom:12px solid transparent;
+          border-top:11px solid transparent; border-bottom:11px solid transparent;
         }
-        .corner-ribbon > span::before{ left:-12px; border-right:12px solid #ffffff; }
-        .corner-ribbon > span::after{ right:-12px; border-left:12px solid #ffffff; }
+        .corner-ribbon > span::before{ left:-11px; border-right:11px solid #ffffff; }
+        .corner-ribbon > span::after{ right:-11px; border-left:11px solid #ffffff; }
 
         .hr{ height:1px; background:rgba(255,255,255,.15); margin:24px 0; border-radius:999px }
 
@@ -360,7 +362,7 @@ export default function InverseDashboard() {
           .outer{ padding:28px 16px }
           .kpis{ grid-template-columns:1fr }
           .tri{ grid-template-columns:1fr }
-          .corner-ribbon{ left:-18px; } /* mobilde biraz içeri */
+          .corner-ribbon{ left:-38px; top:8px; } /* mobilde de köşeye yakın ve dışarı taşsın */
         }
       `}</style>
     </main>
