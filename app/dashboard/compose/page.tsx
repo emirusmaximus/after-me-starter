@@ -27,7 +27,6 @@ export default function ComposePage() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
-          // login'e yönlendir (opsiyonel)
           // window.location.href = "/login?redirectTo=/dashboard/compose";
           setLoading(false);
           return;
@@ -47,14 +46,47 @@ export default function ComposePage() {
 
   const isPremium = useMemo(() => ["premium", "lifetime"].includes(plan), [plan]);
 
-  // DEMO: Supabase kayıtları sonra eklenecek — şimdilik local demo
+  // ✅ GERÇEK KAYIT: letters + letter_recipients
   const saveScheduled = async () => {
+    // 1) Basit doğrulama
     if (!title || !recipients || !unlockDate || !message) {
       alert("Please fill all fields.");
       return;
     }
-    // TODO: supabase.from('letters').insert(...)
-    alert("Saved (demo). In production: client-side AES + Supabase insert.");
+
+    // 2) Kullanıcı
+    const { data: { user }, error: uErr } = await supabase.auth.getUser();
+    if (uErr) return alert(uErr.message);
+    if (!user) return alert("Please log in.");
+
+    // 3) Letters insert
+    const { data: letter, error: lErr } = await supabase
+      .from("letters")
+      .insert({
+        user_id: user.id,
+        title,
+        message,       // V2'de client-side şifreleme eklenebilir
+        unlock_date    // input type="date" → YYYY-MM-DD
+      })
+      .select("id")
+      .single();
+
+    if (lErr) return alert(lErr.message);
+
+    // 4) Recipients insert
+    const emails = recipients.split(",").map(e => e.trim()).filter(Boolean);
+    if (emails.length) {
+      const rows = emails.map(email => ({ letter_id: letter.id, email }));
+      const { error: rErr } = await supabase.from("letter_recipients").insert(rows);
+      if (rErr) return alert(rErr.message);
+    }
+
+    // 5) Temizlik ve bildirim
+    setTitle("");
+    setRecipients("");
+    setUnlockDate("");
+    setMessage("");
+    alert("Scheduled message saved!");
   };
 
   const addPoolItem = () => {
@@ -69,8 +101,7 @@ export default function ComposePage() {
       alert("Please choose recipients and add at least one asset.");
       return;
     }
-    // TODO: supabase tablosu: wills, will_assets, will_recipients
-    // Mantık: heartbeat süresi dolunca (35 gün), backend job tetikleyip bu alıcılara e-posta yollar.
+    // TODO: wills, will_assets, will_recipients tabloları ile insert
     alert("Digital will saved (demo). On heartbeat expiry, emails will be sent automatically.");
   };
 
