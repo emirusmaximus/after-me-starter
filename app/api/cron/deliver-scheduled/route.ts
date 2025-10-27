@@ -1,3 +1,4 @@
+const CRON_SECRET = process.env.CRON_SECRET || "";
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
