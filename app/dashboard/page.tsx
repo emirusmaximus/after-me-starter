@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
 
 export default function InverseDashboard() {
   const [open, setOpen] = useState(false);
@@ -10,6 +11,25 @@ export default function InverseDashboard() {
   const [to, setTo] = useState("");
   const [date, setDate] = useState("");
   const [content, setContent] = useState("");
+
+  // Heartbeat confirm & silent ping
+  const [hbLock, setHbLock] = useState(false);
+  const [hbConfirmOpen, setHbConfirmOpen] = useState(false);
+
+  async function pingHeartbeatSilent() {
+    if (hbLock) return;
+    setHbLock(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { window.location.href = "/login?redirectTo=/dashboard"; return; }
+      await supabase.from("heartbeats").insert({ user_id: user.id });
+    } catch (e) {
+      console.error("heartbeat ping failed", e);
+    } finally {
+      setHbLock(false);
+      setHbConfirmOpen(false);
+    }
+  }
 
   return (
     <main className="wrap">
@@ -46,7 +66,6 @@ export default function InverseDashboard() {
             </ul>
 
             <div className="cta-wrap">
-              {/* CHANGED: aktif href */}
               <Link href="/dashboard/upgrade?plan=premium" className="btn btn-compact" aria-label="Upgrade to Premium">
                 Upgrade Now
               </Link>
@@ -67,7 +86,6 @@ export default function InverseDashboard() {
             </ul>
 
             <div className="cta-wrap">
-              {/* CHANGED: aktif href */}
               <Link href="/dashboard/upgrade?plan=free" className="btn btn-compact" aria-label="Continue with Free plan">
                 Continue Free
               </Link>
@@ -88,7 +106,6 @@ export default function InverseDashboard() {
             </ul>
 
             <div className="cta-wrap">
-              {/* CHANGED: aktif href */}
               <Link href="/dashboard/upgrade?plan=lifetime" className="btn btn-compact" aria-label="Buy Lifetime access">
                 Buy Lifetime
               </Link>
@@ -116,17 +133,18 @@ export default function InverseDashboard() {
           <div className="mini-card">
             <div className="mini-hd">Inspiration</div>
             <p className="mini-txt">Write one sentence your future self needs to hear.</p>
-            {/* Write Now zaten modal açıyor */}
-            <button className="mini-btn" onClick={() => setOpen(true)}>Write Now</button>
+            <Link href="/dashboard/write" className="mini-btn">Write Now</Link>
           </div>
 
           <div className="mini-card">
             <div className="mini-hd">Heartbeat</div>
             <p className="mini-txt">Monthly email ping keeps your vault “alive”.</p>
-            {/* CHANGED: butonu aktif route’a çevirdim */}
-            <Link href="/dashboard/upgrade?feature=heartbeat" className="mini-btn solid" aria-label="Renew Heartbeat">
+            <button
+              className="mini-btn solid"
+              onClick={() => setHbConfirmOpen(true)}
+            >
               Renew Heartbeat
-            </Link>
+            </button>
             <small className="mini-sub">Premium feature</small>
           </div>
         </section>
@@ -175,7 +193,48 @@ export default function InverseDashboard() {
         </section>
       </div>
 
-      {/* Compose Modal (demo) */}
+      {/* Heartbeat Confirm Modal */}
+      {hbConfirmOpen && (
+        <div className="overlay" role="dialog" aria-modal="true" aria-label="Renew Heartbeat">
+          <div className="modal" style={{maxWidth:420}}>
+            <div className="modal-hd" style={{marginBottom:8}}>
+              <h4>Renew Heartbeat</h4>
+              <button className="close" onClick={() => setHbConfirmOpen(false)}>Close</button>
+            </div>
+
+            <div className="form" style={{display:"grid", gap:12}}>
+              <p style={{opacity:.95, lineHeight:1.5}}>
+                Sıcak bir hatırlatma: <b>“I’m alive.”</b> diyerek
+                gün sayacını <b>sıfırlamak</b> üzeresin.
+                Bu işlem, mektuplarının doğru zamanda güvenle teslimi için kalp atışını yeniler.
+              </p>
+              <small className="mini-sub" style={{opacity:.75}}>
+                (Görünür bir değişiklik olmayacak; sayaç arka planda yenilenecek.)
+              </small>
+
+              <div style={{display:"flex", gap:10, marginTop:6}}>
+                <button
+                  onClick={() => setHbConfirmOpen(false)}
+                  className="mini-btn"
+                  style={{borderColor:"rgba(255,255,255,.25)"}}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  onClick={pingHeartbeatSilent}
+                  className="mini-btn solid"
+                  disabled={hbLock}
+                >
+                  {hbLock ? "Renewing…" : "Yes, reset now"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Compose Modal (demo) — yerinde duruyor, bozulmadı */}
       {open && (
         <div className="overlay" role="dialog" aria-modal="true" aria-label="Write Letter">
           <div className="modal">
@@ -217,7 +276,7 @@ export default function InverseDashboard() {
         html, body, * { font-family: Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol", sans-serif; }
       `}</style>
 
-      <style jsx>{/* (tamamen aynı stiller; hiçbir şey bozmadım) */`
+      <style jsx>{`
         .wrap{
           min-height:100vh; background:#000; color:#fff;
           display:flex; justify-content:center; align-items:flex-start;
