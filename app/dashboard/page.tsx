@@ -4,7 +4,7 @@ import { useState } from "react";
 import { supabase } from "@/lib/supabaseClient"; // aynı kaldı
 
 export default function InverseDashboard() {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false); // modal state kalsın, UI bozulmasın
 
   // Heartbeat confirm modal + toast
   const [hbOpen, setHbOpen] = useState(false);
@@ -17,7 +17,7 @@ export default function InverseDashboard() {
   const [date, setDate] = useState("");
   const [content, setContent] = useState("");
 
-  // 🔧 Sadece burası değişti: RPC yok, doğrudan profiles.last_heartbeat_at güncelleniyor
+  // 🔧 Heartbeat: RPC yok, doğrudan profiles.last_heartbeat_at güncelleniyor
   async function handleRenewHeartbeat() {
     try {
       setHbBusy(true);
@@ -141,7 +141,16 @@ export default function InverseDashboard() {
           <div className="mini-card">
             <div className="mini-hd">Inspiration</div>
             <p className="mini-txt">Write one sentence your future self needs to hear.</p>
-            <button className="mini-btn" onClick={() => setOpen(true)}>Write Now</button>
+
+            {/* 🔁 Write Now: yeni sekmede /dashboard/compose aç */}
+            <Link
+              href="/dashboard/compose"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mini-btn"
+            >
+              Write Now
+            </Link>
           </div>
 
           <div className="mini-card">
@@ -198,7 +207,7 @@ export default function InverseDashboard() {
         </section>
       </div>
 
-      {/* Compose Modal (demo) */}
+      {/* Compose Modal (demo) — kalsın, ama artık buton bunu açmıyor */}
       {open && (
         <div className="overlay" role="dialog" aria-modal="true" aria-label="Write Letter">
           <div className="modal">
