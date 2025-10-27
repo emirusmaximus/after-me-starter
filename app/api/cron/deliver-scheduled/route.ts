@@ -9,11 +9,18 @@ const fromEmail = process.env.FROM_EMAIL || "After.Me <noreply@example.com>";
 
 const admin = createClient(url, service, { auth: { persistSession: false } });
 
-export async function GET() {
+export async function GET(req: Request) {
+  // ✅ 1) Gizli anahtar kontrolü
+  const urlObj = new URL(req.url);
+  const key = urlObj.searchParams.get("key");
+  if (!CRON_SECRET || key !== CRON_SECRET) {
+    return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
+  }
+
   try {
     const today = new Date().toISOString().slice(0, 10);
 
-    // 1) zamanı gelmiş mektupları çek
+    // 2) zamanı gelmiş mektupları çek
     const { data: letters, error: lerr } = await admin
       .from("letters")
       .select("id,title,message")
@@ -36,7 +43,7 @@ export async function GET() {
       const toList = (recips || []).map(r => r.email).filter(Boolean);
       if (!toList.length) continue;
 
-      // 2) e-posta gönder (Resend varsa)
+      // 3) e-posta gönder (Resend varsa)
       if (resendKey) {
         await fetch("https://api.resend.com/emails", {
           method: "POST",
@@ -55,7 +62,7 @@ export async function GET() {
         console.log("[EMAIL DEMO]", { toList, subject: l.title, body: l.message });
       }
 
-      // 3) delivered işaretle
+      // 4) delivered işaretle
       await admin
         .from("letters")
         .update({ delivered_at: new Date().toISOString(), status: "delivered" })
@@ -70,6 +77,9 @@ export async function GET() {
   }
 }
 
+// HTML kaçış fonksiyonu
 function escapeHtml(s: string) {
-  return s.replace(/[&<>"']/g, (m) => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;" }[m] as string));
+  return s.replace(/[&<>"']/g, (m) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#039;" }[m] as string)
+  );
 }
