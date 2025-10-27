@@ -1,10 +1,15 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import { supabase } from "@/lib/supabaseClient"; // ✅ eklendi: sessiz ping için
+import { supabase } from "@/lib/supabaseClient"; // ✅ eklendi
 
 export default function InverseDashboard() {
   const [open, setOpen] = useState(false);
+
+  // Heartbeat confirm modal + toast
+  const [hbOpen, setHbOpen] = useState(false);
+  const [hbBusy, setHbBusy] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
 
   // demo form state
   const [title, setTitle] = useState("");
@@ -12,21 +17,23 @@ export default function InverseDashboard() {
   const [date, setDate] = useState("");
   const [content, setContent] = useState("");
 
-  // ✅ Heartbeat confirm & silent ping (sadece bu eklendi)
-  const [hbLock, setHbLock] = useState(false);
-  const [hbConfirmOpen, setHbConfirmOpen] = useState(false);
-  async function pingHeartbeatSilent() {
-    if (hbLock) return;
-    setHbLock(true);
+  async function handleRenewHeartbeat() {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { window.location.href = "/login?redirectTo=/dashboard"; return; }
-      await supabase.from("heartbeats").insert({ user_id: user.id });
-    } catch (e) {
-      console.error("heartbeat ping failed", e);
+      setHbBusy(true);
+      const { error } = await supabase.rpc("renew_heartbeat");
+      setHbBusy(false);
+      if (error) {
+        setToast(error.message || "Heartbeat renew failed.");
+      } else {
+        setHbOpen(false);
+        setToast("Heartbeat renewed. See you soon. ❤️");
+      }
+    } catch (e: any) {
+      setHbBusy(false);
+      setToast(e?.message || "Unexpected error.");
     } finally {
-      setHbLock(false);
-      setHbConfirmOpen(false);
+      // tostu 2.5 sn sonra kaldır
+      setTimeout(() => setToast(null), 2500);
     }
   }
 
@@ -132,8 +139,8 @@ export default function InverseDashboard() {
           <div className="mini-card">
             <div className="mini-hd">Heartbeat</div>
             <p className="mini-txt">Monthly email ping keeps your vault “alive”.</p>
-            {/* ✅ sadece bu buton değişti: confirm modal açar */}
-            <button className="mini-btn solid" onClick={() => setHbConfirmOpen(true)}>
+            {/* Görünüşü değişmeden — sadece tıklamada küçük onay */}
+            <button className="mini-btn solid" onClick={() => setHbOpen(true)}>
               Renew Heartbeat
             </button>
             <small className="mini-sub">Premium feature</small>
@@ -184,46 +191,6 @@ export default function InverseDashboard() {
         </section>
       </div>
 
-      {/* ✅ Heartbeat Confirm Modal — küçük, sıcak metinli */}
-      {hbConfirmOpen && (
-        <div className="overlay" role="dialog" aria-modal="true" aria-label="Renew Heartbeat">
-          <div className="modal" style={{maxWidth:420}}>
-            <div className="modal-hd" style={{marginBottom:8}}>
-              <h4>Renew Heartbeat</h4>
-              <button className="close" onClick={() => setHbConfirmOpen(false)}>Close</button>
-            </div>
-
-            <div className="form" style={{display:"grid", gap:12}}>
-              <p style={{opacity:.95, lineHeight:1.5}}>
-                Sıcak bir hatırlatma: <b>“I’m alive.”</b> diyerek gün sayacını <b>sıfırlamak</b> üzeresin.
-                Bu, mektuplarının doğru zamanda güvenle teslimi için kalp atışını yeniler.
-              </p>
-              <small className="mini-sub" style={{opacity:.75}}>
-                (Görünür bir değişiklik olmayacak; sayaç arka planda yenilenecek.)
-              </small>
-
-              <div style={{display:"flex", gap:10, marginTop:6}}>
-                <button
-                  onClick={() => setHbConfirmOpen(false)}
-                  className="mini-btn"
-                  style={{borderColor:"rgba(255,255,255,.25)"}}
-                >
-                  Cancel
-                </button>
-
-                <button
-                  onClick={pingHeartbeatSilent}
-                  className="mini-btn solid"
-                  disabled={hbLock}
-                >
-                  {hbLock ? "Renewing…" : "Yes, reset now"}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Compose Modal (demo) */}
       {open && (
         <div className="overlay" role="dialog" aria-modal="true" aria-label="Write Letter">
@@ -259,6 +226,28 @@ export default function InverseDashboard() {
           </div>
         </div>
       )}
+
+      {/* Heartbeat Confirm (küçük, sade) */}
+      {hbOpen && (
+        <div className="overlay hb" role="dialog" aria-modal="true" aria-label="Renew Heartbeat">
+          <div className="hb-modal">
+            <div className="hb-title">Renew heartbeat?</div>
+            <p className="hb-text">
+              You’re about to renew your heartbeat. This will reset your <b>35-day</b> timer.
+              Continue?
+            </p>
+            <div className="hb-actions">
+              <button className="mini-btn" disabled={hbBusy} onClick={()=>setHbOpen(false)}>Cancel</button>
+              <button className="mini-btn solid" disabled={hbBusy} onClick={handleRenewHeartbeat}>
+                {hbBusy ? "Renewing…" : "Yes, reset"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mini toast */}
+      {toast && <div className="toast">{toast}</div>}
 
       {/* Fonts (global) */}
       <style jsx global>{`
@@ -463,6 +452,23 @@ export default function InverseDashboard() {
         .mini-btn:hover{ transform:translateY(-1px) }
         .mini-btn.full{ width:100% }
 
+        /* Heartbeat confirm modal (minimal) */
+        .overlay.hb{ background:rgba(0,0,0,.6); display:grid; place-items:center; z-index:50 }
+        .hb-modal{
+          width:min(420px,92vw); background:#0b0b0b; border:1px solid rgba(255,255,255,.14);
+          border-radius:14px; padding:16px; text-align:left; box-shadow:0 0 22px rgba(255,255,255,.05);
+        }
+        .hb-title{ font-weight:900; margin-bottom:6px }
+        .hb-text{ color:#d8d8d8; margin:0 0 12px }
+        .hb-actions{ display:flex; gap:8px; justify-content:flex-end }
+
+        /* Mini toast */
+        .toast{
+          position:fixed; left:50%; bottom:18px; transform:translateX(-50%);
+          background:#0b0b0b; border:1px solid rgba(255,255,255,.14);
+          padding:10px 14px; border-radius:12px; box-shadow:0 0 16px rgba(255,255,255,.05); z-index:60;
+        }
+
         /* Timeline */
         .timeline{ margin-top:20px; text-align:left; position:relative; z-index:1; }
         .tl-hd{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px }
@@ -478,6 +484,14 @@ export default function InverseDashboard() {
         .pill.ok{ background:rgba(154,255,192,.12); border-color:rgba(154,255,192,.25) }
         .pill.wait{ background:rgba(255,224,138,.12); border-color:rgba(255,255,224,.25) }
         .pill.draft{ background:rgba(184,184,184,.12); border-color:rgba(184,184,184,.25) }
+
+        /* Compose modal (mevcut) */
+        .overlay{ position:fixed; inset:0; background:rgba(0,0,0,.6); display:grid; place-items:center; z-index:40 }
+        .modal{ width:min(720px,92vw); background:#0b0b0b; border:1px solid rgba(255,255,255,.14); border-radius:16px; padding:16px }
+        .modal-hd{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px }
+        .form{ display:grid; gap:8px }
+        label{ font-size:13px; color:#cfcfcf }
+        input,textarea{ background:#0a0a0a; border:1px solid rgba(255,255,255,.14); border-radius:10px; color:#fff; padding:10px 12px }
 
         /* Responsive */
         @media (max-width:900px){
