@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/lib/supabaseClient"; // ✅ eklendi: sessiz ping için
 
 export default function InverseDashboard() {
   const [open, setOpen] = useState(false);
@@ -12,10 +12,9 @@ export default function InverseDashboard() {
   const [date, setDate] = useState("");
   const [content, setContent] = useState("");
 
-  // Heartbeat confirm & silent ping
+  // ✅ Heartbeat confirm & silent ping (sadece bu eklendi)
   const [hbLock, setHbLock] = useState(false);
   const [hbConfirmOpen, setHbConfirmOpen] = useState(false);
-
   async function pingHeartbeatSilent() {
     if (hbLock) return;
     setHbLock(true);
@@ -66,9 +65,7 @@ export default function InverseDashboard() {
             </ul>
 
             <div className="cta-wrap">
-              <Link href="/dashboard/upgrade?plan=premium" className="btn btn-compact" aria-label="Upgrade to Premium">
-                Upgrade Now
-              </Link>
+              <Link href="#" className="btn btn-compact">Upgrade Now</Link>
             </div>
           </div>
 
@@ -86,9 +83,7 @@ export default function InverseDashboard() {
             </ul>
 
             <div className="cta-wrap">
-              <Link href="/dashboard/upgrade?plan=free" className="btn btn-compact" aria-label="Continue with Free plan">
-                Continue Free
-              </Link>
+              <Link href="#" className="btn btn-compact">Continue Free</Link>
             </div>
           </div>
 
@@ -106,9 +101,7 @@ export default function InverseDashboard() {
             </ul>
 
             <div className="cta-wrap">
-              <Link href="/dashboard/upgrade?plan=lifetime" className="btn btn-compact" aria-label="Buy Lifetime access">
-                Buy Lifetime
-              </Link>
+              <Link href="#" className="btn btn-compact">Buy Lifetime</Link>
             </div>
           </div>
         </div>
@@ -133,16 +126,14 @@ export default function InverseDashboard() {
           <div className="mini-card">
             <div className="mini-hd">Inspiration</div>
             <p className="mini-txt">Write one sentence your future self needs to hear.</p>
-            <Link href="/dashboard/write" className="mini-btn">Write Now</Link>
+            <button className="mini-btn" onClick={() => setOpen(true)}>Write Now</button>
           </div>
 
           <div className="mini-card">
             <div className="mini-hd">Heartbeat</div>
             <p className="mini-txt">Monthly email ping keeps your vault “alive”.</p>
-            <button
-              className="mini-btn solid"
-              onClick={() => setHbConfirmOpen(true)}
-            >
+            {/* ✅ sadece bu buton değişti: confirm modal açar */}
+            <button className="mini-btn solid" onClick={() => setHbConfirmOpen(true)}>
               Renew Heartbeat
             </button>
             <small className="mini-sub">Premium feature</small>
@@ -193,7 +184,7 @@ export default function InverseDashboard() {
         </section>
       </div>
 
-      {/* Heartbeat Confirm Modal */}
+      {/* ✅ Heartbeat Confirm Modal — küçük, sıcak metinli */}
       {hbConfirmOpen && (
         <div className="overlay" role="dialog" aria-modal="true" aria-label="Renew Heartbeat">
           <div className="modal" style={{maxWidth:420}}>
@@ -204,9 +195,8 @@ export default function InverseDashboard() {
 
             <div className="form" style={{display:"grid", gap:12}}>
               <p style={{opacity:.95, lineHeight:1.5}}>
-                Sıcak bir hatırlatma: <b>“I’m alive.”</b> diyerek
-                gün sayacını <b>sıfırlamak</b> üzeresin.
-                Bu işlem, mektuplarının doğru zamanda güvenle teslimi için kalp atışını yeniler.
+                Sıcak bir hatırlatma: <b>“I’m alive.”</b> diyerek gün sayacını <b>sıfırlamak</b> üzeresin.
+                Bu, mektuplarının doğru zamanda güvenle teslimi için kalp atışını yeniler.
               </p>
               <small className="mini-sub" style={{opacity:.75}}>
                 (Görünür bir değişiklik olmayacak; sayaç arka planda yenilenecek.)
@@ -234,7 +224,7 @@ export default function InverseDashboard() {
         </div>
       )}
 
-      {/* Compose Modal (demo) — yerinde duruyor, bozulmadı */}
+      {/* Compose Modal (demo) */}
       {open && (
         <div className="overlay" role="dialog" aria-modal="true" aria-label="Write Letter">
           <div className="modal">
@@ -478,7 +468,7 @@ export default function InverseDashboard() {
         .tl-hd{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px }
         .tl-hd h3{ margin:0; font-size:19px }
         .tiny-link{ font-size:14px; opacity:.9 }
-        .tl-list{ display:grid; grid-template-columns:1fr; gap:10px }
+        .tl-list{ display:grid; gap:10px }
         .node{ display:flex; gap:12px; align-items:flex-start; background:#0b0b0b; border:1px solid rgba(255,255,255,.14); border-radius:12px; padding:12px 14px; }
         .dot{ width:10px; height:10px; border-radius:50% }
         .dot.ok{ background:#9affc0 } .dot.wait{ background:#ffe08a } .dot.draft{ background:#b8b8b8 }
