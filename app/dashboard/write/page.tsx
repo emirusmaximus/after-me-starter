@@ -68,3 +68,20 @@ const btnSolid: React.CSSProperties = {
 const btnGhost: React.CSSProperties = {
   border:"1px solid #3a3a3a", borderRadius:12, padding:"12px 16px", fontWeight:900, color:"#fff", textDecoration:"none", background:"#0c0c0c"
 };
+// ... (senin mevcut kodun başı aynı)
+
+            <div style={{display:"flex", gap:10, marginTop:6}}>
+              <button
+                onClick={()=>{ alert("Draft saved locally (demo). V1: client-side AES + Supabase."); }}
+                style={btnSolid}
+              >Encrypt & Save (Demo)</button>
+
+              {/* YENİ: Heartbeat Vault linki */}
+              <Link href="/dashboard/vault/new" style={btnGhost}>
+                Create Heartbeat Vault (Premium/Lifetime)
+              </Link>
+
+              <Link href="/dashboard" style={btnGhost}>Cancel</Link>
+            </div>
+
+// ... (geri kalanı aynı)
