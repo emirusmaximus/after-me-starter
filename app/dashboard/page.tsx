@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient"; // aynı kaldı
 
 export default function InverseDashboard() {
@@ -44,6 +44,14 @@ export default function InverseDashboard() {
       setTimeout(() => setToast(null), 2500);
     }
   }
+
+  // 🔒 Arka plan scroll’unu modal açıkken kilitle
+  useEffect(() => {
+    if (!hbOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, [hbOpen]);
 
   return (
     <main className="wrap">
@@ -243,7 +251,7 @@ export default function InverseDashboard() {
         </div>
       )}
 
-      {/* Heartbeat Confirm (küçük, sade) */}
+      {/* ✅ Heartbeat Confirm – tam ekran ortalı, sayfayı bölmeden */}
       {hbOpen && (
         <div className="overlay hb" role="dialog" aria-modal="true" aria-label="Renew Heartbeat">
           <div className="hb-modal">
@@ -253,12 +261,35 @@ export default function InverseDashboard() {
               Continue?
             </p>
             <div className="hb-actions">
-              <button className="mini-btn" disabled={hbBusy} onClick={()=>setHbOpen(false)}>Cancel</button>
+              <button className="mini-btn" disabled={hbBusy} onClick={() => setHbOpen(false)}>Cancel</button>
               <button className="mini-btn solid" disabled={hbBusy} onClick={handleRenewHeartbeat}>
                 {hbBusy ? "Renewing…" : "Yes, reset"}
               </button>
             </div>
           </div>
+
+          {/* Bu stil sadece bu modal için; sayfayı bölmeden tam ekran ortalar */}
+          <style jsx>{`
+            .overlay{
+              position:fixed; inset:0;
+              background:rgba(0,0,0,.6);
+              display:grid; place-items:center;
+              z-index: 9999; /* üst katman */
+              backdrop-filter: blur(3px);
+            }
+            .hb-modal{
+              width:min(420px,92vw);
+              background:#0b0b0b;
+              border:1px solid rgba(255,255,255,.14);
+              border-radius:16px;
+              padding:20px;
+              box-shadow:0 10px 40px rgba(0,0,0,.5), inset 0 0 1px rgba(255,255,255,.06);
+              text-align:left;
+            }
+            .hb-title{ font-weight:900; margin:0 0 8px }
+            .hb-text{ opacity:.9; margin:0 0 12px }
+            .hb-actions{ display:flex; justify-content:flex-end; gap:8px }
+          `}</style>
         </div>
       )}
 
