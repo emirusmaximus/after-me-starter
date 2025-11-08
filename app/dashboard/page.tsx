@@ -4,14 +4,12 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient"; // aynı kaldı
 
 export default function InverseDashboard() {
-  const [open, setOpen] = useState(false); // modal state kalsın, UI bozulmasın
-
-  // Heartbeat confirm modal + toast
-  const [hbOpen, setHbOpen] = useState(false);
+  const [open, setOpen] = useState(false); // Compose modal (demo)
+  const [hbOpen, setHbOpen] = useState(false); // Heartbeat modal
   const [hbBusy, setHbBusy] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
-  // demo form state
+  // demo form state (compose)
   const [title, setTitle] = useState("");
   const [to, setTo] = useState("");
   const [date, setDate] = useState("");
@@ -28,10 +26,7 @@ export default function InverseDashboard() {
       const nowIso = new Date().toISOString();
       const { error: upErr } = await supabase
         .from("profiles")
-        .upsert(
-          { id: user.id, last_heartbeat_at: nowIso },
-          { onConflict: "id" }
-        );
+        .upsert({ id: user.id, last_heartbeat_at: nowIso }, { onConflict: "id" });
 
       if (upErr) throw upErr;
 
@@ -45,7 +40,7 @@ export default function InverseDashboard() {
     }
   }
 
-  // 🔒 Arka plan scroll’unu modal açıkken kilitle
+  // 🔒 Arka plan scroll’unu heartbeat modal açıkken kilitle
   useEffect(() => {
     if (!hbOpen) return;
     const prev = document.body.style.overflow;
@@ -59,7 +54,7 @@ export default function InverseDashboard() {
         {/* === BACKGROUND FX (Animated Mesh + Grain) === */}
         <div className="bgfx" aria-hidden="true" />
 
-        {/* Topbar (hamburger tamamen kaldırıldı) */}
+        {/* Topbar */}
         <div className="topbar">
           <Link href="/" className="brand" aria-label="After.Me — Home">
             <img src="/logo.svg" width={36} height={36} alt="After.Me" />
@@ -149,8 +144,7 @@ export default function InverseDashboard() {
           <div className="mini-card">
             <div className="mini-hd">Inspiration</div>
             <p className="mini-txt">Write one sentence your future self needs to hear.</p>
-
-            {/* 🔁 Write Now: yeni sekmede /dashboard/compose aç */}
+            {/* Şu an yeni sekmede açılıyor; istersen SPA geçişe çeviririz */}
             <Link
               href="/dashboard/compose"
               target="_blank"
@@ -215,7 +209,7 @@ export default function InverseDashboard() {
         </section>
       </div>
 
-      {/* Compose Modal (demo) — kalsın, ama artık buton bunu açmıyor */}
+      {/* Compose Modal (demo) — kalsın */}
       {open && (
         <div className="overlay" role="dialog" aria-modal="true" aria-label="Write Letter">
           <div className="modal">
@@ -248,10 +242,32 @@ export default function InverseDashboard() {
               </button>
             </div>
           </div>
+
+          {/* Compose modal stilleri */}
+          <style jsx>{`
+            .overlay{
+              position:fixed; inset:0; background:rgba(0,0,0,.6);
+              display:grid; place-items:center; z-index:9998; backdrop-filter: blur(2px);
+            }
+            .modal{
+              width:min(560px,92vw);
+              background:#0b0b0b; border:1px solid rgba(255,255,255,.14);
+              border-radius:16px; padding:16px;
+              box-shadow:0 10px 40px rgba(0,0,0,.45), inset 0 0 1px rgba(255,255,255,.08);
+            }
+            .modal-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+            .form{display:grid;gap:10px}
+            label{font-size:13px;color:#cfcfcf}
+            input, textarea{
+              background:#0a0a0a; border:1px solid rgba(255,255,255,.14);
+              border-radius:10px; color:#fff; padding:10px 12px;
+            }
+            .close{ appearance:none; border:1px solid rgba(255,255,255,.2); background:#111; color:#fff; border-radius:10px; padding:6px 10px; }
+          `}</style>
         </div>
       )}
 
-      {/* ✅ Heartbeat Confirm – tam ekran ortalı, sayfayı bölmeden */}
+      {/* Heartbeat Confirm – tam ekran, ortalı */}
       {hbOpen && (
         <div className="overlay hb" role="dialog" aria-modal="true" aria-label="Renew Heartbeat">
           <div className="hb-modal">
@@ -268,7 +284,6 @@ export default function InverseDashboard() {
             </div>
           </div>
 
-          {/* Bu stil sadece bu modal için; sayfayı bölmeden tam ekran ortalar */}
           <style jsx>{`
             .overlay{
               position:fixed; inset:0;
@@ -296,12 +311,7 @@ export default function InverseDashboard() {
       {/* Mini toast */}
       {toast && <div className="toast">{toast}</div>}
 
-      {/* Fonts (global) */}
-      <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;700;800;900&display=swap');
-        html, body, * { font-family: Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol", sans-serif; }
-      `}</style>
-
+      {/* Fonts (global import globals.css’e taşındı) */}
       <style jsx>{`
         .wrap{
           min-height:100vh; background:#000; color:#fff;
@@ -417,11 +427,9 @@ export default function InverseDashboard() {
         .card h2{ font-size:24px }
         .price{ font-size:21px; margin:0 0 12px }
 
-        /* ÖZELLİKLER (çarpıcı nokta simgesi) */
+        /* ÖZELLİKLER */
         ul.features{ list-style:none; margin:0; padding:0; display:grid; gap:10px; width:100%; }
-        ul.features li{
-          position:relative; padding-left:38px; font-size:18px; opacity:.98; text-align:left;
-        }
+        ul.features li{ position:relative; padding-left:38px; font-size:18px; opacity:.98; text-align:left; }
         ul.features li::before{
           content:""; position:absolute; left:8px; top:6px;
           width:16px; height:16px; border-radius:50%;
@@ -434,7 +442,7 @@ export default function InverseDashboard() {
           box-shadow: 0 0 0 6px var(--accentGlow), 0 0 28px var(--accent), inset 0 0 7px rgba(0,0,0,.45);
         }
 
-        /* CTA — kompakt ve tabanda aynı hiza */
+        /* CTA */
         .cta-wrap{ margin-top:auto; width:100%; display:flex; justify-content:center; }
         .btn{
           background:#fff; color:#000; text-decoration:none;
@@ -447,18 +455,15 @@ export default function InverseDashboard() {
         /* Zemin + accent */
         .premium{
           background: linear-gradient(160deg, #2b205a 0%, #4a3fb3 100%);
-          --accent:#9b8dff;
-          --accentGlow: rgba(108, 99, 255, .28);
+          --accent:#9b8dff; --accentGlow: rgba(108, 99, 255, .28);
         }
         .free{
           background: linear-gradient(160deg, #0f1014 0%, #1b1c22 100%);
-          --accent:#e8e8e8;
-          --accentGlow: rgba(255,255,255,.20);
+          --accent:#e8e8e8; --accentGlow: rgba(255,255,255,.20);
         }
         .lifetime{
           background: linear-gradient(160deg, #6e5a09 0%, #a67a00 100%);
-          --accent:#f2c94c;
-          --accentGlow: rgba(242,201,76,.30);
+          --accent:#f2c94c; --accentGlow: rgba(242,201,76,.30);
         }
 
         /* Kurdela */
@@ -514,6 +519,14 @@ export default function InverseDashboard() {
         .pill.ok{ background:rgba(154,255,192,.12); border-color:rgba(154,255,192,.25) }
         .pill.wait{ background:rgba(255,224,138,.12); border-color:rgba(255,255,224,.25) }
         .pill.draft{ background:rgba(184,184,184,.12); border-color:rgba(184,184,184,.25) }
+
+        /* Toast */
+        .toast{
+          position:fixed; bottom:18px; left:50%; transform:translateX(-50%);
+          background:#111; color:#fff; border:1px solid rgba(255,255,255,.16);
+          border-radius:10px; padding:10px 14px; z-index:10000;
+          box-shadow:0 6px 22px rgba(0,0,0,.4);
+        }
 
         /* Responsive */
         @media (max-width:900px){
